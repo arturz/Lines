@@ -5,6 +5,8 @@ import Title from "./Title";
 import { yellow, yellowDark } from "../../constants/colors";
 import { ModalButton } from "../../components";
 import MapSizeButtons from "./MapSizeButtons";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../../App";
 
 const styles = StyleSheet.create({
   container: {
@@ -18,7 +20,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({ navigation: { navigate } }) => (
+type MenuScreenNavigationProp = StackNavigationProp<RootStackParamList, "Menu">;
+
+export default ({
+  navigation: { navigate },
+}: {
+  navigation: MenuScreenNavigationProp;
+}) => (
   <View style={styles.container}>
     <WhitePortal name="modal" />
     <Title />

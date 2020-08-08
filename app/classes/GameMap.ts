@@ -1,14 +1,17 @@
-import { Pointer } from "./Pointer";
 import { Cell } from "./Cell";
 
 export class GameMap {
-  pointer: Pointer;
   cells: Cell[][] = [];
 
-  constructor(public width: number, public height: number, copied = false) {
-    if (copied) return;
-
-    this.pointer = new Pointer(this.width / 2, this.height / 2);
+  constructor(
+    public width: number,
+    public height: number,
+    copy: GameMap = null
+  ) {
+    if (copy) {
+      Object.assign(this, copy);
+      return;
+    }
 
     for (let i = 0; i < height; i++) {
       this.cells.push([]);
@@ -18,9 +21,7 @@ export class GameMap {
     }
   }
 
-  copy() {
-    const _map = new GameMap(this.width, this.height, true);
-    Object.assign(_map, this);
-    return _map;
+  getCells() {
+    return [...this.cells];
   }
 }

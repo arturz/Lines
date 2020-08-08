@@ -1,5 +1,5 @@
-import { Direction } from "../classes/Direction";
-import { Color } from "../classes/Color";
+import { Direction } from "../__classes/Direction";
+import { Player } from "../constants";
 
 export const START_GAME = "START_GAME";
 export function startGame(width: number, height: number) {
@@ -10,16 +10,21 @@ export function startGame(width: number, height: number) {
 }
 
 export const FINISH = "FINISH";
-export function finish(winner: Color) {
+export function finish(winner: Player) {
   return { type: FINISH, payload: { winner } };
 }
 
 export const TAKE_LINE = "TAKE_LINE";
-export function takeLine(y: number, x: number, direction: Direction) {
-  return { type: TAKE_LINE, payload: { x, y, direction } };
+export function takeLine(
+  y: number,
+  x: number,
+  direction: Direction,
+  backwards = false
+) {
+  return { type: TAKE_LINE, payload: { x, y, direction, backwards } };
 }
 
-export const CHANGE_COLOR = "CHANGE_COLOR";
-export function changeColor() {
-  return { type: CHANGE_COLOR };
+export const TOGGLE_PLAYER = "TOGGLE_PLAYER";
+export function togglePlayer() {
+  return { type: TOGGLE_PLAYER };
 }

@@ -11,7 +11,7 @@ import {
 import { gsap } from "gsap-rn";
 import { BlackPortal } from "react-native-portal";
 import { blue, yellow } from "../../constants/colors";
-import { AnimationState } from "../../constants/AnimationState";
+import { AnimationStatus } from "../../constants/AnimationStatus";
 import Modal from "./Modal";
 
 const dimensions = {
@@ -54,7 +54,7 @@ export default ({
   children: React.ReactNode;
 }) => {
   const [modal, setModal] = useState({ open: false, top: null });
-  const animationState = useRef(AnimationState.Ready);
+  const animationStatus = useRef(AnimationStatus.Ready);
   const button = useRef(null);
   const text = useRef(null);
 

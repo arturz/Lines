@@ -1,18 +1,23 @@
-import { Color } from "./Color";
-import { Direction } from "./Direction";
-import { Line } from "./Line";
+import { Player } from "../constants/Player";
+import { Direction } from "../constants/Direction";
 
-class CellLine extends Line {
-  constructor(public direction: Direction, private color: Color) {
-    super(direction);
-  }
+class CellLine {
+  constructor(
+    public direction: Direction,
+    private player: Player,
+    private backwards?: boolean
+  ) {}
 
   getDirection() {
     return this.direction;
   }
 
-  getColor() {
-    return this.color;
+  isBackwards() {
+    return Boolean(this.backwards);
+  }
+
+  getPlayer() {
+    return this.player;
   }
 
   hasDirection(direction: Direction) {
@@ -35,11 +40,11 @@ export class Cell {
     );
   }
 
-  takeLine(direction: Direction, color: Color) {
+  takeLine(direction: Direction, player: Player, backwards?: boolean) {
     if (this.isLineTaken(direction))
       throw new Error(`Cell line is already taken`);
 
-    this.takenLines.push(new CellLine(direction, color));
+    this.takenLines.push(new CellLine(direction, player, backwards));
   }
 
   getTakenLines() {

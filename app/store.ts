@@ -1,56 +1,100 @@
 import { createStore, applyMiddleware } from "redux";
-import { Color } from "./classes/Color";
 import { GameMap } from "./classes/GameMap";
-import { START_GAME, TAKE_LINE, FINISH, CHANGE_COLOR } from "./actions/game";
-import { Status } from "./classes/Status";
-import reverseColor from "./utils/reverseColor";
+import { START_GAME, TAKE_LINE, FINISH, TOGGLE_PLAYER } from "./actions/game";
+import getToggledPlayer from "./utils/getToggledPlayer";
+import { GameStatus } from "./constants/GameStatus";
+import { Player } from "./constants/Player";
+import { Pointer } from "./classes/Pointer";
+import { Gates } from "./classes/Gates";
 
-const initialState = {
-  changedColor: true,
-  status: Status.Playing,
-  color: Color.Red,
-  winner: null,
-  map: null,
+interface State {
+  game: {
+    status: GameStatus;
+    toggledPlayer: boolean;
+    player: Player;
+    pointer: Pointer;
+    winner: Player;
+    map: GameMap;
+    gates: Gates;
+  };
+}
+
+const initialState: State = {
+  game: {
+    status: GameStatus.Ready,
+    toggledPlayer: true,
+    player: null,
+    pointer: null,
+    winner: null,
+    map: null,
+    gates: null,
+  },
 };
 
-function reducer(state, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case START_GAME:
       return {
         ...state,
-        winner: null,
-        status: Status.Playing,
-        color: Color.Red,
-        map: new GameMap(action.payload.width, action.payload.height),
+        game: {
+          ...initialState.game,
+          status: GameStatus.Playing,
+          player: Player.A,
+          pointer: new Pointer(
+            action.payload.width / 2,
+            action.payload.height / 2
+          ),
+          map: new GameMap(action.payload.width, action.payload.height),
+          gates: new Gates(action.payload.width, action.payload.height),
+        },
       };
+
     case TAKE_LINE:
-      const map = state.map.copy();
+      const map = new GameMap(
+        state.game.map.width,
+        state.game.map.height,
+        state.game.map
+      );
       map.cells[action.payload.y][action.payload.x].takeLine(
         action.payload.direction,
-        state.color
+        state.game.player,
+        action.payload.backwards
       );
-      map.pointer.updateCoordinates(
+      const { x, y } = state.game.pointer.getNextCoordinates(
         action.payload.y,
         action.payload.x,
         action.payload.direction
       );
       return {
         ...state,
-        changedColor: false,
-        map,
+        game: {
+          ...state.game,
+          toggledPlayer: false,
+          map,
+          pointer: new Pointer(x, y),
+        },
       };
-    case CHANGE_COLOR:
+
+    case TOGGLE_PLAYER:
       return {
         ...state,
-        changedColor: true,
-        color: reverseColor(state.color),
+        game: {
+          ...state.game,
+          toggledPlayer: true,
+          player: getToggledPlayer(state.game.player),
+        },
       };
+
     case FINISH:
       return {
         ...state,
-        status: Status.Finish,
-        winner: action.payload.winner,
+        game: {
+          ...state.game,
+          status: GameStatus.Finish,
+          winner: action.payload.winner,
+        },
       };
+
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import { Direction } from "./Direction";
+import { Direction } from "../constants";
 
 export class Pointer {
   constructor(private x: number, private y: number) {}
@@ -43,11 +43,5 @@ export class Pointer {
       x,
       y,
     };
-  }
-
-  updateCoordinates(lineY: number, lineX: number, direction: Direction) {
-    const { x, y } = this.getNextCoordinates(lineY, lineX, direction);
-    this.x = x;
-    this.y = y;
   }
 }

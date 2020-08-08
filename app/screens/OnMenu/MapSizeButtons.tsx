@@ -5,7 +5,6 @@ import Title from "./Title";
 import { yellow, yellowDark } from "../../constants/colors";
 import { ModalButton } from "../../components";
 import Button from "../../components/Button";
-import { MapSize } from "../../constants/MapSize";
 
 const styles = StyleSheet.create({
   container: {
@@ -19,14 +18,14 @@ const styles = StyleSheet.create({
 
 export default ({ navigate }: { navigate: Function }) => (
   <View style={styles.container}>
-    <Button onPress={() => navigate("Game", { size: MapSize.Small })}>
+    <Button onPress={() => navigate("Game", { width: 4, height: 8 })}>
       Small
     </Button>
-    <Button onPress={() => navigate("Game", { size: MapSize.Medium })}>
+    <Button onPress={() => navigate("Game", { width: 6, height: 12 })}>
       Medium
     </Button>
     <Button
-      onPress={() => navigate("Game", { size: MapSize.Big })}
+      onPress={() => navigate("Game", { width: 8, height: 16 })}
       style={styles.lastButton}
     >
       Big
