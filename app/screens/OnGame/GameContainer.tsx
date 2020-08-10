@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import DimensionsWrapper from "../../wrappers/DimensionsWrapper";
+import { DimensionsWrapper } from "../../components/wrappers";
 import Game from "./Game";
 import { CellLineProps } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
@@ -14,7 +14,7 @@ import canBePlaced from "./utils/canBePlaced";
 import { Alert } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../../App";
+import { RootStackParamList } from "../../navigations";
 
 const mapStateToProps = ({
   game: { status, map, pointer, player, toggledPlayer, winner, gates },
@@ -115,7 +115,10 @@ const GameContainer = ({
   }, [status, map, player, toggledPlayer, pointer, winner]);
 
   const startGame = () =>
-    dispatchStartName(route?.params?.width || 6, route?.params?.height || 10);
+    void dispatchStartName(
+      route?.params?.width || 6,
+      route?.params?.height || 10
+    );
 
   useEffect(startGame, []);
 

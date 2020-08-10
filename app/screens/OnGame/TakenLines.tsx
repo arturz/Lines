@@ -5,6 +5,7 @@ import { GameSizes } from "../../types";
 import { GameMap } from "../../classes/GameMap";
 import getDrewLineProps from "./utils/getDrewLineProps";
 import getPlayerColor from "../../utils/getPlayerColor";
+import { Sizes } from "../../styles";
 
 const mapStateToProps = ({ game: { map } }) => ({
   map,
@@ -28,7 +29,7 @@ const TakenLines = memo(({ map, width, height, cellPx, offset }: Props) => {
               offset,
             })}
             stroke={getPlayerColor(cellLine.getPlayer())}
-            strokeWidth={4}
+            strokeWidth={Sizes.TAKEN_LINES}
             strokeLinecap="round"
           />
         );

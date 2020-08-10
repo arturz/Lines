@@ -4,6 +4,7 @@ import { Line } from "react-native-svg";
 import { GameSizes } from "../../types";
 import { Gates } from "../../classes/Gates";
 import { getPlayerColor } from "../../utils";
+import { Sizes } from "../../styles";
 
 const mapStateToProps = ({ game: { gates } }) => ({
   gates,
@@ -23,7 +24,7 @@ const GatesComponent = ({ cellPx, offset, gates }: Props) => (
         x2={offset.width + to.x * cellPx}
         y2={offset.height + to.y * cellPx}
         stroke={getPlayerColor(player)}
-        strokeWidth={10}
+        strokeWidth={Sizes.GATE}
         strokeLinecap="round"
       />
     ))}

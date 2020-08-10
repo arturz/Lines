@@ -1,5 +1,4 @@
 import React, { memo, forwardRef, useRef, MutableRefObject } from "react";
-import { Animated } from "react-native";
 import { connect } from "react-redux";
 import { GameSizes, CellLineProps } from "../../types";
 import { Line } from "react-native-svg";
@@ -7,7 +6,7 @@ import getDrewLineProps from "./utils/getDrewLineProps";
 import getPlayerColor from "../../utils/getPlayerColor";
 import { Player } from "../../constants";
 import gsap from "gsap";
-import AnimatedLine from "../../components/AnimatedLine";
+import { Sizes } from "../../styles";
 
 const mapStateToProps = ({ game: { player } }) => ({
   player,
@@ -41,14 +40,14 @@ const HoverLine = memo(({ cellPx, offset, player, forwardedRef }: Props) => {
             offset,
             length: state.length,
           }),
-          strokeWidth: 4,
+          strokeWidth: Sizes.HOVER_LINES,
         });
       },
     });
   };
 
   const clear = () => {
-    timeline.kill();
+    if (timeline) timeline.kill();
     _line.current.setNativeProps({
       strokeWidth: 0,
     });
@@ -61,16 +60,14 @@ const HoverLine = memo(({ cellPx, offset, player, forwardedRef }: Props) => {
     };
 
   return (
-    <AnimatedLine
-      ref={_line}
-      stroke={getPlayerColor(player)}
-      strokeLinecap="round"
-    />
+    <Line ref={_line} stroke={getPlayerColor(player)} strokeLinecap="round" />
   );
 });
 
 const ConnectedComponent = connect(mapStateToProps)(HoverLine);
 
-export default forwardRef((props, forwardedRef) => (
-  <ConnectedComponent {...props} forwardedRef={forwardedRef} />
-));
+export default forwardRef<typeof ConnectedComponent, GameSizes>(
+  (props, forwardedRef) => (
+    <ConnectedComponent {...props} forwardedRef={forwardedRef} />
+  )
+);

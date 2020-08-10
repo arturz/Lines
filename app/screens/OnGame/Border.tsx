@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { GameSizes, Point } from "../../types";
+import { Colors, Sizes } from "../../styles";
 import { Line } from "react-native-svg";
-import { Colors } from "../../constants";
 
 export default memo(({ width, height, cellPx, offset }: GameSizes) => {
   //first and last point
@@ -22,8 +22,8 @@ export default memo(({ width, height, cellPx, offset }: GameSizes) => {
           y1={lastPoint.y}
           x2={point.x}
           y2={point.y}
-          stroke={Colors.yellowDark}
-          strokeWidth={6}
+          stroke={Colors.YELLOW_DARK}
+          strokeWidth={Sizes.BORDER}
           strokeLinecap="round"
         />
       ),

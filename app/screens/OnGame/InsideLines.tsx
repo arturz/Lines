@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { GameSizes } from "../../types";
 import { Line } from "react-native-svg";
-import { Colors } from "../../constants";
+import { Colors, Sizes } from "../../styles";
 
 export default memo(({ width, height, cellPx, offset }: GameSizes) => {
   const elements: JSX.Element[] = [];
@@ -14,8 +14,8 @@ export default memo(({ width, height, cellPx, offset }: GameSizes) => {
         y1={offset.height + y * cellPx}
         x2={offset.width + width * cellPx}
         y2={offset.height + y * cellPx}
-        stroke={Colors.yellow}
-        strokeWidth={4}
+        stroke={Colors.YELLOW}
+        strokeWidth={Sizes.INSIDE_LINES}
         strokeLinecap="round"
       />
     );
@@ -29,8 +29,8 @@ export default memo(({ width, height, cellPx, offset }: GameSizes) => {
         y1={offset.height}
         x2={offset.width + x * cellPx}
         y2={offset.height + height * cellPx}
-        stroke={Colors.yellow}
-        strokeWidth={4}
+        stroke={Colors.YELLOW}
+        strokeWidth={Sizes.INSIDE_LINES}
         strokeLinecap="round"
       />
     );

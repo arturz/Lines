@@ -8,19 +8,12 @@ interface Props {
   heightPx: number;
 }
 
-const styles = StyleSheet.create({
-  dimensions: {
-    width: "100%",
-    height: "100%",
-  },
-});
-
 export default ({ render }: { render: (Props) => ReactNode }) => {
   const [dimensions, setDimensions] = useState<Props>(null);
 
   return (
     <View
-      style={[StyleSheet.absoluteFill, styles.dimensions]}
+      style={StyleSheet.absoluteFill}
       onLayout={({
         nativeEvent: {
           layout: { width, height },

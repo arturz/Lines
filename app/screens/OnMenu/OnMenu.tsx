@@ -1,18 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { WhitePortal } from "react-native-portal";
 import Title from "./Title";
-import { yellow, yellowDark } from "../../constants/colors";
-import { ModalButton } from "../../components";
-import MapSizeButtons from "./MapSizeButtons";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../../App";
+import MapSizeButtons from "./SelectMapSize";
+import { MenuScreenNavigationProp } from "./types/MenuScreenNavigationProp";
+import { Colors } from "../../styles";
+import { ButtonThatOpensModal } from "../../components/organisms";
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: yellow,
+    backgroundColor: Colors.YELLOW,
   },
   buttons: {
     display: "flex",
@@ -20,23 +19,17 @@ const styles = StyleSheet.create({
   },
 });
 
-type MenuScreenNavigationProp = StackNavigationProp<RootStackParamList, "Menu">;
-
-export default ({
-  navigation: { navigate },
-}: {
-  navigation: MenuScreenNavigationProp;
-}) => (
+export default ({ navigation }: { navigation: MenuScreenNavigationProp }) => (
   <View style={styles.container}>
     <WhitePortal name="modal" />
     <Title />
     <View style={styles.buttons}>
-      <ModalButton
+      <ButtonThatOpensModal
         buttonTitle={"TWO PLAYERS\nONE DEVICE"}
         modalTitle="Map size"
       >
-        <MapSizeButtons navigate={navigate} />
-      </ModalButton>
+        <MapSizeButtons navigation={navigation} />
+      </ButtonThatOpensModal>
     </View>
   </View>
 );
