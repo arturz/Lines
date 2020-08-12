@@ -1,4 +1,10 @@
-import React, { memo, forwardRef, useRef, MutableRefObject } from "react";
+import React, {
+  memo,
+  forwardRef,
+  useRef,
+  MutableRefObject,
+  useImperativeHandle,
+} from "react";
 import { connect } from "react-redux";
 import { GameSizes, CellLineProps } from "../../types";
 import { Line } from "react-native-svg";
@@ -53,11 +59,14 @@ const HoverLine = memo(({ cellPx, offset, player, forwardedRef }: Props) => {
     });
   };
 
-  if (typeof forwardedRef !== "function")
-    forwardedRef.current = {
-      start,
-      clear,
-    };
+  useImperativeHandle(forwardedRef, () => ({
+    get start() {
+      return start;
+    },
+    get clear() {
+      return clear;
+    },
+  }));
 
   return (
     <Line ref={_line} stroke={getPlayerColor(player)} strokeLinecap="round" />

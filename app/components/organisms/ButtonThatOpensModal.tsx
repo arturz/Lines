@@ -9,6 +9,7 @@ import {
 import { Colors, Sizes } from "../../styles";
 import measure from "../../utils/measure";
 import Modal from "../molecules/Modal";
+import MenuButton from "../molecules/MenuButton";
 
 const styles = StyleSheet.create({
   container: {
@@ -18,22 +19,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: Sizes.MENU_BUTTON_WIDTH,
     height: Sizes.MENU_BUTTON_HEIGHT,
-  },
-  button: {
-    backgroundColor: Colors.BLUE,
-    borderRadius: 100,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: Sizes.MENU_BUTTON_WIDTH,
-    height: Sizes.MENU_BUTTON_HEIGHT,
-  },
-  text: {
-    fontFamily: "Barlow-Regular",
-    fontSize: 25,
-    color: Colors.YELLOW,
-    textTransform: "uppercase",
-    textAlign: "center",
   },
 });
 
@@ -47,11 +32,14 @@ export default ({
   children: React.ReactNode;
 }) => {
   const [modal, setModal] = useState({ open: false, top: null });
+
+  const buttonComponent = useRef(null);
+
   const button = useRef(null);
   const text = useRef(null);
 
   const openModal = async () => {
-    const { pageY, height } = await measure(button.current);
+    const { pageY, height } = await measure(buttonComponent.current.button);
     setModal({
       open: true,
       top: pageY + height / 2,
@@ -68,29 +56,31 @@ export default ({
   async function shrink() {
     if (modal.open) return;
 
-    await animateButtonThatOpensModal(button.current, text.current);
+    await animateButtonThatOpensModal(
+      buttonComponent.current.button,
+      buttonComponent.current.text
+    );
     openModal();
   }
 
   function stretch() {
     closeModal();
 
-    reverseAnimateButtonThatOpensModal(button.current, text.current);
+    reverseAnimateButtonThatOpensModal(
+      buttonComponent.current.button,
+      buttonComponent.current.text
+    );
   }
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={shrink}>
-        <View style={styles.container}>
-          <View style={styles.button} ref={button}>
-            <Text style={styles.text} ref={text} numberOfLines={2}>
-              {buttonTitle}
-            </Text>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
+      <View style={styles.container}>
+        <MenuButton onPress={shrink} ref={buttonComponent}>
+          {buttonTitle}
+        </MenuButton>
+      </View>
       {modal.open && (
-        <BlackPortal name="modal">
+        <BlackPortal name="modal-portal">
           <Modal top={modal.top} onClose={stretch} title={modalTitle}>
             {children}
           </Modal>

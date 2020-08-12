@@ -4,6 +4,7 @@ import { View, StyleSheet, BackHandler } from "react-native";
 import { FromBottom } from "../wrappers";
 import { Colors } from "../../styles";
 import { animateModal, reverseAnimateModal } from "../../greensock/Modal";
+import sleep from "../../utils/sleep";
 
 const styles = StyleSheet.create({
   container: {
@@ -11,6 +12,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingLeft: 30,
     paddingRight: 30,
+    zIndex: 1,
   },
   modal: {
     backgroundColor: Colors.BLUE,
@@ -26,6 +28,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 30,
   },
+  bottomSemiDot: {
+    position: "absolute",
+    left: "50%",
+    translateX: -20,
+    width: 40,
+    height: 20,
+    backgroundColor: Colors.BLUE,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    zIndex: 2,
+  },
 });
 
 interface Props {
@@ -38,7 +51,7 @@ interface Props {
 const Modal = ({ top, title, onClose, children }: Props) => {
   const modal = useRef(null);
   const content = useRef(null);
-  const [animateXButton, setAnimateXButton] = useState(false);
+  const [animateXButton, setAnimateXButton] = useState(null);
 
   async function stretch() {
     await animateModal(modal.current, content.current);
@@ -46,6 +59,7 @@ const Modal = ({ top, title, onClose, children }: Props) => {
   }
 
   async function shrink() {
+    setAnimateXButton(false);
     await reverseAnimateModal(modal.current, content.current);
     onClose();
   }
@@ -81,6 +95,7 @@ const Modal = ({ top, title, onClose, children }: Props) => {
           </View>
         </FromBottom>
       </View>
+      <View style={[styles.bottomSemiDot, { top }]} />
     </>
   );
 };

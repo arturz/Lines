@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { WhitePortal } from "react-native-portal";
 import Title from "./Title";
-import MapSizeButtons from "./SelectMapSize";
+import SelectMapSize from "./SelectMapSize";
 import { MenuScreenNavigationProp } from "./types/MenuScreenNavigationProp";
 import { Colors } from "../../styles";
 import { ButtonThatOpensModal } from "../../components/organisms";
@@ -21,14 +21,14 @@ const styles = StyleSheet.create({
 
 export default ({ navigation }: { navigation: MenuScreenNavigationProp }) => (
   <View style={styles.container}>
-    <WhitePortal name="modal" />
+    <WhitePortal name="modal-portal" />
     <Title />
     <View style={styles.buttons}>
       <ButtonThatOpensModal
         buttonTitle={"TWO PLAYERS\nONE DEVICE"}
         modalTitle="Map size"
       >
-        <MapSizeButtons navigation={navigation} />
+        <SelectMapSize navigation={navigation} />
       </ButtonThatOpensModal>
     </View>
   </View>

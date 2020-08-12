@@ -1,8 +1,11 @@
 import React, { useRef, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Animated, Easing } from "react-native";
 import { Colors } from "../../styles";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { animateXButton } from "../../greensock/X-Button";
+import {
+  animateXButton,
+  reverseAnimateXButton,
+} from "../../greensock/X-Button";
 
 const styles = StyleSheet.create({
   container: {
@@ -34,17 +37,52 @@ export default ({
   const secondLine = useRef<View>(null);
 
   useEffect(() => {
-    if (!animate) return;
+    if (animate === null) return;
 
-    animateXButton(firstLine.current, secondLine.current);
+    //animate lines
+    if (animate === true) animateXButton(firstLine.current, secondLine.current);
+    else reverseAnimateXButton(firstLine.current, secondLine.current);
   }, [animate]);
 
+  const pressAnimatiom = useRef(new Animated.Value(0)).current;
+
+  const pressIn = () => {
+    Animated.timing(pressAnimatiom, {
+      toValue: 1,
+      duration: 200,
+      easing: Easing.bezier(0, 0.6, 0.8, 1),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const pressOut = () => {
+    Animated.timing(pressAnimatiom, {
+      toValue: 0,
+      duration: 200,
+      easing: Easing.bezier(0, 0.6, 0.8, 1),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const transform = [
+    {
+      scale: pressAnimatiom.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 0.9],
+      }),
+    },
+  ];
+
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
-      <View style={styles.container}>
+    <TouchableWithoutFeedback
+      onPressIn={pressIn}
+      onPress={onPress}
+      onPressOut={pressOut}
+    >
+      <Animated.View style={[styles.container, { transform }]}>
         <View ref={firstLine} style={[styles.line]} />
         <View ref={secondLine} style={[styles.line]} />
-      </View>
+      </Animated.View>
     </TouchableWithoutFeedback>
   );
 };

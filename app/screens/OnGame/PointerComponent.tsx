@@ -1,4 +1,4 @@
-import React, { memo, useRef, useEffect } from "react";
+import React, { memo, useRef, useEffect, useLayoutEffect } from "react";
 import { connect } from "react-redux";
 import { GameSizes } from "../../types";
 import { Circle } from "react-native-svg";
@@ -21,7 +21,7 @@ interface Props extends GameSizes {
 const PointerComponent = memo(({ pointer, player, cellPx, offset }: Props) => {
   const _circle = useRef(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const timeline = gsap.timeline();
     const state = { radius: 0 };
     timeline.to(state, {
@@ -42,6 +42,7 @@ const PointerComponent = memo(({ pointer, player, cellPx, offset }: Props) => {
       cx={pointer.getCoordinates().x * cellPx + offset.width}
       cy={pointer.getCoordinates().y * cellPx + offset.height}
       fill={getPlayerColor(player)}
+      r={0}
     />
   );
 });
