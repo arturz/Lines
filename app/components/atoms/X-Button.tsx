@@ -5,7 +5,7 @@ import {
   animateXButton,
   reverseAnimateXButton,
 } from "../../greensock/X-Button";
-import TouchableScale from "../wrappers/TouchableScale";
+import { TouchableScaleRotate } from "../wrappers/touchables";
 
 const styles = StyleSheet.create({
   container: {
@@ -45,11 +45,11 @@ export default ({
   }, [animate]);
 
   return (
-    <TouchableScale onPress={onPress} minimumScale={0.9}>
+    <TouchableScaleRotate onPress={onPress}>
       <Animated.View style={styles.container}>
         <View ref={firstLine} style={[styles.line]} />
         <View ref={secondLine} style={[styles.line]} />
       </Animated.View>
-    </TouchableScale>
+    </TouchableScaleRotate>
   );
 };

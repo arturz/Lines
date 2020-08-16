@@ -6,21 +6,28 @@ import {
 import { Animated, Easing } from "react-native";
 import { pipe, identity } from "lodash/fp";
 
-type Props = Exclude<
+export type TouchableProps = Exclude<
   React.ComponentProps<typeof TouchableWithoutFeedback>,
   ContainedTouchableProperties
 > & {
   children: ReactNode;
-  minimumScale?: number;
+};
+
+type TouchableBaseProps = TouchableProps & {
+  extend: {
+    [property: string]: {
+      outputRange: number[] | string[];
+    };
+  };
 };
 
 export default ({
   children,
-  minimumScale = 0.95,
+  extend = {},
   onPressIn = identity,
   onPressOut = identity,
   ...props
-}: Props) => {
+}: TouchableBaseProps) => {
   const pressAnimatiom = useRef(new Animated.Value(0)).current;
 
   const pressIn = () => {
@@ -41,14 +48,14 @@ export default ({
     }).start();
   };
 
-  const transform = [
-    {
-      scale: pressAnimatiom.interpolate({
+  const style = {
+    transform: Object.entries(extend).map(([property, { outputRange }]) => ({
+      [property]: pressAnimatiom.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, minimumScale],
+        outputRange,
       }),
-    },
-  ];
+    })),
+  };
 
   return (
     <TouchableWithoutFeedback
@@ -56,7 +63,7 @@ export default ({
       onPressIn={pipe(pressIn, onPressIn)}
       onPressOut={pipe(pressOut, onPressOut)}
     >
-      <Animated.View style={{ transform }}>{children}</Animated.View>
+      <Animated.View style={style}>{children}</Animated.View>
     </TouchableWithoutFeedback>
   );
 };

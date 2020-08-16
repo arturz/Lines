@@ -8,7 +8,7 @@ import React, {
 import { Text, StyleSheet, View } from "react-native";
 import { Colors, Sizes } from "../../styles";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import TouchableScale from "../wrappers/TouchableScale";
+import { TouchableScale } from "../wrappers/touchables";
 
 const styles = StyleSheet.create({
   container: {
@@ -62,6 +62,6 @@ export default forwardRef<TouchableWithoutFeedback, Props>(
           </Text>
         </View>
       </TouchableScale>
-    )
+    );
   }
 );
