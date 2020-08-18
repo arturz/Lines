@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { View, StyleSheet, Text, BackHandler } from "react-native";
 import { connect } from "react-redux";
 import { DimensionsWrapper } from "../../components/wrappers";
 import Game from "./Game";
@@ -11,10 +12,8 @@ import { Player } from "../../constants";
 import getToggledPlayer from "../../utils/getToggledPlayer";
 import getStickingPoints from "./utils/getStickingPoints";
 import canBePlaced from "./utils/canBePlaced";
-import { Alert } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../navigations";
+import FinishAlert from "./localMultiplayer/FinishAlert";
+import { GameScreenNavigationProp } from "../../navigations";
 
 const mapStateToProps = ({
   game: { status, map, pointer, player, toggledPlayer, winner, gates },
@@ -36,8 +35,6 @@ const mapDispatchToProps = (dispatch) => ({
   togglePlayer: () => dispatch(togglePlayer()),
 });
 
-type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, "Game">;
-
 const GameContainer = ({
   status,
   map,
@@ -51,7 +48,7 @@ const GameContainer = ({
   togglePlayer,
   finish,
   route,
-  navigation: { navigate },
+  navigation,
 }: {
   status: GameStatus;
   map: GameMap;
@@ -67,16 +64,25 @@ const GameContainer = ({
   route: any;
   navigation: GameScreenNavigationProp;
 }) => {
+  //start game
   useEffect(() => {
+    dispatchStartName(route?.params?.width || 6, route?.params?.height || 10);
+  }, []);
+
+  //game logic run every move
+  useEffect(() => {
+    //only run game logic code during a game
     if (status !== GameStatus.Playing) return;
 
+    //check for a winner
     if (winner === null) {
+      //finish by enclosure
       if (checkFinishByEnclosure({ map, pointer })) {
         finish(getToggledPlayer(player));
         return;
       }
 
-      //finishByGoal
+      //finish by goal
       if (
         gates.isOnGate(pointer.getCoordinates().y, pointer.getCoordinates().x)
       ) {
@@ -96,11 +102,7 @@ const GameContainer = ({
       }
     }
 
-    if (winner === null && checkFinishByEnclosure({ map, pointer })) {
-      finish(getToggledPlayer(player));
-      return;
-    }
-
+    //toggle player if it is necessary
     if (
       !toggledPlayer &&
       getStickingPoints(
@@ -114,14 +116,7 @@ const GameContainer = ({
     }
   }, [status, map, player, toggledPlayer, pointer, winner]);
 
-  const startGame = () =>
-    void dispatchStartName(
-      route?.params?.width || 6,
-      route?.params?.height || 10
-    );
-
-  useEffect(startGame, []);
-
+  //game logic - check if player can take line
   const onTakeLine = (cellLineProps: CellLineProps) => {
     if (status !== GameStatus.Playing) return;
 
@@ -141,26 +136,25 @@ const GameContainer = ({
     );
   };
 
-  if (status === GameStatus.Finish) {
-    Alert.alert(
-      "Finish",
-      `The winner is ${winner === Player.A ? "red" : "blue"}!`,
-      [
-        {
-          text: "Go to menu",
-          onPress: () => navigate("Menu"),
-        },
-        {
-          text: "Play again",
-          onPress: startGame,
-        },
-      ]
+  const goToMenu = () => navigation.navigate("Menu");
+
+  useEffect(() => {
+    const backAction = () => {
+      goToMenu();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
     );
-  }
+
+    return () => backHandler.remove();
+  }, []);
 
   if (status === GameStatus.Playing || status === GameStatus.Finish)
     return (
-      <>
+      <View style={StyleSheet.absoluteFill}>
         <DimensionsWrapper
           render={({ widthPx, heightPx }) => (
             <Game
@@ -172,7 +166,8 @@ const GameContainer = ({
             />
           )}
         />
-      </>
+        <FinishAlert goToMenu={goToMenu} />
+      </View>
     );
 
   return null;

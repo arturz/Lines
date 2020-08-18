@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Text, StyleSheet } from "react-native";
 import { Colors } from "../../styles";
 
@@ -11,6 +11,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({ children }: { children: string }) => (
+export default ({ children }: { children: ReactNode }) => (
   <Text style={styles.title}>{children}</Text>
 );

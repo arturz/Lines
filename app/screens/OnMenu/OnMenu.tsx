@@ -3,9 +3,9 @@ import { View, StyleSheet } from "react-native";
 import { WhitePortal } from "react-native-portal";
 import Title from "./Title";
 import SelectMapSize from "./SelectMapSize";
-import { MenuScreenNavigationProp } from "./types/MenuScreenNavigationProp";
 import { Colors } from "../../styles";
 import { ButtonThatOpensModal } from "../../components/organisms";
+import { MenuScreenNavigationProp } from "../../navigations";
 
 const styles = StyleSheet.create({
   container: {

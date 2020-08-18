@@ -1,15 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
-import { XButton, Title } from "../atoms";
 import { View, StyleSheet, BackHandler } from "react-native";
 import { FromBottom } from "../wrappers";
 import { Colors } from "../../styles";
 import { animateModal, reverseAnimateModal } from "../../greensock/Modal";
-import sleep from "../../utils/sleep";
+import { Header } from "../molecules";
 
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
     width: "100%",
+    maxWidth: 420,
     paddingLeft: 30,
     paddingRight: 30,
     zIndex: 1,
@@ -21,12 +21,6 @@ const styles = StyleSheet.create({
     elevation: 10,
     opacity: 0,
     overflow: "hidden",
-  },
-  header: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 30,
   },
   bottomSemiDot: {
     position: "absolute",
@@ -86,10 +80,10 @@ const Modal = ({ top, title, onClose, children }: Props) => {
         <FromBottom>
           <View style={styles.modal} ref={modal}>
             <View ref={content}>
-              <View style={styles.header}>
-                <Title>{title}</Title>
-                <XButton onPress={shrink} animate={animateXButton} />
-              </View>
+              <Header
+                title={title}
+                xButton={{ animate: animateXButton, onPress: shrink }}
+              />
               {children}
             </View>
           </View>

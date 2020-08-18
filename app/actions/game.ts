@@ -27,3 +27,8 @@ export const TOGGLE_PLAYER = "TOGGLE_PLAYER";
 export function togglePlayer() {
   return { type: TOGGLE_PLAYER };
 }
+
+export const PAUSE_GAME = "PAUSE_GAME";
+export function pauseGame() {
+  return { type: PAUSE_GAME };
+}

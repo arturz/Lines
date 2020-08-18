@@ -11,7 +11,7 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { TouchableScale } from "../wrappers/touchables";
 
 const styles = StyleSheet.create({
-  container: {
+  button: {
     height: Sizes.BUTTON_HEIGHT,
     width: Sizes.BUTTON_WIDTH,
     display: "flex",
@@ -56,7 +56,7 @@ export default forwardRef<TouchableWithoutFeedback, Props>(
 
     return (
       <TouchableScale onPress={onPress}>
-        <View style={[styles.container, style]} ref={button}>
+        <View style={[styles.button, style]} ref={button}>
           <Text style={[styles.text, textStyle]} ref={text}>
             {children}
           </Text>

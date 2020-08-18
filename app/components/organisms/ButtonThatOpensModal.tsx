@@ -1,14 +1,13 @@
 import React, { useRef, useState } from "react";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { BlackPortal } from "react-native-portal";
 import {
   animateButtonThatOpensModal,
   reverseAnimateButtonThatOpensModal,
 } from "../../greensock";
-import { Colors, Sizes } from "../../styles";
+import { Sizes } from "../../styles";
 import measure from "../../utils/measure";
-import Modal from "../molecules/Modal";
+import Modal from "./Modal";
 import MenuButton from "../molecules/MenuButton";
 
 const styles = StyleSheet.create({

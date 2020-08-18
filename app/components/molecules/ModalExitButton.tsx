@@ -4,12 +4,11 @@ import Button from "../atoms/Button";
 import { Colors } from "../../styles";
 
 const styles = StyleSheet.create({
-  menuButton: {
-    height: 80,
-    backgroundColor: Colors.BLUE,
-    marginBottom: 30,
+  modalButton: {
+    height: 60,
+    backgroundColor: Colors.RED,
   },
-  menuButtonTextStyle: {
+  modalButtonTextStyle: {
     color: Colors.YELLOW,
   },
 });
@@ -26,8 +25,8 @@ export default forwardRef(
     ref: MutableRefObject<any>
   ) => (
     <Button
-      style={styles.menuButton}
-      textStyle={styles.menuButtonTextStyle}
+      style={styles.modalButton}
+      textStyle={styles.modalButtonTextStyle}
       children={children}
       onPress={onPress}
       ref={ref}

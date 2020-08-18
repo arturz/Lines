@@ -1,5 +1,6 @@
 export enum GameStatus {
-  Ready,
-  Playing,
-  Finish,
+  Ready = "Ready",
+  Playing = "Playing",
+  Paused = "Paused",
+  Finish = "Finish",
 }

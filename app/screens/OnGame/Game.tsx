@@ -18,6 +18,7 @@ import HoverLine from "./HoverLine";
 import canBePlaced from "./utils/canBePlaced";
 import GatesComponent from "./GatesComponent";
 import getHoverLineProps from "./utils/hoverLine/getHoverLineProps";
+import { isEqual } from "lodash";
 
 const mapStateToProps = ({ game: { map, pointer } }) => ({
   map,
@@ -76,10 +77,7 @@ const Game = ({
       { pointer, cellPx, offset }
     );
 
-    if (
-      JSON.stringify(_hoverLineProps.current) === JSON.stringify(hoverLineProps)
-    )
-      return;
+    if (isEqual(_hoverLineProps.current, hoverLineProps)) return;
 
     if (
       canBePlaced(
