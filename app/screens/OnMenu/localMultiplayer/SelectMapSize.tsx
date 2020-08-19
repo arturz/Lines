@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { ModalButton } from "../../components/molecules";
-import { MenuScreenNavigationProp } from "./types/MenuScreenNavigationProp";
+import { ModalButton } from "../../../components/molecules";
+import { MenuScreenNavigationProp } from "../../../navigations";
 
 const styles = StyleSheet.create({
   container: {

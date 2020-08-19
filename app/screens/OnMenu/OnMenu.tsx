@@ -1,11 +1,15 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { WhitePortal } from "react-native-portal";
 import Title from "./Title";
-import SelectMapSize from "./SelectMapSize";
+import { SelectMapSize } from "./localMultiplayer";
 import { Colors } from "../../styles";
 import { ButtonThatOpensModal } from "../../components/organisms";
 import { MenuScreenNavigationProp } from "../../navigations";
+import { Paragraph } from "../../components/atoms";
+import { withPortalHost } from "../../hocs";
+import { ModalButton } from "../../components/molecules";
+import LocalMultiplayerModalButton from "./localMultiplayer/LocalMultiplayerModalButton";
+import NetworkMultiplayerModalButton from "./networkMultiplayer/NetworkMultiplayerModalButton";
 
 const styles = StyleSheet.create({
   container: {
@@ -19,17 +23,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({ navigation }: { navigation: MenuScreenNavigationProp }) => (
+type Props = {
+  navigation: MenuScreenNavigationProp;
+};
+
+export default withPortalHost<Props>(({ navigation }: Props) => (
   <View style={styles.container}>
-    <WhitePortal name="modal-portal" />
     <Title />
     <View style={styles.buttons}>
-      <ButtonThatOpensModal
-        buttonTitle={"TWO PLAYERS\nONE DEVICE"}
-        modalTitle="Map size"
-      >
-        <SelectMapSize navigation={navigation} />
-      </ButtonThatOpensModal>
+      <LocalMultiplayerModalButton navigation={navigation} />
+      <NetworkMultiplayerModalButton navigation={navigation} />
     </View>
   </View>
-);
+));

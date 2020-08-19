@@ -22,16 +22,9 @@ const styles = StyleSheet.create({
     opacity: 0,
     overflow: "hidden",
   },
-  bottomSemiDot: {
-    position: "absolute",
-    left: "50%",
-    translateX: -20,
-    width: 40,
-    height: 20,
-    backgroundColor: Colors.BLUE,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    zIndex: 2,
+  main: {
+    marginLeft: 15,
+    marginRight: 15,
   },
 });
 
@@ -75,22 +68,19 @@ const Modal = ({ top, title, onClose, children }: Props) => {
   }, [modal]);
 
   return (
-    <>
-      <View style={[styles.container, { top }]}>
-        <FromBottom>
-          <View style={styles.modal} ref={modal}>
-            <View ref={content}>
-              <Header
-                title={title}
-                xButton={{ animate: animateXButton, onPress: shrink }}
-              />
-              {children}
-            </View>
+    <View style={[styles.container, { top }]}>
+      <FromBottom>
+        <View style={styles.modal} ref={modal}>
+          <View ref={content}>
+            <Header
+              title={title}
+              xButton={{ animate: animateXButton, onPress: shrink }}
+            />
+            <View style={styles.main}>{children}</View>
           </View>
-        </FromBottom>
-      </View>
-      <View style={[styles.bottomSemiDot, { top }]} />
-    </>
+        </View>
+      </FromBottom>
+    </View>
   );
 };
 

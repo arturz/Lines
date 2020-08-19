@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { BlackPortal } from "react-native-portal";
+import { Portal } from "react-native-portalize";
 import {
   animateButtonThatOpensModal,
   reverseAnimateButtonThatOpensModal,
@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: Sizes.MENU_BUTTON_WIDTH,
     height: Sizes.MENU_BUTTON_HEIGHT,
+    marginBottom: 15,
   },
 });
 
@@ -79,11 +80,11 @@ export default ({
         </MenuButton>
       </View>
       {modal.open && (
-        <BlackPortal name="modal-portal">
+        <Portal>
           <Modal top={modal.top} onClose={stretch} title={modalTitle}>
             {children}
           </Modal>
-        </BlackPortal>
+        </Portal>
       )}
     </>
   );

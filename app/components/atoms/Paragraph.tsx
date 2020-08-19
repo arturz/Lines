@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontFamily: "Barlow-Medium",
     color: Colors.YELLOW,
-    marginBottom: 15,
+    marginBottom: 30,
   },
 });
 
