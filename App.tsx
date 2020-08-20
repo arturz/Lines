@@ -2,20 +2,19 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { Provider } from "react-redux";
 import { OnMenu, OnGame } from "./app/screens";
-import { store } from "./app/store";
+import { store } from "./app/redux";
 import { Stack } from "./app/navigations";
 import { Linking } from "react-native";
+import { joinRoom } from "./app/firebase";
 
 export default () => {
   const navigate = (url) => {
-    console.log("navigate", url);
-
     const route = url.replace(/.*?:\/\//g, "");
     const id = route.match(/\/([^\/]+)\/?$/)[1];
     const routeName = route.split("/")[0];
 
     if (routeName === "join") {
-      console.log("join", id);
+      joinRoom(id);
     }
   };
 

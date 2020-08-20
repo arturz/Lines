@@ -4,7 +4,7 @@ import { GameSizes } from "../../types";
 import { Circle } from "react-native-svg";
 import { Pointer } from "../../classes";
 import { Player } from "../../constants";
-import getPlayerColor from "../../utils/getPlayerColor";
+import { getPlayerColor } from "../../utils";
 import gsap from "gsap";
 import { Sizes } from "../../styles";
 

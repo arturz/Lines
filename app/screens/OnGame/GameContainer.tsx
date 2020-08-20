@@ -2,18 +2,20 @@ import React, { useEffect } from "react";
 import { View, StyleSheet, Text, BackHandler } from "react-native";
 import { connect } from "react-redux";
 import { DimensionsWrapper } from "../../components/wrappers";
-import Game from "./Game";
 import { CellLineProps } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
-import { startGame, takeLine, finish, togglePlayer } from "../../actions/game";
+import { startGame, takeLine, finish, togglePlayer } from "../../redux";
 import { GameMap, Pointer, Gates } from "../../classes";
-import checkFinishByEnclosure from "./utils/checkFinishByEnclosure";
 import { Player } from "../../constants";
 import getToggledPlayer from "../../utils/getToggledPlayer";
-import getStickingPoints from "./utils/getStickingPoints";
-import canBePlaced from "./utils/canBePlaced";
+import {
+  checkFinishByEnclosure,
+  getStickingPoints,
+  canBePlaced,
+} from "../../utils";
 import FinishAlert from "./localMultiplayer/FinishAlert";
 import { GameScreenNavigationProp } from "../../navigations";
+import GameRenderer from "../../components/gameRenderer/GameRenderer";
 
 const mapStateToProps = ({
   game: { status, map, pointer, player, toggledPlayer, winner, gates },
@@ -157,7 +159,7 @@ const GameContainer = ({
       <View style={StyleSheet.absoluteFill}>
         <DimensionsWrapper
           render={({ widthPx, heightPx }) => (
-            <Game
+            <GameRenderer
               width={map.width}
               height={map.height}
               widthPx={widthPx}

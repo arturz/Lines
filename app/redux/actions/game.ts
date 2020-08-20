@@ -1,4 +1,4 @@
-import { Player, Direction } from "../constants";
+import { Player, Direction } from "../../constants";
 
 export const START_GAME = "START_GAME";
 export function startGame(width: number, height: number) {

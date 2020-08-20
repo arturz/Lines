@@ -1,5 +1,5 @@
-import { Pointer, GameMap } from "../../../classes";
-import { Direction } from "../../../constants";
+import { Pointer, GameMap } from "../../classes";
+import { Direction } from "../../constants";
 import canBePlaced from "./canBePlaced";
 
 export default ({ map, pointer }: { map: GameMap; pointer: Pointer }) => {

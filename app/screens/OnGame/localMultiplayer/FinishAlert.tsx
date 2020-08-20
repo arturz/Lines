@@ -4,7 +4,7 @@ import { ModalButton, ModalExitButton } from "../../../components/molecules";
 import { Alert } from "../../../components/organisms";
 import { GameStatus, Player } from "../../../constants";
 import { compose } from "redux";
-import { startGame } from "../../../actions/game";
+import { startGame } from "../../../redux";
 import { connect } from "react-redux";
 import { GameMap } from "../../../classes";
 

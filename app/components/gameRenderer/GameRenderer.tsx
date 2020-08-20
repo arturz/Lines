@@ -15,9 +15,8 @@ import PointerComponent from "./PointerComponent";
 import TakenLines from "./TakenLines";
 import { PanResponder } from "react-native";
 import HoverLine from "./HoverLine";
-import canBePlaced from "./utils/canBePlaced";
 import GatesComponent from "./GatesComponent";
-import getHoverLineProps from "./utils/hoverLine/getHoverLineProps";
+import { getHoverLineProps, canBePlaced } from "../../utils";
 import { isEqual } from "lodash";
 
 const mapStateToProps = ({ game: { map, pointer } }) => ({

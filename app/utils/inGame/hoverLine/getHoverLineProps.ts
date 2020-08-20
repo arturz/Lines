@@ -1,8 +1,8 @@
 import getEighthAroundPointer, {
   EightAroundPointerProps,
 } from "./getEighthAroundPointer";
-import { Point } from "../../../../types";
-import { Direction } from "../../../../constants";
+import { Point } from "../../../types";
+import { Direction } from "../../../constants";
 
 export default (
   { x, y }: Point,

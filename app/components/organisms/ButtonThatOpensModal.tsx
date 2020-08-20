@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Portal } from "react-native-portalize";
+import { identity } from "lodash";
+import { pipe } from "lodash/fp";
 import {
   animateButtonThatOpensModal,
   reverseAnimateButtonThatOpensModal,
@@ -26,17 +28,16 @@ export default ({
   buttonTitle,
   modalTitle,
   children,
+  onCloseModal = identity,
 }: {
   buttonTitle: string;
   modalTitle: string;
   children: React.ReactNode;
+  onCloseModal?: () => void;
 }) => {
   const [modal, setModal] = useState({ open: false, top: null });
 
   const buttonComponent = useRef(null);
-
-  const button = useRef(null);
-  const text = useRef(null);
 
   const openModal = async () => {
     const { pageY, height } = await measure(buttonComponent.current.button);
@@ -81,7 +82,11 @@ export default ({
       </View>
       {modal.open && (
         <Portal>
-          <Modal top={modal.top} onClose={stretch} title={modalTitle}>
+          <Modal
+            top={modal.top}
+            onClose={pipe(stretch, onCloseModal)}
+            title={modalTitle}
+          >
             {children}
           </Modal>
         </Portal>

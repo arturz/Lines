@@ -1,11 +1,11 @@
 import { createStore, applyMiddleware } from "redux";
-import { GameMap } from "./classes/GameMap";
-import { START_GAME, TAKE_LINE, FINISH, TOGGLE_PLAYER } from "./actions/game";
-import getToggledPlayer from "./utils/getToggledPlayer";
-import { GameStatus } from "./constants/GameStatus";
-import { Player } from "./constants/Player";
-import { Pointer } from "./classes/Pointer";
-import { Gates } from "./classes/Gates";
+import { GameMap } from "../classes/GameMap";
+import { START_GAME, TAKE_LINE, FINISH, TOGGLE_PLAYER } from "../redux";
+import getToggledPlayer from "../utils/getToggledPlayer";
+import { GameStatus } from "../constants/GameStatus";
+import { Player } from "../constants/Player";
+import { Pointer } from "../classes/Pointer";
+import { Gates } from "../classes/Gates";
 
 interface State {
   game: {

@@ -8,8 +8,7 @@ import React, {
 import { connect } from "react-redux";
 import { GameSizes, CellLineProps } from "../../types";
 import { Line } from "react-native-svg";
-import getDrewLineProps from "./utils/getDrewLineProps";
-import getPlayerColor from "../../utils/getPlayerColor";
+import { getPlayerColor, getDrewLineProps } from "../../utils";
 import { Player } from "../../constants";
 import gsap from "gsap";
 import { Sizes } from "../../styles";

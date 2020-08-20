@@ -1,5 +1,5 @@
-import { Direction } from "../../../constants";
-import { GameMap, Pointer } from "../../../classes";
+import { Direction } from "../../constants";
+import { GameMap, Pointer } from "../../classes";
 
 export default (
   y: number,

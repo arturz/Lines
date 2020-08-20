@@ -1,5 +1,5 @@
-import { Point, Offset } from "../../../../types";
-import { Pointer } from "../../../../classes";
+import { Point, Offset } from "../../../types";
+import { Pointer } from "../../../classes";
 
 export interface EightAroundPointerProps {
   pointer: Pointer;

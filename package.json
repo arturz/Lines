@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-firebase/app": "^8.3.1",
+    "@react-native-firebase/database": "^7.4.2",
+    "@react-native-firebase/firestore": "^7.5.3",
     "@react-navigation/native": "^5.7.2",
     "@react-navigation/stack": "^5.8.0",
     "eventemitter3": "^4.0.4",
-    "firebase": "^7.18.0",
     "gsap": "^3.4.2",
     "gsap-rn": "0.0.14",
     "lodash": "^4.17.20",

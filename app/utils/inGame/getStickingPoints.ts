@@ -1,5 +1,5 @@
-import { GameMap } from "../../../classes";
-import { Direction } from "../../../constants";
+import { GameMap } from "../../classes";
+import { Direction } from "../../constants";
 
 //remember that pointer has always one sticking point at least (previous line), except by the start
 export default (y: number, x: number, { map }: { map: GameMap }) => {

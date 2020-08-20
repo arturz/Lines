@@ -1,5 +1,5 @@
-import { Direction } from "../../../constants";
-import { Offset } from "../../../types";
+import { Direction } from "../../constants";
+import { Offset } from "../../types";
 
 interface Props {
   cellPx: number;

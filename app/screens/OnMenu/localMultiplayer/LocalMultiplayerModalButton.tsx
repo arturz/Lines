@@ -5,7 +5,7 @@ import { MenuScreenNavigationProp } from "../../../navigations";
 
 export default ({ navigation }: { navigation: MenuScreenNavigationProp }) => (
   <ButtonThatOpensModal
-    buttonTitle={"play with friend\non this device"}
+    buttonTitle={"two players\non this device"}
     modalTitle="Map size"
   >
     <SelectMapSize navigation={navigation} />

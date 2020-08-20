@@ -3,8 +3,7 @@ import { connect } from "react-redux";
 import { Line } from "react-native-svg";
 import { GameSizes } from "../../types";
 import { GameMap } from "../../classes/GameMap";
-import getDrewLineProps from "./utils/getDrewLineProps";
-import getPlayerColor from "../../utils/getPlayerColor";
+import { getDrewLineProps, getPlayerColor } from "../../utils";
 import { Sizes } from "../../styles";
 
 const mapStateToProps = ({ game: { map } }) => ({
