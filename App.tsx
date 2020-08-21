@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { Provider } from "react-redux";
-import { OnMenu, OnGame } from "./app/screens";
+import { OnMenu, OnLocalMultiplayerGame } from "./app/screens";
 import { store } from "./app/redux";
 import { Stack } from "./app/navigations";
 import { Linking } from "react-native";
@@ -44,8 +44,8 @@ export default () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Game"
-            component={OnGame}
+            name="LocalMultiplayerGame"
+            component={OnLocalMultiplayerGame}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

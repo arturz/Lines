@@ -3,16 +3,16 @@ import { Point } from "../types";
 
 class Gate {
   constructor(
-    readonly from: Point,
-    readonly to: Point,
-    readonly player: Player
+    public readonly from: Point,
+    public readonly to: Point,
+    public readonly player: Player
   ) {}
 }
 
 export class Gates {
-  gates: Gate[] = [];
+  public readonly gates: Gate[] = [];
 
-  constructor(public width: number, public height: number) {
+  constructor(public readonly width: number, public readonly height: number) {
     this.gates.push(
       new Gate(
         { x: width / 2 - 1, y: 0 },

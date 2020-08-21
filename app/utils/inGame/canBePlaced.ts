@@ -11,6 +11,7 @@ export default (
 
   const { x: nextX, y: nextY } = pointer.getNextCoordinates(y, x, direction);
 
+  //can't take line at the border (top and left)
   if (
     nextX < 0 ||
     nextY < 0 ||
@@ -19,6 +20,7 @@ export default (
   )
     return false;
 
+  //can't take line at the border (bottom and right)
   if (
     nextX > map.width ||
     nextY > map.height ||
@@ -27,7 +29,7 @@ export default (
   )
     return false;
 
-  //corners
+  //can't take line in the corner
   if (
     (x === 0 && y === 0 && direction === Direction.CommingDown) ||
     (x === 0 && y === map.height - 1 && direction === Direction.SteppingUp) ||
@@ -38,6 +40,7 @@ export default (
   )
     return false;
 
+  //can't take line where another line is placed
   if (map.cells[y][x].isLineTaken(direction)) return false;
 
   return true;

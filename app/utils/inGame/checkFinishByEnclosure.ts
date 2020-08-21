@@ -2,6 +2,7 @@ import { Pointer, GameMap } from "../../classes";
 import { Direction } from "../../constants";
 import canBePlaced from "./canBePlaced";
 
+//enclosure happens when player can't go in any direction
 export default ({ map, pointer }: { map: GameMap; pointer: Pointer }) => {
   const { x, y } = pointer.getCoordinates();
 

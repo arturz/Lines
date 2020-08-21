@@ -1,13 +1,7 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useRef } from "react";
 import { connect } from "react-redux";
-import Svg, { Line } from "react-native-svg";
-import {
-  DisplayResolution,
-  MapSize,
-  Offset,
-  CellLineProps,
-  Point,
-} from "../../types";
+import Svg from "react-native-svg";
+import { DisplayResolution, CellLineProps, Point } from "../../types";
 import InsideLines from "./InsideLines";
 import Border from "./Border";
 import { GameMap, Pointer } from "../../classes";
@@ -18,47 +12,43 @@ import HoverLine from "./HoverLine";
 import GatesComponent from "./GatesComponent";
 import { getHoverLineProps, canBePlaced } from "../../utils";
 import { isEqual } from "lodash";
+import { getOffsetAndCellPx } from "../../utils/inGame";
+import { GameStatus } from "../../constants";
 
-const mapStateToProps = ({ game: { map, pointer } }) => ({
+const mapStateToProps = ({ game: { map, pointer, status } }) => ({
+  status,
   map,
   pointer,
 });
 
 interface StateProps {
+  status: GameStatus;
   map: GameMap;
   pointer: Pointer;
 }
 
-interface Props extends MapSize, DisplayResolution, StateProps {
+interface Props extends DisplayResolution, StateProps, Point {
   onTakeLine: (CellLineProps) => void;
 }
 
 const Game = ({
-  width,
-  height,
+  /* resolution of component */
   widthPx,
   heightPx,
-  onTakeLine,
+  /* position of component relative to screen (for properly handling touch events) */
+  x,
+  y,
+  status,
   map,
   pointer,
+  onTakeLine,
 }: Props) => {
-  const { cellPx, offset }: { cellPx: number; offset: Offset } = useMemo(() => {
-    let cellPx;
-    let offset: Offset = {
-      height: 0,
-      width: 0,
-    };
-    if (widthPx / (width + 1) < heightPx / (height + 1)) {
-      cellPx = widthPx / (width + 1);
-      offset.width = (widthPx - width * cellPx) / 2;
-      offset.height = (heightPx - height * cellPx) / 2;
-    } else {
-      cellPx = heightPx / (height + 1);
-      offset.width = (widthPx - width * cellPx) / 2;
-      offset.height = (heightPx - height * cellPx) / 2;
-    }
-    return { cellPx, offset };
-  }, [width, height, widthPx, heightPx]);
+  const { cellPx, offset } = getOffsetAndCellPx({
+    width: map.width,
+    height: map.height,
+    widthPx,
+    heightPx,
+  });
 
   /*
     I didn't use useState, so we don't need to rerender whole component only when hover line changes.
@@ -95,14 +85,14 @@ const Game = ({
     onStartShouldSetPanResponder: () => true,
     onPanResponderGrant: (e, gestureState) => {
       showHoverLine({
-        x: gestureState.x0,
-        y: gestureState.y0,
+        x: gestureState.x0 - x,
+        y: gestureState.y0 - y,
       });
     },
     onPanResponderMove: (e, gestureState) => {
       showHoverLine({
-        x: gestureState.moveX,
-        y: gestureState.moveY,
+        x: gestureState.moveX - x,
+        y: gestureState.moveY - y,
       });
     },
     onPanResponderRelease: (e, gestureState) => {
@@ -119,37 +109,42 @@ const Game = ({
       height={heightPx}
       width={widthPx}
       viewBox={`0 0 ${widthPx} ${heightPx}`}
-      {...panResponder.panHandlers}
+      {...(status === GameStatus.Playing && panResponder.panHandlers)}
     >
       <InsideLines
-        width={width}
-        height={height}
+        width={map.width}
+        height={map.height}
         cellPx={cellPx}
         offset={offset}
       />
       <TakenLines
-        width={width}
-        height={height}
+        width={map.width}
+        height={map.height}
         cellPx={cellPx}
         offset={offset}
       />
       <HoverLine
-        width={width}
-        height={height}
+        width={map.width}
+        height={map.height}
         cellPx={cellPx}
         offset={offset}
         ref={_hoverLineComponent}
       />
-      <Border width={width} height={height} cellPx={cellPx} offset={offset} />
+      <Border
+        width={map.width}
+        height={map.height}
+        cellPx={cellPx}
+        offset={offset}
+      />
       <PointerComponent
-        width={width}
-        height={height}
+        width={map.width}
+        height={map.height}
         cellPx={cellPx}
         offset={offset}
       />
       <GatesComponent
-        width={width}
-        height={height}
+        width={map.width}
+        height={map.height}
         cellPx={cellPx}
         offset={offset}
       />

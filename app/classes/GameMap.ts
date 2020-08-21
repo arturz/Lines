@@ -1,11 +1,11 @@
 import { Cell } from "./Cell";
 
 export class GameMap {
-  cells: Cell[][] = [];
+  public readonly cells: Cell[][] = [];
 
   constructor(
-    public width: number,
-    public height: number,
+    public readonly width: number,
+    public readonly height: number,
     copy: GameMap = null
   ) {
     if (copy) {

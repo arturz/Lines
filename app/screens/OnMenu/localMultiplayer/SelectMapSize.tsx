@@ -13,17 +13,23 @@ const styles = StyleSheet.create({
 export default ({ navigation }: { navigation: MenuScreenNavigationProp }) => (
   <View style={styles.container}>
     <ModalButton
-      onPress={() => navigation.navigate("Game", { width: 4, height: 8 })}
+      onPress={() =>
+        navigation.navigate("LocalMultiplayerGame", { width: 4, height: 8 })
+      }
     >
       Small
     </ModalButton>
     <ModalButton
-      onPress={() => navigation.navigate("Game", { width: 6, height: 12 })}
+      onPress={() =>
+        navigation.navigate("LocalMultiplayerGame", { width: 6, height: 12 })
+      }
     >
       Medium
     </ModalButton>
     <ModalButton
-      onPress={() => navigation.navigate("Game", { width: 8, height: 16 })}
+      onPress={() =>
+        navigation.navigate("LocalMultiplayerGame", { width: 8, height: 16 })
+      }
     >
       Big
     </ModalButton>

@@ -1,7 +1,7 @@
 import { Direction } from "../constants";
 
 export class Pointer {
-  constructor(private x: number, private y: number) {}
+  constructor(private readonly x: number, private readonly y: number) {}
 
   getCoordinates() {
     return {

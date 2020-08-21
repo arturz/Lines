@@ -3,9 +3,9 @@ import { Direction } from "../constants/Direction";
 
 class CellLine {
   constructor(
-    public direction: Direction,
-    private player: Player,
-    private backwards?: boolean
+    public readonly direction: Direction,
+    private readonly player: Player,
+    private readonly backwards?: boolean
   ) {}
 
   getDirection() {
@@ -26,7 +26,7 @@ class CellLine {
 }
 
 export class Cell {
-  private takenLines: CellLine[] = [];
+  private readonly takenLines: CellLine[] = [];
 
   isLineTaken(direction: Direction) {
     return ~this.takenLines.findIndex((cellLine) =>
