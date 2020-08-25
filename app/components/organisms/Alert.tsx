@@ -24,13 +24,14 @@ const styles = StyleSheet.create({
   },
 });
 
-interface Props {
+type Props = {
   title: ReactNode;
   isOpen: boolean;
+  onClose?: () => void;
   children: React.ReactNode;
-}
+};
 
-export default ({ isOpen, title, children }: Props) => {
+export default ({ isOpen, title, onClose, children }: Props) => {
   const animation = useRef(new Animated.Value(0)).current;
 
   const show = () => {
@@ -78,7 +79,10 @@ export default ({ isOpen, title, children }: Props) => {
       pointerEvents={isOpen ? "auto" : "none"}
     >
       <Animated.View style={[styles.alert, animationStyle]}>
-        <Header title={title} />
+        <Header
+          title={title}
+          xButton={onClose ? { animate: true, onPress: onClose } : false}
+        />
         <View style={styles.main}>{children}</View>
       </Animated.View>
     </View>

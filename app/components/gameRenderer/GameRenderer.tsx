@@ -28,6 +28,7 @@ interface StateProps {
 }
 
 interface Props extends DisplayResolution, StateProps, Point {
+  allowTakingLine: boolean;
   onTakeLine: (CellLineProps) => void;
 }
 
@@ -41,6 +42,7 @@ const Game = ({
   status,
   map,
   pointer,
+  allowTakingLine,
   onTakeLine,
 }: Props) => {
   const { cellPx, offset } = getOffsetAndCellPx({
@@ -69,6 +71,7 @@ const Game = ({
     if (isEqual(_hoverLineProps.current, hoverLineProps)) return;
 
     if (
+      allowTakingLine &&
       canBePlaced(
         hoverLineProps.y,
         hoverLineProps.x,

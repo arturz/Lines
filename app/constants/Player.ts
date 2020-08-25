@@ -1,4 +1,4 @@
 export enum Player {
-  A = "Player A",
-  B = "Player B",
+  A = "A",
+  B = "B",
 }

@@ -6,7 +6,9 @@ import { firebaseConfig } from "./config";
 //don't create next instance of app on refresh during development
 if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
 
-export async function createRoom() {
+export { firestore, database };
+
+/*export async function createRoom() {
   //firestore
   const docRef = await firestore().collection("rooms").add({
     createdAt: firestore.FieldValue.serverTimestamp(),
@@ -52,12 +54,39 @@ export async function deleteRoom(id: string) {
   await database().ref(`/online/${id}`).remove();
 }
 
-export function addActionListener(id: string) {
+export function onAction(id: string, snapshot) {
   const removeActionListener = firestore()
     .collection("rooms")
     .doc(id)
     .collection("actions")
-    .onSnapshot(() => {});
+    .onSnapshot(snapshot);
 
   return removeActionListener;
 }
+
+export function onceGuestJoin(id: string, handler) {
+  const ref = database().ref(`/online/${id}/guest`);
+
+  function onValue(snapshot) {
+    if (snapshot.val() === true) {
+      handler();
+      ref.off("value", onValue);
+    }
+  }
+
+  ref.on("value", onValue);
+}
+
+export function onceGuestLeave(id: string, handler) {
+  const ref = database().ref(`/online/${id}/guest`);
+
+  function onValue(snapshot) {
+    if (snapshot.val() === false) {
+      handler();
+      ref.off("value", onValue);
+    }
+  }
+
+  ref.on("value", onValue);
+}
+*/

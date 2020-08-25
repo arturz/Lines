@@ -16,7 +16,7 @@
     "@react-native-firebase/firestore": "^7.5.3",
     "@react-navigation/native": "^5.7.2",
     "@react-navigation/stack": "^5.8.0",
-    "eventemitter3": "^4.0.4",
+    "eventemitter3": "^4.0.5",
     "gsap": "^3.4.2",
     "gsap-rn": "0.0.14",
     "lodash": "^4.17.20",

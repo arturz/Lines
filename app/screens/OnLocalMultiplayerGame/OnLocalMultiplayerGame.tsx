@@ -11,9 +11,8 @@ import FinishAlert from "./FinishAlert";
 import { LocalMultiplayerGameScreenNavigationProp } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
 
-const mapStateToProps = ({ game: { status, map, pointer } }) => ({
+const mapStateToProps = ({ game: { status, pointer } }) => ({
   status,
-  map,
   pointer,
 });
 
@@ -25,14 +24,12 @@ const mapDispatchToProps = (dispatch) => ({
 
 const LocalMultiplayerGame = ({
   status,
-  map,
-  startGame: dispatchStartName,
+  startGame: dispatchStartGame,
   takeLine,
   route,
   navigation,
 }: {
   status: GameStatus;
-  map: GameMap;
   pointer: Pointer;
   startGame: (width: number, height: number) => void;
   takeLine: (
@@ -46,7 +43,7 @@ const LocalMultiplayerGame = ({
 }) => {
   //start game automatically
   useEffect(() => {
-    dispatchStartName(route?.params?.width || 6, route?.params?.height || 10);
+    dispatchStartGame(route?.params?.width ?? 6, route?.params?.height ?? 10);
   }, []);
 
   //dispatch to store
@@ -82,12 +79,12 @@ const LocalMultiplayerGame = ({
           <LayoutWrapper
             render={({ widthPx, heightPx, x, y }) => (
               <GameRenderer
-                width={map.width}
-                height={map.height}
                 widthPx={widthPx}
                 heightPx={heightPx}
                 x={x}
                 y={y}
+                //on the same device always Player.A or Player.B can take line
+                allowTakingLine={status === GameStatus.Playing}
                 onTakeLine={onTakeLine}
               />
             )}
