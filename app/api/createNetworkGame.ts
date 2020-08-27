@@ -37,13 +37,9 @@ export default async (roomId: string, player: Player) => {
   emitter.on("opponentDisconnected", delayedOpponentLeft);
   emitter.on("opponentConnected", () => delayedOpponentLeft.cancel());
 
-  //opponent left the game and can't go back - it's time to destroy the room and leave the game
-  emitter.on("opponentLeft", async () => {
+  async function __destroy() {
     //remove firebase listeners
     firebaseListeners.map(result);
-
-    //remove client-side listeners
-    emitter.removeAllListeners();
 
     //remove presence object
     await database().ref(`/online/${roomId}`).remove();
@@ -56,7 +52,13 @@ export default async (roomId: string, player: Player) => {
 
     //it's time to navigate to menu
     emitter.emit("roomDestroyed");
-  });
+
+    //remove client-side listeners
+    emitter.removeAllListeners();
+  }
+
+  //opponent left the game and can't go back - it's time to destroy the room and leave the game
+  emitter.on("opponentLeft", __destroy);
 
   //listen for opponent's presence change
   firebaseListeners.push(
@@ -142,9 +144,12 @@ export default async (roomId: string, player: Player) => {
 
   //make sure events will be handled properly (you have to attach them on your own)
   setTimeout(() => {
-    if (emitter.listenerCount("roomDestroyed") === 0) {
+    if (
+      emitter.listenerCount("roomDestroyed") === 0 &&
+      emitter.listenerCount("opponentLeft") === 0
+    ) {
       throw new Error(
-        `You should attach roomDestroyed listener that navigates to menu`
+        `You should attach roomDestroyed or opponentLeft listener that navigates to menu`
       );
     }
 
@@ -159,5 +164,6 @@ export default async (roomId: string, player: Player) => {
     emitter,
     action,
     leave,
+    __destroy,
   };
 };

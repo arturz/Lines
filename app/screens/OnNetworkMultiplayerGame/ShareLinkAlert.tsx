@@ -14,10 +14,12 @@ const styles = StyleSheet.create({
 
 export default ({
   isOpen,
+  isRoomCreated,
   id,
   onAbort,
 }: {
   isOpen: boolean;
+  isRoomCreated: boolean;
   id: string;
   onAbort: () => void;
 }) => {
@@ -27,7 +29,7 @@ export default ({
     });
   }
 
-  if (id === null)
+  if (isRoomCreated)
     return (
       <Alert isOpen={isOpen} title="Creating room...">
         <Paragraph>Link will appear here</Paragraph>

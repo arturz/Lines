@@ -10,6 +10,7 @@ import { Direction } from "../../constants";
 import FinishAlert from "./FinishAlert";
 import { LocalMultiplayerGameScreenNavigationProp } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
+import CurrentPlayerIndicator from "../../components/gameRenderer/CurrentPlayerIndicator";
 
 const mapStateToProps = ({ game: { status, pointer } }) => ({
   status,
@@ -75,6 +76,7 @@ const LocalMultiplayerGame = ({
   if (status === GameStatus.Playing || status === GameStatus.Finish)
     return (
       <View style={StyleSheet.absoluteFill}>
+        <CurrentPlayerIndicator />
         <GameLogic>
           <LayoutWrapper
             render={({ widthPx, heightPx, x, y }) => (
