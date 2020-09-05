@@ -6,10 +6,12 @@ import { Colors } from "../../styles";
 const styles = StyleSheet.create({
   modalButton: {
     height: 60,
-    backgroundColor: Colors.RED,
+    backgroundColor: "transparent",
+    borderWidth: 3,
+    borderColor: Colors.RED,
   },
   modalButtonTextStyle: {
-    color: Colors.YELLOW,
+    color: Colors.RED,
   },
 });
 

@@ -11,14 +11,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    fontSize: 100,
-    fontFamily: "Barlow-Regular",
+    fontSize: 90,
+    fontFamily: "Barlow-ExtraBold",
     color: Colors.RED,
+    letterSpacing: 9,
+    textAlign: 'center',
+    lineHeight: 90
   },
 });
 
 export default () => (
   <View style={styles.container}>
-    <Text style={styles.text}>LINES</Text>
+    <Text style={styles.text}>LINES{'\n'}GAME</Text>
   </View>
 );

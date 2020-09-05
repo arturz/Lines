@@ -21,6 +21,7 @@ import LeavePrompt from "./LeavePrompt";
 import FinishAlert from "./FinishAlert";
 import ExpiredLinkAlert from "./ExpiredLinkAlert";
 import OpponentLeftAlert from "./OpponentLeftAlert";
+import CurrentPlayerIndicator from "../../components/gameRenderer/CurrentPlayerIndicator";
 
 const mapStateToProps = ({ game: { status, player } }) => ({
   status,
@@ -171,6 +172,10 @@ const LocalMultiplayerGame = ({
     <>
       {(status === GameStatus.Playing || status === GameStatus.Finish) && (
         <View style={StyleSheet.absoluteFill}>
+          <CurrentPlayerIndicator
+            playerAText={isHost ? `your's move` : `opponent's move`}
+            playerBText={isHost ? `opponent's move` : `your's move`}
+          />
           <GameLogic>
             <LayoutWrapper
               render={({ widthPx, heightPx, x, y }) => (

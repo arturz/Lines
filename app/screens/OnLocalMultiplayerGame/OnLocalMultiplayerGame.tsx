@@ -76,7 +76,10 @@ const LocalMultiplayerGame = ({
   if (status === GameStatus.Playing || status === GameStatus.Finish)
     return (
       <View style={StyleSheet.absoluteFill}>
-        <CurrentPlayerIndicator />
+        <CurrentPlayerIndicator
+          playerAText="red's move"
+          playerBText="blue's move"
+        />
         <GameLogic>
           <LayoutWrapper
             render={({ widthPx, heightPx, x, y }) => (

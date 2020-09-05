@@ -21,7 +21,7 @@
     "gsap-rn": "0.0.14",
     "lodash": "^4.17.20",
     "react": "16.13.1",
-    "react-native": "0.63.2",
+    "react-native": "^0.63.2",
     "react-native-canvas": "^0.1.37",
     "react-native-gesture-handler": "^1.7.0",
     "react-native-portalize": "^1.0.3",
