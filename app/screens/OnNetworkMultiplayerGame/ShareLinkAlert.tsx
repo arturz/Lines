@@ -29,7 +29,7 @@ export default ({
     });
   }
 
-  if (isRoomCreated)
+  if (!isRoomCreated)
     return (
       <Alert isOpen={isOpen} title="Creating room...">
         <Paragraph>Link will appear here</Paragraph>

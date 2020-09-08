@@ -1,6 +1,13 @@
 import { createStore, applyMiddleware } from "redux";
 import { GameMap } from "../classes/GameMap";
-import { START_GAME, TAKE_LINE, FINISH, TOGGLE_PLAYER } from "./actions";
+import {
+  START_GAME,
+  TAKE_LINE,
+  FINISH,
+  TOGGLE_PLAYER,
+  INITIALIZE_GAME,
+  CLEAR_GAME,
+} from "./actions";
 import getToggledPlayer from "../utils/getToggledPlayer";
 import { GameStatus } from "../constants/GameStatus";
 import { Player } from "../constants/Player";
@@ -33,12 +40,12 @@ const initialState: State = {
 
 function reducer(state = initialState, action) {
   switch (action.type) {
-    case START_GAME:
+    case INITIALIZE_GAME:
       return {
         ...state,
         game: {
           ...initialState.game,
-          status: GameStatus.Playing,
+          status: GameStatus.Initialized,
           player: Player.A,
           pointer: new Pointer(
             action.payload.width / 2,
@@ -46,6 +53,15 @@ function reducer(state = initialState, action) {
           ),
           map: new GameMap(action.payload.width, action.payload.height),
           gates: new Gates(action.payload.width, action.payload.height),
+        },
+      };
+
+    case START_GAME:
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          status: GameStatus.Playing,
         },
       };
 
@@ -93,6 +109,12 @@ function reducer(state = initialState, action) {
           status: GameStatus.Finish,
           winner: action.payload.winner,
         },
+      };
+
+    case CLEAR_GAME:
+      return {
+        ...state,
+        game: { ...initialState.game },
       };
 
     default:

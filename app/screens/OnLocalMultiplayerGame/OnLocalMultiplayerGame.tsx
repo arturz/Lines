@@ -4,13 +4,13 @@ import { connect } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
 import { CellLineProps } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
-import { startGame, takeLine } from "../../redux";
-import { GameMap, Pointer } from "../../classes";
-import { Direction } from "../../constants";
+import { initializeGame, startGame, takeLine, clearGame } from "../../redux";
+import { Pointer } from "../../classes";
 import FinishAlert from "./FinishAlert";
 import { LocalMultiplayerGameScreenNavigationProp } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
 import CurrentPlayerIndicator from "../../components/gameRenderer/CurrentPlayerIndicator";
+import { compose } from "redux";
 
 const mapStateToProps = ({ game: { status, pointer } }) => ({
   status,
@@ -18,38 +18,42 @@ const mapStateToProps = ({ game: { status, pointer } }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  startGame: (width, height) => dispatch(startGame(width, height)),
-  takeLine: (y, x, direction, backwards) =>
-    dispatch(takeLine(y, x, direction, backwards)),
+  initializeGame: compose(dispatch, initializeGame),
+  startGame: compose(dispatch, startGame),
+  takeLine: compose(dispatch, takeLine),
+  clearGame: compose(dispatch, clearGame),
 });
 
 const LocalMultiplayerGame = ({
   status,
   startGame: dispatchStartGame,
-  takeLine,
+  initializeGame: dispatchInitializeGame,
+  takeLine: dispatchTakeLine,
+  clearGame: dispatchClearGame,
   route,
   navigation,
 }: {
   status: GameStatus;
   pointer: Pointer;
-  startGame: (width: number, height: number) => void;
-  takeLine: (
-    y: number,
-    x: number,
-    direction: Direction,
-    backwards: boolean
-  ) => void;
+  startGame: typeof startGame;
+  initializeGame: typeof initializeGame;
+  takeLine: typeof takeLine;
+  clearGame: typeof clearGame;
   route: any;
   navigation: LocalMultiplayerGameScreenNavigationProp;
 }) => {
   //start game automatically
   useEffect(() => {
-    dispatchStartGame(route?.params?.width ?? 6, route?.params?.height ?? 10);
+    dispatchInitializeGame(
+      route?.params?.width ?? 6,
+      route?.params?.height ?? 10
+    );
+    dispatchStartGame();
   }, []);
 
   //dispatch to store
   const onTakeLine = (cellLineProps: CellLineProps) => {
-    takeLine(
+    dispatchTakeLine(
       cellLineProps.y,
       cellLineProps.x,
       cellLineProps.direction,
@@ -61,6 +65,7 @@ const LocalMultiplayerGame = ({
 
   useEffect(() => {
     const backAction = () => {
+      dispatchClearGame();
       goToMenu();
       return true;
     };

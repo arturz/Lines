@@ -1,12 +1,16 @@
-// @refresh reset
-
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { View, StyleSheet, BackHandler } from "react-native";
 import { connect } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
 import { CellLineProps, Await } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
-import { startGame, takeLine, store } from "../../redux";
+import {
+  startGame,
+  takeLine,
+  store,
+  initializeGame,
+  clearGame,
+} from "../../redux";
 import { Player } from "../../constants";
 import {
   LocalMultiplayerGameScreenNavigationProp,
@@ -14,7 +18,7 @@ import {
   NetworkGuestProp,
 } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
-import { createRoom, checkIfRoomExists, createNetworkGame } from "../../api";
+import { createRoom, checkIfRoomExists, NetworkGame } from "../../api";
 import ShareLinkAlert from "./ShareLinkAlert";
 import JoinedGameAlert from "./JoinedGameAlert";
 import LeavePrompt from "./LeavePrompt";
@@ -22,6 +26,8 @@ import FinishAlert from "./FinishAlert";
 import ExpiredLinkAlert from "./ExpiredLinkAlert";
 import OpponentLeftAlert from "./OpponentLeftAlert";
 import CurrentPlayerIndicator from "../../components/gameRenderer/CurrentPlayerIndicator";
+import { compose } from "redux";
+import { cond } from "lodash";
 
 const mapStateToProps = ({ game: { status, player } }) => ({
   status,
@@ -29,32 +35,43 @@ const mapStateToProps = ({ game: { status, player } }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  startGame: (width, height) => dispatch(startGame(width, height)),
-  takeLine: (y, x, direction, backwards) =>
-    dispatch(takeLine(y, x, direction, backwards)),
+  initializeGame: compose(dispatch, initializeGame),
+  startGame: compose(dispatch, startGame),
+  takeLine: compose(dispatch, takeLine),
+  clearGame: compose(dispatch, clearGame),
 });
 
 const LocalMultiplayerGame = ({
   status,
   player,
   startGame: dispatchStartGame,
+  initializeGame: dispatchInitializeGame,
   takeLine: dispatchTakeLine,
+  clearGame: dispatchClearGame,
   route: { params },
   navigation,
 }: {
   status: GameStatus;
   player: Player;
   startGame: typeof startGame;
+  initializeGame: typeof initializeGame;
   takeLine: typeof takeLine;
+  clearGame: typeof clearGame;
   route: {
-    params: (NetworkGuestProp | NetworkHostProp) & {
-      width?: number;
-      height?: number;
-    };
+    params: NetworkGuestProp | NetworkHostProp;
   };
   navigation: LocalMultiplayerGameScreenNavigationProp;
 }) => {
   const isHost = params.isHost;
+
+  //check for required host's navigation params
+  if (isHost) {
+    if (
+      (params as NetworkHostProp).width === undefined ||
+      (params as NetworkHostProp).height === undefined
+    )
+      throw new Error(`Undefined route's params.width and/or params.height`);
+  }
 
   //used for showing alert when guest joins room that doesn't exist (expired URL)
   const [showExpiredLinkAlert, setShowExpiredLinkAlert] = useState(false);
@@ -64,76 +81,92 @@ const LocalMultiplayerGame = ({
 
   const [showOpponentLeftAlert, setShowOpponentLeftAlert] = useState(false);
 
-  const [roomId, setRoomId] = useState(null);
-
   //contains functions for communication with server
-  const gameRef = useRef<Await<ReturnType<typeof createNetworkGame>>>(null);
+  const [game, setGame] = useState<NetworkGame>(null);
 
   function resetState() {
     setShowExpiredLinkAlert(false);
     setShowLeavePrompt(false);
     setShowOpponentLeftAlert(false);
-    setRoomId(null);
-    gameRef.current = null;
-  }
-
-  function start() {
-    const width = params.width ?? 6;
-    const height = params.height ?? 10;
-    gameRef.current.action(dispatchStartGame(width, height));
+    setGame(null);
   }
 
   useEffect(() => {
-    //@ts-ignore
-    const _roomId = isHost ? null : params.id;
+    if (isHost) {
+      //initialize UI when we are waiting for opponent
+      dispatchInitializeGame(
+        (params as NetworkHostProp).width,
+        (params as NetworkHostProp).height
+      );
+    }
+  }, []);
 
-    if (_roomId === null) {
-      createRoom().then(setRoomId);
+  async function startAsHost() {
+    console.log("startAsHost");
+
+    await game.action(
+      dispatchInitializeGame(
+        (params as NetworkHostProp).width,
+        (params as NetworkHostProp).height
+      )
+    );
+    //start game
+    await game.action(dispatchStartGame());
+  }
+
+  useEffect(() => {
+    if (game !== null) {
+      if (isHost) {
+        game.emitter.on("opponentConnected", startAsHost);
+      }
+    }
+  }, [game]);
+
+  useEffect(() => {
+    function setup(roomId: string) {
+      const game = new NetworkGame(roomId, isHost ? Player.A : Player.B);
+
+      game.emitter.on("opponentLeft", () => setShowOpponentLeftAlert(true));
+      game.emitter.on("opponentsAction", (action) => {
+        store.dispatch(action);
+        console.log(
+          `dispatched from opponent ${action.type} ${action.payload}`
+        );
+      });
+
+      setGame(game);
+      isHost && console.log("setup done");
+    }
+
+    if (isHost) {
+      createRoom().then(setup);
+      console.log(`created new room (as host)`);
     } else {
-      checkIfRoomExists(_roomId).then((exists) => {
+      checkIfRoomExists((params as NetworkGuestProp).id).then((exists) => {
         if (!exists) {
           setShowExpiredLinkAlert(true);
         } else {
-          setRoomId(_roomId);
+          setup((params as NetworkGuestProp).id);
         }
       });
     }
   }, []);
-
-  useEffect(() => {
-    if (roomId !== null) setup();
-
-    async function setup() {
-      const game = await createNetworkGame(
-        roomId,
-        isHost ? Player.A : Player.B
-      );
-      gameRef.current = game;
-
-      game.emitter.on("opponentLeft", () => {
-        setShowOpponentLeftAlert(true);
-      });
-
-      game.emitter.on("opponentsAction", (action) => {
-        store.dispatch(action);
-      });
-
-      if (isHost) {
-        game.emitter.on("opponentConnected", start);
-      }
-    }
-  }, [roomId]);
 
   function goToMenu() {
     navigation.navigate("Menu");
   }
 
   function leaveRoom() {
-    //disconnect
-    gameRef.current.leave();
+    if (game !== null) {
+      //disconnect
+      game.leave();
+    }
 
-    //reset state
+    //reset component's state
     resetState();
+
+    //reset redux's game state
+    dispatchClearGame();
 
     //go to menu
     goToMenu();
@@ -141,12 +174,12 @@ const LocalMultiplayerGame = ({
 
   //use only when you are host and noone else is connected, in other cases use leaveRoom
   function __destroyRoom() {
-    gameRef.current.__destroy();
+    game.__destroy();
     goToMenu();
   }
 
   const onTakeLine = (cellLineProps: CellLineProps) => {
-    gameRef.current.action(
+    game.action(
       dispatchTakeLine(
         cellLineProps.y,
         cellLineProps.x,
@@ -160,7 +193,7 @@ const LocalMultiplayerGame = ({
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
-        leaveRoom();
+        setShowLeavePrompt(true);
         return true;
       }
     );
@@ -168,9 +201,17 @@ const LocalMultiplayerGame = ({
     return () => backHandler.remove();
   }, []);
 
+  const showShareLinkAlert =
+    isHost &&
+    (status === GameStatus.Ready || status === GameStatus.Initialized);
+
+  const showJoinedGameAlert = !isHost && status === GameStatus.Ready;
+
   return (
     <>
-      {(status === GameStatus.Playing || status === GameStatus.Finish) && (
+      {(status === GameStatus.Initialized ||
+        status === GameStatus.Playing ||
+        status === GameStatus.Finish) && (
         <View style={StyleSheet.absoluteFill}>
           <CurrentPlayerIndicator
             playerAText={isHost ? `your's move` : `opponent's move`}
@@ -186,7 +227,11 @@ const LocalMultiplayerGame = ({
                   y={y}
                   onTakeLine={onTakeLine}
                   allowTakingLine={
-                    isHost ? player === Player.A : player === Player.B
+                    status === GameStatus.Playing
+                      ? isHost
+                        ? player === Player.A
+                        : player === Player.B
+                      : false
                   }
                 />
               )}
@@ -194,33 +239,39 @@ const LocalMultiplayerGame = ({
           </GameLogic>
         </View>
       )}
-      <ExpiredLinkAlert isOpen={showExpiredLinkAlert} goToMenu={goToMenu} />
-      {isHost ? (
-        <>
-          <ShareLinkAlert
-            isRoomCreated={roomId !== null && gameRef.current !== null}
-            isOpen={status === GameStatus.Ready}
-            id={roomId}
-            onAbort={__destroyRoom}
-          />
-        </>
-      ) : (
-        <>
-          <JoinedGameAlert isOpen={status === GameStatus.Ready} />
-        </>
-      )}
+
+      {/* host */}
+      <ShareLinkAlert
+        isRoomCreated={game !== null}
+        isOpen={showShareLinkAlert}
+        id={game?.roomId}
+        onAbort={__destroyRoom}
+      />
+      {/* guest */}
+      <JoinedGameAlert isOpen={!showExpiredLinkAlert && showJoinedGameAlert} />
+
+      <OpponentLeftAlert isOpen={showOpponentLeftAlert} goToMenu={leaveRoom} />
+      <ExpiredLinkAlert
+        isOpen={!showOpponentLeftAlert && showExpiredLinkAlert}
+        goToMenu={goToMenu}
+      />
       <LeavePrompt
-        isOpen={showLeavePrompt}
+        isOpen={
+          !showOpponentLeftAlert && !showExpiredLinkAlert && showLeavePrompt
+        }
         onResume={() => setShowLeavePrompt(false)}
         onLeave={leaveRoom}
       />
       <FinishAlert
-        isOpen={status === GameStatus.Finish}
+        isOpen={
+          !showOpponentLeftAlert &&
+          !showExpiredLinkAlert &&
+          status === GameStatus.Finish
+        }
         isHost={isHost}
-        onPlayAgain={start}
+        onPlayAgain={startAsHost}
         onLeave={leaveRoom}
       />
-      <OpponentLeftAlert isOpen={showOpponentLeftAlert} goToMenu={leaveRoom} />
     </>
   );
 };
