@@ -3,7 +3,7 @@ import { View, StyleSheet, BackHandler } from "react-native";
 import { FromBottom } from "../wrappers";
 import { Colors } from "../../styles";
 import { animateModal, reverseAnimateModal } from "../../greensock/Modal";
-import { Header } from "../molecules";
+import { ModalHeader } from "../molecules";
 
 const styles = StyleSheet.create({
   container: {
@@ -72,7 +72,7 @@ const Modal = ({ top, title, onClose, children }: Props) => {
       <FromBottom>
         <View style={styles.modal} ref={modal}>
           <View ref={content}>
-            <Header
+            <ModalHeader
               title={title}
               xButton={{ animate: animateXButton, onPress: shrink }}
             />

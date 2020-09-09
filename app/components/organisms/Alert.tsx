@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, ReactNode } from "react";
 import { Animated, View, StyleSheet, Easing } from "react-native";
 import { Colors } from "../../styles";
-import { Header } from "../molecules";
+import { ModalHeader } from "../molecules";
 
 const styles = StyleSheet.create({
   container: {
@@ -79,7 +79,7 @@ export default ({ isOpen, title, onClose, children }: Props) => {
       pointerEvents={isOpen ? "auto" : "none"}
     >
       <Animated.View style={[styles.alert, animationStyle]}>
-        <Header
+        <ModalHeader
           title={title}
           xButton={onClose ? { animate: true, onPress: onClose } : false}
         />

@@ -9,8 +9,9 @@ import { Pointer } from "../../classes";
 import FinishAlert from "./FinishAlert";
 import { LocalMultiplayerGameScreenNavigationProp } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
-import CurrentPlayerIndicator from "../../components/gameRenderer/CurrentPlayerIndicator";
 import { compose } from "redux";
+import { withGameDeepLinking } from "../../hocs";
+import { CurrentPlayerIndicator } from "../../components/atoms";
 
 const mapStateToProps = ({ game: { status, pointer } }) => ({
   status,
@@ -24,15 +25,7 @@ const mapDispatchToProps = (dispatch) => ({
   clearGame: compose(dispatch, clearGame),
 });
 
-const LocalMultiplayerGame = ({
-  status,
-  startGame: dispatchStartGame,
-  initializeGame: dispatchInitializeGame,
-  takeLine: dispatchTakeLine,
-  clearGame: dispatchClearGame,
-  route,
-  navigation,
-}: {
+type Props = {
   status: GameStatus;
   pointer: Pointer;
   startGame: typeof startGame;
@@ -41,7 +34,17 @@ const LocalMultiplayerGame = ({
   clearGame: typeof clearGame;
   route: any;
   navigation: LocalMultiplayerGameScreenNavigationProp;
-}) => {
+};
+
+const LocalMultiplayerGame = ({
+  status,
+  startGame: dispatchStartGame,
+  initializeGame: dispatchInitializeGame,
+  takeLine: dispatchTakeLine,
+  clearGame: dispatchClearGame,
+  route,
+  navigation,
+}: Props) => {
   //start game automatically
   useEffect(() => {
     dispatchInitializeGame(
@@ -107,7 +110,6 @@ const LocalMultiplayerGame = ({
   return null;
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LocalMultiplayerGame);
+export default withGameDeepLinking<Props>(
+  connect(mapStateToProps, mapDispatchToProps)(LocalMultiplayerGame)
+);

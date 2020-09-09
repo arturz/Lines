@@ -29,3 +29,9 @@ export type NetworkMultiplayerGameScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "NetworkMultiplayerGame"
 >;
+
+//for withGameDeepLinking - it should work on every screen
+export type AnyScreenNavigationProp =
+  | MenuScreenNavigationProp
+  | LocalMultiplayerGameScreenNavigationProp
+  | NetworkMultiplayerGameScreenNavigationProp;

@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, BackHandler } from "react-native";
 import { connect } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
-import { CellLineProps, Await } from "../../types";
+import { CellLineProps } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
 import {
   startGame,
@@ -25,9 +25,9 @@ import LeavePrompt from "./LeavePrompt";
 import FinishAlert from "./FinishAlert";
 import ExpiredLinkAlert from "./ExpiredLinkAlert";
 import OpponentLeftAlert from "./OpponentLeftAlert";
-import CurrentPlayerIndicator from "../../components/gameRenderer/CurrentPlayerIndicator";
 import { compose } from "redux";
-import { cond } from "lodash";
+import { withGameDeepLinking } from "../../hocs";
+import { CurrentPlayerIndicator } from "../../components/atoms";
 
 const mapStateToProps = ({ game: { status, player } }) => ({
   status,
@@ -112,6 +112,16 @@ const LocalMultiplayerGame = ({
     );
     //start game
     await game.action(dispatchStartGame());
+  }
+
+  //don't show alert about waiting for opponent when game is restarting
+  const restarting = useRef(false);
+
+  //playing again
+  async function restartAsHost() {
+    restarting.current = true;
+    await startAsHost();
+    restarting.current = false;
   }
 
   useEffect(() => {
@@ -203,9 +213,12 @@ const LocalMultiplayerGame = ({
 
   const showShareLinkAlert =
     isHost &&
-    (status === GameStatus.Ready || status === GameStatus.Initialized);
+    (status === GameStatus.Ready || status === GameStatus.Initialized) &&
+    !restarting.current;
 
-  const showJoinedGameAlert = !isHost && status === GameStatus.Ready;
+  const showJoinedGameAlert =
+    !isHost &&
+    (status === GameStatus.Ready || status === GameStatus.Initialized);
 
   return (
     <>
@@ -269,14 +282,13 @@ const LocalMultiplayerGame = ({
           status === GameStatus.Finish
         }
         isHost={isHost}
-        onPlayAgain={startAsHost}
+        onPlayAgain={restartAsHost}
         onLeave={leaveRoom}
       />
     </>
   );
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LocalMultiplayerGame);
+export default withGameDeepLinking(
+  connect(mapStateToProps, mapDispatchToProps)(LocalMultiplayerGame)
+);
