@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, BackHandler } from "react-native";
 import { connect } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
@@ -11,7 +11,8 @@ import { LocalMultiplayerGameScreenNavigationProp } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
 import { compose } from "redux";
 import { withGameDeepLinking } from "../../hocs";
-import { CurrentPlayerIndicator } from "../../components/atoms";
+import GameHeader from "../../components/molecules/GameHeader";
+import { LeavePrompt } from "../../components/organisms";
 
 const mapStateToProps = ({ game: { status, pointer } }) => ({
   status,
@@ -45,6 +46,9 @@ const LocalMultiplayerGame = ({
   route,
   navigation,
 }: Props) => {
+  //prompt that allows to leave the game
+  const [showLeavePrompt, setShowLeavePrompt] = useState(false);
+
   //start game automatically
   useEffect(() => {
     dispatchInitializeGame(
@@ -66,10 +70,14 @@ const LocalMultiplayerGame = ({
 
   const goToMenu = () => navigation.navigate("Menu");
 
+  function leaveRoom() {
+    dispatchClearGame();
+    goToMenu();
+  }
+
   useEffect(() => {
     const backAction = () => {
-      dispatchClearGame();
-      goToMenu();
+      setShowLeavePrompt(true);
       return true;
     };
 
@@ -81,13 +89,45 @@ const LocalMultiplayerGame = ({
     return () => backHandler.remove();
   }, []);
 
+  return (
+    <>
+      {(status === GameStatus.Playing || status === GameStatus.Finish) && (
+        <View style={StyleSheet.absoluteFill}>
+          <GameHeader
+            playerAText="red’s move"
+            playerBText="blue’s move"
+            onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
+          />
+          <GameLogic>
+            <LayoutWrapper
+              render={({ widthPx, heightPx, x, y }) => (
+                <GameRenderer
+                  widthPx={widthPx}
+                  heightPx={heightPx}
+                  x={x}
+                  y={y}
+                  //on the same device always Player.A or Player.B can take line
+                  allowTakingLine={status === GameStatus.Playing}
+                  onTakeLine={onTakeLine}
+                />
+              )}
+            />
+            <FinishAlert goToMenu={goToMenu} />
+          </GameLogic>
+        </View>
+      )}
+      <LeavePrompt
+        isOpen={showLeavePrompt}
+        onResume={() => setShowLeavePrompt(false)}
+        onLeave={leaveRoom}
+      />
+    </>
+  );
+
   if (status === GameStatus.Playing || status === GameStatus.Finish)
     return (
       <View style={StyleSheet.absoluteFill}>
-        <CurrentPlayerIndicator
-          playerAText="red's move"
-          playerBText="blue's move"
-        />
+        <GameHeader playerAText="red’s move" playerBText="blue’s move" />
         <GameLogic>
           <LayoutWrapper
             render={({ widthPx, heightPx, x, y }) => (

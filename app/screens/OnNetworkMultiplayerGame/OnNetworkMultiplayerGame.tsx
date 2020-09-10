@@ -19,15 +19,17 @@ import {
 } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
 import { createRoom, checkIfRoomExists, NetworkGame } from "../../api";
-import ShareLinkAlert from "./ShareLinkAlert";
-import JoinedGameAlert from "./JoinedGameAlert";
-import LeavePrompt from "./LeavePrompt";
-import FinishAlert from "./FinishAlert";
-import ExpiredLinkAlert from "./ExpiredLinkAlert";
-import OpponentLeftAlert from "./OpponentLeftAlert";
 import { compose } from "redux";
 import { withGameDeepLinking } from "../../hocs";
-import { CurrentPlayerIndicator } from "../../components/atoms";
+import {
+  ShareLinkAlert,
+  JoinedGameAlert,
+  OpponentLeftAlert,
+  ExpiredLinkAlert,
+  LeavePrompt,
+  FinishAlert,
+} from "../../components/organisms";
+import { GameHeader } from "../../components/molecules";
 
 const mapStateToProps = ({ game: { status, player } }) => ({
   status,
@@ -76,7 +78,7 @@ const LocalMultiplayerGame = ({
   //used for showing alert when guest joins room that doesn't exist (expired URL)
   const [showExpiredLinkAlert, setShowExpiredLinkAlert] = useState(false);
 
-  //prompt that allows to leave game
+  //prompt that allows to leave the game
   const [showLeavePrompt, setShowLeavePrompt] = useState(false);
 
   const [showOpponentLeftAlert, setShowOpponentLeftAlert] = useState(false);
@@ -226,9 +228,10 @@ const LocalMultiplayerGame = ({
         status === GameStatus.Playing ||
         status === GameStatus.Finish) && (
         <View style={StyleSheet.absoluteFill}>
-          <CurrentPlayerIndicator
-            playerAText={isHost ? `your's move` : `opponent's move`}
-            playerBText={isHost ? `opponent's move` : `your's move`}
+          <GameHeader
+            playerAText={isHost ? `your’s move` : `opponent’s move`}
+            playerBText={isHost ? `opponent’s move` : `your’s move`}
+            onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
           />
           <GameLogic>
             <LayoutWrapper
@@ -270,7 +273,10 @@ const LocalMultiplayerGame = ({
       />
       <LeavePrompt
         isOpen={
-          !showOpponentLeftAlert && !showExpiredLinkAlert && showLeavePrompt
+          !showShareLinkAlert &&
+          !showOpponentLeftAlert &&
+          !showExpiredLinkAlert &&
+          showLeavePrompt
         }
         onResume={() => setShowLeavePrompt(false)}
         onLeave={leaveRoom}

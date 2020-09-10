@@ -1,7 +1,7 @@
 import React from "react";
-import { Alert } from "../../components/organisms";
-import { Paragraph } from "../../components/atoms";
-import { ModalButton, ModalExitButton } from "../../components/molecules";
+import Alert from "./Alert";
+import { Paragraph } from "../atoms";
+import { ModalButton, ModalExitButton } from "../molecules";
 import { Share, StyleSheet, View } from "react-native";
 import { getInviteLink } from "../../constants";
 

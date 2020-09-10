@@ -2,6 +2,10 @@
  * @format
  */
 
+if (!__DEV__) {
+  globalThis.console.log = () => {};
+}
+
 import "react-native-gesture-handler";
 
 import { AppRegistry } from "react-native";

@@ -1,6 +1,6 @@
 import React from "react";
-import { Alert } from "../../components/organisms";
-import { Paragraph } from "../../components/atoms";
+import Alert from "./Alert";
+import { Paragraph } from "../atoms";
 
 export default ({ isOpen }: { isOpen: boolean }) => (
   <Alert title="Joined game!" isOpen={isOpen}>

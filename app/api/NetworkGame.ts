@@ -16,7 +16,7 @@ export class NetworkGame {
   private readonly firestoreListeners = [];
 
   constructor(public readonly roomId: string, private readonly player: Player) {
-    this.checkCodebase();
+    if (__DEV__) this.checkCodebase();
     this.attachEmitterListeners();
     this.attachFirestoreListeners();
     this.setupPresence();
@@ -44,7 +44,7 @@ export class NetworkGame {
     const roomExists = await checkIfRoomExists(this.roomId);
     if (!roomExists)
       throw new Error(
-        `NetworkGame: room with id ${this.roomId} doesn't exists!`
+        `NetworkGame: room with id ${this.roomId} doesn't exists! It has to be checked before creating new NetworkGame instance.`
       );
   }
 

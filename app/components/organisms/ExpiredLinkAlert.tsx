@@ -1,7 +1,7 @@
 import React from "react";
-import { Alert } from "../../components/organisms";
-import { Paragraph } from "../../components/atoms";
-import { ModalButton } from "../../components/molecules";
+import { Alert } from ".";
+import { Paragraph } from "../atoms";
+import { ModalButton } from "../molecules";
 
 export default ({
   isOpen,

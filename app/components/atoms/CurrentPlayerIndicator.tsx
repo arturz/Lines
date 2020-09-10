@@ -4,16 +4,18 @@ import { connect } from "react-redux";
 import { Colors } from "../../styles";
 import { Player } from "../../constants";
 import { getToggledPlayer } from "../../utils";
+import { GAME_HEADER_HEIGHT } from "../../styles/sizes";
 
 const styles = StyleSheet.create({
   container: {
+    flexGrow: 1,
     backgroundColor: Colors.BLUE,
-    padding: 10,
-    marginLeft: 60,
-    marginRight: 60,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     overflow: "hidden",
+    height: GAME_HEADER_HEIGHT,
+    display: "flex",
+    justifyContent: "center",
   },
   textbarsContainer: {
     position: "relative",
@@ -33,10 +35,13 @@ const mapStateToProps = ({ game: { player } }) => ({
   player,
 });
 
-type Props = {
-  player: Player;
+export type CurrentPlayerIndicatorProps = {
   playerAText: string;
   playerBText: string;
+};
+
+type Props = CurrentPlayerIndicatorProps & {
+  player: Player;
 };
 
 const Indicator = ({ player, playerAText, playerBText }: Props) => {
@@ -104,10 +109,14 @@ const Indicator = ({ player, playerAText, playerBText }: Props) => {
   return (
     <View style={styles.container}>
       <View style={[styles.textbarsContainer, { height: textHeight }]}>
-        <Animated.Text style={[styles.textbar, fadingOutTextbarStyle]}>
+        <Animated.Text
+          numberOfLines={1}
+          style={[styles.textbar, fadingOutTextbarStyle]}
+        >
           {fadingOutTextbarText}
         </Animated.Text>
         <Animated.Text
+          numberOfLines={1}
           style={[styles.textbar, fadingInTextbarStyle]}
           onLayout={onLayout}
         >
