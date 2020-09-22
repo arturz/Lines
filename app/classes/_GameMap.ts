@@ -1,7 +1,9 @@
 import { Cell } from "./Cell";
+import { cloneObject } from "../utils";
+import { Cells } from "../types";
 
 export class GameMap {
-  public readonly cells: Cell[][] = [];
+  private cells: Cells = [];
 
   constructor(
     public readonly width: number,
@@ -23,5 +25,12 @@ export class GameMap {
 
   getCells() {
     return [...this.cells];
+  }
+
+  //basic immutability for Redux
+  getMapWithSetCells(cells: Cells) {
+    const _gameMap = cloneObject(this);
+    _gameMap.cells = cells;
+    return _gameMap;
   }
 }

@@ -1,24 +1,22 @@
 import React, { memo, useEffect } from "react";
 import { connect } from "react-redux";
 import { GameStatus, Player } from "../../constants";
-import { GameMap, Pointer, Gates } from "../../classes";
 import { finish, togglePlayer } from "../../redux";
 import {
   checkFinishByEnclosure,
   getToggledPlayer,
   getStickingPoints,
 } from "../../utils";
+import { GameMap } from "../../types";
 
 const mapStateToProps = ({
-  game: { status, map, player, toggledPlayer, pointer, winner, gates },
+  game: { status, map, player, toggledPlayer, winner },
 }) => ({
   status,
   map,
   player,
   toggledPlayer,
-  pointer,
   winner,
-  gates,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -31,9 +29,7 @@ type Props = {
   map: GameMap;
   player: Player;
   toggledPlayer: Player;
-  pointer: Pointer;
   winner: Player;
-  gates: Gates;
   finish: (winner: Player) => void;
   togglePlayer: () => void;
   children: React.ReactChild;
@@ -45,9 +41,7 @@ const GameLogic = memo(
     map,
     player,
     toggledPlayer,
-    pointer,
     winner,
-    gates,
     finish,
     togglePlayer,
     children,
@@ -60,18 +54,21 @@ const GameLogic = memo(
       //check for a winner
       if (winner === null) {
         //finish by enclosure
-        if (checkFinishByEnclosure({ map, pointer })) {
+        if (checkFinishByEnclosure({ map })) {
           finish(getToggledPlayer(player));
           return;
         }
 
         //finish by goal
         if (
-          gates.isOnGate(pointer.getCoordinates().y, pointer.getCoordinates().x)
+          map.gates.isOnGate(
+            map.pointer.getCoordinates().y,
+            map.pointer.getCoordinates().x
+          )
         ) {
-          const gatePlayer = gates.getPlayerBelongingToGate(
-            pointer.getCoordinates().y,
-            pointer.getCoordinates().x
+          const gatePlayer = map.gates.getPlayerBelongingToGate(
+            map.pointer.getCoordinates().y,
+            map.pointer.getCoordinates().x
           );
 
           //own goal
@@ -89,11 +86,9 @@ const GameLogic = memo(
       if (
         !toggledPlayer &&
         getStickingPoints(
-          pointer.getCoordinates().y,
-          pointer.getCoordinates().x,
-          {
-            map,
-          }
+          map.pointer.getCoordinates().y,
+          map.pointer.getCoordinates().x,
+          map
         ) === 1
       ) {
         togglePlayer();

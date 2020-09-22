@@ -9,8 +9,8 @@ export const MEDIUM = {
 };
 
 export const BIG = {
-  width: 8 as const,
-  height: 12 as const,
+  width: 20 as const,
+  height: 20 as const,
 };
 
 export default {

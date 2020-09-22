@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert } from ".";
+import Alert from "./Alert";
 import { Paragraph } from "../atoms";
 import { ModalButton } from "../molecules";
 

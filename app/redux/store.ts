@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware } from "redux";
-import { GameMap } from "../classes/GameMap";
 import {
   START_GAME,
   TAKE_LINE,
@@ -12,17 +11,16 @@ import getToggledPlayer from "../utils/getToggledPlayer";
 import { GameStatus } from "../constants/GameStatus";
 import { Player } from "../constants/Player";
 import { Pointer } from "../classes/Pointer";
-import { Gates } from "../classes/Gates";
+import { GameMap } from "../types";
+import { createGameMap } from "../utils";
 
 interface State {
   game: {
     status: GameStatus;
     toggledPlayer: boolean;
     player: Player;
-    pointer: Pointer;
     winner: Player;
     map: GameMap;
-    gates: Gates;
   };
 }
 
@@ -31,10 +29,16 @@ const initialState: State = {
     status: GameStatus.Ready,
     toggledPlayer: true,
     player: null,
-    pointer: null,
     winner: null,
-    map: null,
-    gates: null,
+    map: {
+      seed: null,
+      cells: null,
+      gates: null,
+      borders: null,
+      pointer: null,
+      width: null,
+      height: null,
+    },
   },
 };
 
@@ -47,12 +51,7 @@ function reducer(state = initialState, action) {
           ...initialState.game,
           status: GameStatus.Initialized,
           player: Player.A,
-          pointer: new Pointer(
-            action.payload.width / 2,
-            action.payload.height / 2
-          ),
-          map: new GameMap(action.payload.width, action.payload.height),
-          gates: new Gates(action.payload.width, action.payload.height),
+          map: createGameMap(action.payload.width, action.payload.height),
         },
       };
 
@@ -66,17 +65,13 @@ function reducer(state = initialState, action) {
       };
 
     case TAKE_LINE:
-      const map = new GameMap(
-        state.game.map.width,
-        state.game.map.height,
-        state.game.map
-      );
-      map.cells[action.payload.y][action.payload.x].takeLine(
+      const cells = [...state.game.map.cells];
+      cells[action.payload.y][action.payload.x].takeLine(
         action.payload.direction,
         state.game.player,
         action.payload.backwards
       );
-      const { x, y } = state.game.pointer.getNextCoordinates(
+      const { x, y } = state.game.map.pointer.getNextCoordinates(
         action.payload.y,
         action.payload.x,
         action.payload.direction
@@ -86,8 +81,11 @@ function reducer(state = initialState, action) {
         game: {
           ...state.game,
           toggledPlayer: false,
-          map,
-          pointer: new Pointer(x, y),
+          map: {
+            ...state.game.map,
+            cells,
+            pointer: new Pointer(x, y),
+          },
         },
       };
 

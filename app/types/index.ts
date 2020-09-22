@@ -5,3 +5,6 @@ export * from "./Offset";
 export * from "./Point";
 export * from "./CellLineProps";
 export * from "./Await";
+export * from "./Cells";
+export * from "./GameMap";
+export * from "./MapSeed";

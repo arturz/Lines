@@ -8,7 +8,12 @@ import { getPlayerColor } from "../../utils";
 import gsap from "gsap";
 import { Sizes } from "../../styles";
 
-const mapStateToProps = ({ game: { pointer, player } }) => ({
+const mapStateToProps = ({
+  game: {
+    player,
+    map: { pointer },
+  },
+}) => ({
   pointer,
   player,
 });

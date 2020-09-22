@@ -1,10 +1,9 @@
 import React, { useRef } from "react";
 import { connect } from "react-redux";
 import Svg from "react-native-svg";
-import { DisplayResolution, CellLineProps, Point } from "../../types";
+import { DisplayResolution, CellLineProps, Point, GameMap } from "../../types";
 import InsideLines from "./InsideLines";
 import Border from "./Border";
-import { GameMap, Pointer } from "../../classes";
 import PointerComponent from "./PointerComponent";
 import TakenLines from "./TakenLines";
 import { PanResponder } from "react-native";
@@ -15,16 +14,14 @@ import { isEqual } from "lodash";
 import { getOffsetAndCellPx } from "../../utils/inGame";
 import { GameStatus } from "../../constants";
 
-const mapStateToProps = ({ game: { map, pointer, status } }) => ({
+const mapStateToProps = ({ game: { map, status } }) => ({
   status,
   map,
-  pointer,
 });
 
 interface StateProps {
   status: GameStatus;
   map: GameMap;
-  pointer: Pointer;
 }
 
 interface Props extends DisplayResolution, StateProps, Point {
@@ -41,7 +38,6 @@ const Game = ({
   y,
   status,
   map,
-  pointer,
   allowTakingLine,
   onTakeLine,
 }: Props) => {
@@ -65,7 +61,7 @@ const Game = ({
   const showHoverLine = ({ x, y }: Point) => {
     const hoverLineProps = getHoverLineProps(
       { x, y },
-      { pointer, cellPx, offset }
+      { pointer: map.pointer, cellPx, offset }
     );
 
     if (isEqual(_hoverLineProps.current, hoverLineProps)) return;
@@ -76,7 +72,7 @@ const Game = ({
         hoverLineProps.y,
         hoverLineProps.x,
         hoverLineProps.direction,
-        { map, pointer }
+        map
       )
     ) {
       _hoverLineProps.current = hoverLineProps;

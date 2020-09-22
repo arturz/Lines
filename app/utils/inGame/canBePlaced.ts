@@ -1,42 +1,23 @@
 import { Direction } from "../../constants";
-import { GameMap, Pointer } from "../../classes";
+import { GameMap } from "../../types";
 
-export default (
-  y: number,
-  x: number,
-  direction: Direction,
-  { map, pointer }: { map: GameMap; pointer: Pointer }
-) => {
-  const { x: oldX, y: oldY } = pointer.getCoordinates();
+export default (y: number, x: number, direction: Direction, map: GameMap) => {
+  const { x: nextX, y: nextY } = map.pointer.getNextCoordinates(
+    y,
+    x,
+    direction
+  );
 
-  const { x: nextX, y: nextY } = pointer.getNextCoordinates(y, x, direction);
+  //out of map
+  if (!map.cells[y] || !map.cells[y][x]) return false;
 
-  //can't take line at the border (top and left)
+  const { x: oldX, y: oldY } = map.pointer.getCoordinates();
+
+  //player can only jump on wall
   if (
-    nextX < 0 ||
-    nextY < 0 ||
-    (nextX === 0 && oldX === 0) ||
-    (nextY === 0 && oldY === 0)
-  )
-    return false;
-
-  //can't take line at the border (bottom and right)
-  if (
-    nextX > map.width ||
-    nextY > map.height ||
-    (nextX === map.width && oldX === map.width) ||
-    (nextY === map.height && oldY === map.height)
-  )
-    return false;
-
-  //can't take line in the corner
-  if (
-    (x === 0 && y === 0 && direction === Direction.CommingDown) ||
-    (x === 0 && y === map.height - 1 && direction === Direction.SteppingUp) ||
-    (x === map.width - 1 && y === 0 && direction === Direction.SteppingUp) ||
-    (x === map.width - 1 &&
-      y === map.height - 1 &&
-      direction === Direction.CommingDown)
+    map.borders.isOnBorder(oldY, oldX) &&
+    map.borders.isOnBorder(nextY, nextX) &&
+    (oldX === nextX || oldY === nextY)
   )
     return false;
 

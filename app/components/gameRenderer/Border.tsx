@@ -1,36 +1,43 @@
 import React, { memo } from "react";
-import { GameSizes, Point } from "../../types";
-import { Colors, Sizes } from "../../styles";
+import { connect } from "react-redux";
 import { Line } from "react-native-svg";
+import { GameSizes, MapSeed } from "../../types";
+import { Sizes, Colors } from "../../styles";
+import { Borders } from "../../classes";
+import { shouldMapLayoutUpdate } from "../../utils";
 
-export default memo(({ width, height, cellPx, offset }: GameSizes) => {
-  //first and last point
-  const closurePoint = { x: offset.width, y: offset.height };
-  const points: Point[] = [
-    { x: width * cellPx + offset.width, y: offset.height },
-    { x: width * cellPx + offset.width, y: height * cellPx + offset.height },
-    { x: offset.width, y: height * cellPx + offset.height },
-    closurePoint,
-  ];
+const mapStateToProps = ({
+  game: {
+    map: { borders, seed },
+  },
+}) => ({
+  borders,
+  seed,
+});
 
-  const [elements] = points.reduce(
-    ([elements, lastPoint], point, index) => [
-      elements.concat(
+interface Props extends GameSizes {
+  borders: Borders;
+  seed: MapSeed;
+}
+
+const Border = memo(
+  ({ borders, cellPx, offset }: Props) => (
+    <>
+      {borders.getBorders().map((border, index) => (
         <Line
           key={index}
-          x1={lastPoint.x}
-          y1={lastPoint.y}
-          x2={point.x}
-          y2={point.y}
+          x1={offset.width + cellPx * border.from.x}
+          y1={offset.height + cellPx * border.from.y}
+          x2={offset.width + cellPx * border.to.x}
+          y2={offset.height + cellPx * border.to.y}
           stroke={Colors.YELLOW_DARK}
           strokeWidth={Sizes.BORDER}
           strokeLinecap="round"
         />
-      ),
-      point,
-    ],
-    [[], closurePoint]
-  );
+      ))}
+    </>
+  ),
+  shouldMapLayoutUpdate
+);
 
-  return <>{elements}</>;
-});
+export default connect(mapStateToProps)(Border);

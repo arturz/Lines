@@ -6,7 +6,11 @@ import { Gates } from "../../classes/Gates";
 import { getPlayerColor } from "../../utils";
 import { Sizes } from "../../styles";
 
-const mapStateToProps = ({ game: { gates } }) => ({
+const mapStateToProps = ({
+  game: {
+    map: { gates },
+  },
+}) => ({
   gates,
 });
 
