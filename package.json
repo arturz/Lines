@@ -20,6 +20,7 @@
     "gsap": "^3.4.2",
     "gsap-rn": "0.0.14",
     "lodash": "^4.17.20",
+    "random-int": "^2.0.1",
     "react": "16.13.1",
     "react-native": "^0.63.2",
     "react-native-canvas": "^0.1.37",
