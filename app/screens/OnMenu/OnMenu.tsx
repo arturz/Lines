@@ -9,8 +9,8 @@ import { withPortalHost, withGameDeepLinking } from "../../hocs";
 import { ModalButton } from "../../components/molecules";
 import LocalMultiplayerModalButton from "./LocalMultiplayerModalButton";
 import NetworkHostMultiplayerModalButton from "./NetworkHostMultiplayerModalButton";
-import { MapSize } from "../../constants";
 import { pipe } from "lodash/fp";
+import { GameSize } from "../../constants";
 
 const styles = StyleSheet.create({
   container: {
@@ -35,14 +35,14 @@ export default withGameDeepLinking<Props>(
         <Title />
         <View style={styles.buttons}>
           <LocalMultiplayerModalButton
-            goToGame={(mapSize: MapSize) =>
-              navigation.navigate("LocalMultiplayerGame", mapSize)
+            goToGame={(gameSize: GameSize) =>
+              navigation.navigate("LocalMultiplayerGame", { gameSize })
             }
           />
           <NetworkHostMultiplayerModalButton
-            goToGame={(mapSize: MapSize) =>
+            goToGame={(gameSize: GameSize) =>
               navigation.navigate("NetworkMultiplayerGame", {
-                ...mapSize,
+                gameSize,
                 isHost: true,
               })
             }

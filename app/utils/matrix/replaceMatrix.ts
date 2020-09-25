@@ -1,27 +1,8 @@
-import { MatrixPosition } from "../constants";
+import { Array2D } from "../../types";
+import { MatrixPosition } from "../../constants";
+import replaceMatrixAtPosition from "./replaceMatrixAtPosition";
 
-type Array2D = any[][];
-
-function replaceMatrixAtPosition(
-  startAtY: number,
-  startAtX: number,
-  source: Array2D,
-  supply: Array2D
-) {
-  //copy of source
-  const matrix = [];
-  for (var i = 0; i < source.length; i++) matrix[i] = source[i].slice();
-
-  for (let y = 0; y < supply.length; y++) {
-    for (let x = 0; x < supply[0].length; x++) {
-      matrix[startAtY + y][startAtX + x] = supply[y][x];
-    }
-  }
-
-  return matrix;
-}
-
-export function replaceMatrix(
+export default function replaceMatrix(
   source: Array2D,
   supply: Array2D,
   position: MatrixPosition
@@ -115,14 +96,4 @@ export function replaceMatrix(
     default:
       throw new Error(`replaceMatrix: unknown position (${position})`);
   }
-}
-
-export function createMatrix(y: number, x: number, character?: any) {
-  const matrix = [];
-  for (let i = 0; i < y; i++) {
-    const row = [];
-    for (let j = 0; j < x; j++) row.push(character);
-    matrix.push(row);
-  }
-  return matrix;
 }

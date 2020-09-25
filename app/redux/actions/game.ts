@@ -1,10 +1,11 @@
-import { Player, Direction } from "../../constants";
+import { Player, Direction, GameSize } from "../../constants";
+import { MapSeed } from "../../types";
 
 export const INITIALIZE_GAME = "INITIALIZE_GAME" as const;
-export function initializeGame(width: number, height: number) {
+export function initializeGame(seed: MapSeed, gameSize: GameSize) {
   return {
     type: INITIALIZE_GAME,
-    payload: { width, height },
+    payload: { seed, gameSize },
   };
 }
 

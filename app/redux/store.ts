@@ -13,6 +13,7 @@ import { Player } from "../constants/Player";
 import { Pointer } from "../classes/Pointer";
 import { GameMap } from "../types";
 import { createGameMap } from "../utils";
+import { GameSize } from "../constants";
 
 interface State {
   game: {
@@ -20,6 +21,7 @@ interface State {
     toggledPlayer: boolean;
     player: Player;
     winner: Player;
+    gameSize: GameSize;
     map: GameMap;
   };
 }
@@ -30,6 +32,7 @@ const initialState: State = {
     toggledPlayer: true,
     player: null,
     winner: null,
+    gameSize: null,
     map: {
       seed: null,
       cells: null,
@@ -51,7 +54,8 @@ function reducer(state = initialState, action) {
           ...initialState.game,
           status: GameStatus.Initialized,
           player: Player.A,
-          map: createGameMap(action.payload.width, action.payload.height),
+          map: createGameMap(action.payload.seed),
+          seed: action.payload.seed,
         },
       };
 

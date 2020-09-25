@@ -8,3 +8,4 @@ export * from "./Await";
 export * from "./Cells";
 export * from "./GameMap";
 export * from "./MapSeed";
+export * from "./Array2D";

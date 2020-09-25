@@ -2,14 +2,16 @@ import {
   createStackNavigator,
   StackNavigationProp,
 } from "@react-navigation/stack";
-import { MapSize } from "../constants";
+import { GameSize } from "../constants";
 
-export type NetworkHostProp = MapSize & { isHost: true };
+export type NetworkHostProp = { gameSize: GameSize } & { isHost: true };
 export type NetworkGuestProp = { id: string; isHost: false };
 
 export type RootStackParamList = {
   Menu: undefined;
-  LocalMultiplayerGame: MapSize;
+  LocalMultiplayerGame: {
+    gameSize: GameSize;
+  };
   NetworkMultiplayerGame: NetworkHostProp | NetworkGuestProp;
 };
 

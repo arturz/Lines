@@ -2,11 +2,10 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { ModalButton, ModalExitButton } from "../../components/molecules";
 import { Alert } from "../../components/organisms";
-import { GameStatus, Player } from "../../constants";
-import { compose } from "redux";
+import { GameStatus, Player, GameSize } from "../../constants";
 import { startGame, initializeGame } from "../../redux";
 import { connect } from "react-redux";
-import { GameMap } from "../../classes";
+import { generateMapSeed } from "../../utils";
 
 const styles = StyleSheet.create({
   content: {
@@ -15,15 +14,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ game: { status, winner, map } }) => ({
+const mapStateToProps = ({ game: { status, winner, map, gameSize } }) => ({
   status,
   winner,
-  map,
+  gameSize,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  playAgain: (width: number, height: number) => {
-    dispatch(initializeGame(width, height));
+  playAgain: (gameSize: GameSize) => {
+    const seed = generateMapSeed(gameSize);
+    dispatch(initializeGame(seed, gameSize));
     dispatch(startGame());
   },
 });
@@ -31,12 +31,18 @@ const mapDispatchToProps = (dispatch) => ({
 type Props = {
   status: GameStatus;
   winner: Player;
-  map: GameMap;
+  gameSize: GameSize;
   goToMenu: () => void;
-  playAgain: (width: number, height: number) => void;
+  playAgain: (gameSize: GameSize) => void;
 };
 
-const FinishAlert = ({ status, winner, map, playAgain, goToMenu }: Props) => {
+const FinishAlert = ({
+  status,
+  winner,
+  gameSize,
+  playAgain,
+  goToMenu,
+}: Props) => {
   const title =
     winner === null
       ? "Playing again"
@@ -45,7 +51,7 @@ const FinishAlert = ({ status, winner, map, playAgain, goToMenu }: Props) => {
   return (
     <Alert title={title} isOpen={status === GameStatus.Finish}>
       <View style={styles.content}>
-        <ModalButton onPress={() => playAgain(map.width, map.height)}>
+        <ModalButton onPress={() => playAgain(gameSize)}>
           Play again
         </ModalButton>
         <ModalExitButton onPress={goToMenu}>Go to menu</ModalExitButton>

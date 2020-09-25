@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, BackHandler } from "react-native";
 import { connect } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
-import { CellLineProps } from "../../types";
+import { CellLineProps, MapSeed } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
 import {
   startGame,
@@ -30,6 +30,7 @@ import {
   FinishAlert,
 } from "../../components/organisms";
 import { GameHeader } from "../../components/molecules";
+import { generateMapSeed } from "../../utils";
 
 const mapStateToProps = ({ game: { status, player } }) => ({
   status,
@@ -42,6 +43,12 @@ const mapDispatchToProps = (dispatch) => ({
   takeLine: compose(dispatch, takeLine),
   clearGame: compose(dispatch, clearGame),
 });
+
+function isNetworkHostProp(
+  prop: NetworkGuestProp | NetworkHostProp
+): prop is NetworkHostProp {
+  return (prop as NetworkHostProp).isHost;
+}
 
 const LocalMultiplayerGame = ({
   status,
@@ -64,16 +71,16 @@ const LocalMultiplayerGame = ({
   };
   navigation: LocalMultiplayerGameScreenNavigationProp;
 }) => {
-  const isHost = params.isHost;
+  const isHost = isNetworkHostProp(params);
 
   //check for required host's navigation params
-  if (isHost) {
-    if (
-      (params as NetworkHostProp).width === undefined ||
-      (params as NetworkHostProp).height === undefined
-    )
-      throw new Error(`Undefined route's params.width and/or params.height`);
+  if (isHost && (params as NetworkHostProp).gameSize === undefined) {
+    throw new Error(`Undefined gameSize (host)`);
   }
+
+  const seedGeneratedByHost = useRef<MapSeed>(
+    isHost ? generateMapSeed((params as NetworkHostProp).gameSize) : null
+  );
 
   //used for showing alert when guest joins room that doesn't exist (expired URL)
   const [showExpiredLinkAlert, setShowExpiredLinkAlert] = useState(false);
@@ -97,8 +104,8 @@ const LocalMultiplayerGame = ({
     if (isHost) {
       //initialize UI when we are waiting for opponent
       dispatchInitializeGame(
-        (params as NetworkHostProp).width,
-        (params as NetworkHostProp).height
+        seedGeneratedByHost.current,
+        (params as NetworkHostProp).gameSize
       );
     }
   }, []);
@@ -108,8 +115,8 @@ const LocalMultiplayerGame = ({
 
     await game.action(
       dispatchInitializeGame(
-        (params as NetworkHostProp).width,
-        (params as NetworkHostProp).height
+        seedGeneratedByHost.current,
+        (params as NetworkHostProp).gameSize
       )
     );
     //start game
@@ -122,6 +129,9 @@ const LocalMultiplayerGame = ({
   //playing again
   async function restartAsHost() {
     restarting.current = true;
+    seedGeneratedByHost.current = generateMapSeed(
+      (params as NetworkHostProp).gameSize
+    );
     await startAsHost();
     restarting.current = false;
   }

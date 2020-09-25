@@ -13,6 +13,7 @@ import { compose } from "redux";
 import { withGameDeepLinking } from "../../hocs";
 import GameHeader from "../../components/molecules/GameHeader";
 import { LeavePrompt } from "../../components/organisms";
+import { generateMapSeed } from "../../utils";
 
 const mapStateToProps = ({ game: { status, pointer } }) => ({
   status,
@@ -51,9 +52,12 @@ const LocalMultiplayerGame = ({
 
   //start game automatically
   useEffect(() => {
+    if (typeof route?.params?.gameSize === undefined)
+      throw new Error(`Undefined gameSize`);
+
     dispatchInitializeGame(
-      route?.params?.width ?? 6,
-      route?.params?.height ?? 10
+      generateMapSeed(route.params.gameSize),
+      route.params.gameSize
     );
     dispatchStartGame();
   }, []);
