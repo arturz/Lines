@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ game: { status, winner, map, gameSize } }) => ({
+const mapStateToProps = ({ game: { status, winner, gameSize } }) => ({
   status,
   winner,
   gameSize,

@@ -10,8 +10,8 @@ const getGameSizeBase = cond([
 ]);
 
 export default function (gameSize: GameSize): MapSeed {
-  const width = 10; //getGameSizeBase(gameSize) * 2;
-  const height = 10; //getGameSizeBase(gameSize) * 2;
+  const width = getGameSizeBase(gameSize) * 2;
+  const height = getGameSizeBase(gameSize) * 2;
 
   const gates = {
     A: [

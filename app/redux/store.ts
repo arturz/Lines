@@ -55,6 +55,7 @@ function reducer(state = initialState, action) {
           status: GameStatus.Initialized,
           player: Player.A,
           map: createGameMap(action.payload.seed),
+          gameSize: action.payload.gameSize,
           seed: action.payload.seed,
         },
       };
