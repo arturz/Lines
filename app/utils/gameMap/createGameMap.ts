@@ -15,15 +15,14 @@ function isRelativeSubstraction(
   return (substraction as MapSeedSubstractionRelative).position !== undefined;
 }
 
-export default (seed): GameMap => {
+export default (seed: MapSeed): GameMap => {
   const { width, height } = seed;
   let cells = createMatrix(width, height, () => new Cell());
 
   const pointer = new Pointer(seed.pointer.x, seed.pointer.y);
-  const gates = new Gates([
-    ...seed.gates.A.map(({ from, to }) => new Gate(from, to, Player.A)),
-    ...seed.gates.B.map(({ from, to }) => new Gate(from, to, Player.B)),
-  ]);
+  const gates = new Gates(
+    seed.gates.map(({ from, to, player }) => new Gate(from, to, player))
+  );
 
   if (seed.substractions)
     seed.substractions.forEach((substraction) => {

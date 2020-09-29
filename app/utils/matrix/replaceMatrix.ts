@@ -14,14 +14,14 @@ export default function replaceMatrix(
     case MatrixPosition.TOP_RIGHT:
       return replaceMatrixAtPosition(
         0,
-        source.length - supply.length,
+        source[0].length - supply[0].length,
         source,
         supply
       );
 
     case MatrixPosition.BOTTOM_LEFT:
       return replaceMatrixAtPosition(
-        source[0].length - supply[0].length,
+        source.length - supply.length,
         0,
         source,
         supply
@@ -29,8 +29,8 @@ export default function replaceMatrix(
 
     case MatrixPosition.BOTTOM_RIGHT:
       return replaceMatrixAtPosition(
-        source[0].length - supply[0].length,
         source.length - supply.length,
+        source[0].length - supply[0].length,
         source,
         supply
       );
@@ -43,8 +43,8 @@ export default function replaceMatrix(
         throw new Error(`Bad size of arrays`);
 
       return replaceMatrixAtPosition(
-        Math.floor(source[0].length / 2) - 1,
-        Math.floor(source.length / 2) - 1,
+        Math.floor(source.length / 2) - Math.floor(supply.length / 2),
+        Math.floor(source[0].length / 2) - Math.floor(supply[0].length / 2),
         source,
         supply
       );
@@ -55,7 +55,7 @@ export default function replaceMatrix(
 
       return replaceMatrixAtPosition(
         0,
-        Math.floor(source.length / 2) - 1,
+        Math.floor(source[0].length / 2) - Math.floor(supply[0].length / 2),
         source,
         supply
       );
@@ -65,8 +65,8 @@ export default function replaceMatrix(
         throw new Error(`Bad size of arrays`);
 
       return replaceMatrixAtPosition(
-        source[0].length - supply[0].length,
-        Math.floor(source.length / 2) - 1,
+        source.length - supply.length,
+        Math.floor(source[0].length / 2) - Math.floor(supply[0].length / 2),
         source,
         supply
       );
@@ -76,7 +76,7 @@ export default function replaceMatrix(
         throw new Error(`Bad size of arrays`);
 
       return replaceMatrixAtPosition(
-        Math.floor(source[0].length / 2) - 1,
+        Math.floor(source.length / 2) - Math.floor(supply.length / 2),
         0,
         source,
         supply
@@ -87,8 +87,8 @@ export default function replaceMatrix(
         throw new Error(`Bad size of arrays`);
 
       return replaceMatrixAtPosition(
-        Math.floor(source[0].length / 2) - 1,
-        source.length - supply.length,
+        Math.floor(source.length / 2) - Math.floor(supply.length / 2),
+        source[0].length - supply[0].length,
         source,
         supply
       );

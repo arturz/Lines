@@ -37,8 +37,8 @@ export default ({ isOpen, title, onClose, children }: Props) => {
   const show = () => {
     Animated.timing(animation, {
       toValue: 1,
-      duration: 600,
-      easing: Easing.bounce,
+      duration: 300,
+      easing: Easing.bezier(0, 0.6, 0.8, 1),
       useNativeDriver: true,
     }).start();
   };
@@ -46,7 +46,7 @@ export default ({ isOpen, title, onClose, children }: Props) => {
   const hide = () => {
     Animated.timing(animation, {
       toValue: 0,
-      duration: 600,
+      duration: 300,
       easing: Easing.bezier(0, 0.6, 0.8, 1),
       useNativeDriver: true,
     }).start();

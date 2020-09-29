@@ -1,6 +1,6 @@
 import { MapSize } from "./MapSize";
 import { Point } from "./Point";
-import { MatrixPosition } from "../constants";
+import { MatrixPosition, Player } from "../constants";
 
 export type MapSeedSubstractionAbsolute = {
   width: number;
@@ -20,15 +20,13 @@ export type MapSeedSubstraction =
   | MapSeedSubstractionRelative;
 
 type MapSeedGate = {
+  player: Player;
   from: Point;
   to: Point;
 };
 
 export interface MapSeed extends MapSize {
   substractions?: MapSeedSubstraction[];
-  gates: {
-    A: MapSeedGate[];
-    B: MapSeedGate[];
-  };
+  gates: MapSeedGate[];
   pointer: Point;
 }
