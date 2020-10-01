@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import { RootState } from "../../redux";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
-
 type ComponentOwnProps = {
   isOpen: boolean;
   playerAWinnerText: string;
@@ -15,7 +14,6 @@ type ComponentOwnProps = {
   onPlayAgain: () => void;
   onLeave: () => void;
 };
-
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
 const mapStateToProps = ({ game: { winner } }: RootState) => ({

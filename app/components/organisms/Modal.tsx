@@ -28,14 +28,14 @@ const styles = StyleSheet.create({
   },
 });
 
-interface Props {
+type ComponentProps = ComponentOwnProps;
+type ComponentOwnProps = {
   top: number;
   title: string;
   onClose: () => void;
-  children: React.ReactNode;
-}
+};
 
-const Modal = ({ top, title, onClose, children }: Props) => {
+const Modal: React.FC<ComponentProps> = ({ top, title, onClose, children }) => {
   const modal = useRef(null);
   const content = useRef(null);
   const [animateXButton, setAnimateXButton] = useState(null);

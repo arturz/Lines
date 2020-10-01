@@ -2,23 +2,27 @@ import React from "react";
 import { connect } from "react-redux";
 import { Line } from "react-native-svg";
 import { GameSizes } from "../../types";
-import { Gates } from "../../classes/Gates";
 import { getPlayerColor } from "../../utils";
 import { Sizes } from "../../styles";
+import { RootState } from "../../redux";
+
+type ComponentProps = ComponentOwnProps & ComponentStoreProps;
+type ComponentOwnProps = GameSizes;
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
 const mapStateToProps = ({
   game: {
     map: { gates },
   },
-}) => ({
+}: RootState) => ({
   gates,
 });
 
-interface Props extends GameSizes {
-  gates: Gates;
-}
-
-const GatesComponent = ({ cellPx, offset, gates }: Props) => (
+const GatesComponent: React.FC<ComponentProps> = ({
+  cellPx,
+  offset,
+  gates,
+}) => (
   <>
     {gates.getGates().map(({ from, to, player }, index) => (
       <Line

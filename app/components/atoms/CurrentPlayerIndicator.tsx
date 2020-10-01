@@ -5,6 +5,7 @@ import { Colors } from "../../styles";
 import { Player } from "../../constants";
 import { getToggledPlayer } from "../../utils";
 import { GAME_HEADER_HEIGHT } from "../../styles/sizes";
+import { RootState } from "../../redux";
 
 const styles = StyleSheet.create({
   container: {
@@ -31,20 +32,22 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ game: { player } }) => ({
-  player,
-});
-
-export type CurrentPlayerIndicatorProps = {
+type ComponentProps = ComponentOwnProps & ComponentStoreProps;
+type ComponentOwnProps = {
   playerAText: string;
   playerBText: string;
 };
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
-type Props = CurrentPlayerIndicatorProps & {
-  player: Player;
-};
+const mapStateToProps = ({ game: { player } }: RootState) => ({
+  player,
+});
 
-const Indicator = ({ player, playerAText, playerBText }: Props) => {
+const Indicator: React.FC<ComponentProps> = ({
+  player,
+  playerAText,
+  playerBText,
+}) => {
   const [textHeight, setTextHeight] = useState(null);
 
   const onLayout = ({

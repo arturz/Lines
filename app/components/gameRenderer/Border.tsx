@@ -1,27 +1,26 @@
 import React, { memo } from "react";
 import { connect } from "react-redux";
 import { Line } from "react-native-svg";
-import { GameSizes, MapSeed } from "../../types";
+import { GameSizes } from "../../types";
 import { Sizes, Colors } from "../../styles";
-import { Borders } from "../../classes";
 import { shouldMapLayoutUpdate } from "../../utils";
+import { RootState } from "../../redux";
+
+type ComponentProps = ComponentOwnProps & ComponentStoreProps;
+type ComponentOwnProps = GameSizes;
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
 const mapStateToProps = ({
   game: {
     map: { borders, seed },
   },
-}) => ({
+}: RootState) => ({
   borders,
   seed,
 });
 
-interface Props extends GameSizes {
-  borders: Borders;
-  seed: MapSeed;
-}
-
-const Border = memo(
-  ({ borders, cellPx, offset }: Props) => (
+const Border: React.FC<ComponentProps> = memo(
+  ({ borders, cellPx, offset }) => (
     <>
       {borders.getBorders().map((border, index) => (
         <Line

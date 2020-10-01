@@ -1,5 +1,6 @@
 import React, { memo, useEffect } from "react";
 import { connect } from "react-redux";
+import { Dispatch } from "redux";
 import { GameStatus } from "../../constants";
 import { finish, togglePlayer, RootState } from "../../redux";
 import {
@@ -25,7 +26,7 @@ const mapStateToProps = ({
   winner,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   finish: (player) => dispatch(finish(player)),
   togglePlayer: () => dispatch(togglePlayer()),
 });

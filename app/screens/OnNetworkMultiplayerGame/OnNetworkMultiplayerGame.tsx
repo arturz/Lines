@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, BackHandler } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
 import { CellLineProps, MapSeed } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
@@ -13,13 +13,14 @@ import {
 } from "../../redux";
 import { Player } from "../../constants";
 import {
-  LocalMultiplayerGameScreenNavigationProp,
   NetworkHostProp,
   NetworkGuestProp,
+  NetworkMultiplayerGameScreenNavigationProp,
+  RootStackParamList,
 } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
 import { createRoom, checkIfRoomExists, NetworkGame } from "../../api";
-import { compose } from "redux";
+import { compose, Dispatch } from "redux";
 import { withGameDeepLinking } from "../../hocs";
 import {
   ShareLinkAlert,
@@ -31,18 +32,30 @@ import {
 } from "../../components/organisms";
 import { GameHeader } from "../../components/molecules";
 import { generateMapSeed } from "../../utils";
+import { RouteProp } from "@react-navigation/native";
+
+type ComponentProps = ComponentOwnProps &
+  ComponentStoreProps &
+  ComponentDispatchProps;
+
+type ComponentOwnProps = {
+  route: RouteProp<RootStackParamList, "NetworkMultiplayerGame">;
+  navigation: NetworkMultiplayerGameScreenNavigationProp;
+};
+
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
+type ComponentDispatchProps = ReturnType<typeof mapDispatchToProps>;
 
 const mapStateToProps = ({ game: { status, player } }: RootState) => ({
   status,
   player,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   initializeGame: compose(dispatch, initializeGame),
   startGame: compose(dispatch, startGame),
   takeLine: compose(dispatch, takeLine),
   clearGame: compose(dispatch, clearGame),
-  dispatch,
 });
 
 function isNetworkHostProp(
@@ -51,7 +64,7 @@ function isNetworkHostProp(
   return (prop as NetworkHostProp).isHost;
 }
 
-const LocalMultiplayerGame = ({
+const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
   status,
   player,
   startGame: dispatchStartGame,
@@ -60,19 +73,6 @@ const LocalMultiplayerGame = ({
   clearGame: dispatchClearGame,
   route: { params },
   navigation,
-  dispatch,
-}: {
-  status: GameStatus;
-  player: Player;
-  startGame: typeof startGame;
-  initializeGame: typeof initializeGame;
-  takeLine: typeof takeLine;
-  clearGame: typeof clearGame;
-  route: {
-    params: NetworkGuestProp | NetworkHostProp;
-  };
-  navigation: LocalMultiplayerGameScreenNavigationProp;
-  dispatch: (any) => any;
 }) => {
   const isHost = isNetworkHostProp(params);
 
@@ -147,6 +147,7 @@ const LocalMultiplayerGame = ({
     }
   }, [game]);
 
+  const dispatch = useDispatch();
   useEffect(() => {
     function setup(roomId: string) {
       const game = new NetworkGame(roomId, isHost ? Player.A : Player.B);
@@ -315,5 +316,5 @@ const LocalMultiplayerGame = ({
 };
 
 export default withGameDeepLinking(
-  connect(mapStateToProps, mapDispatchToProps)(LocalMultiplayerGame)
+  connect(mapStateToProps, mapDispatchToProps)(NetworkMultiplayerGame)
 );

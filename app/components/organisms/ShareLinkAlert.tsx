@@ -12,16 +12,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
-  isOpen,
-  isRoomCreated,
-  id,
-  onAbort,
-}: {
+type ComponentProps = ComponentOwnProps;
+type ComponentOwnProps = {
   isOpen: boolean;
   isRoomCreated: boolean;
   id: string;
   onAbort: () => void;
+};
+
+const ShareLinkAlert: React.FC<ComponentProps> = ({
+  isOpen,
+  isRoomCreated,
+  id,
+  onAbort,
 }) => {
   async function shareInviteLink() {
     Share.share({
@@ -46,3 +49,5 @@ export default ({
     </Alert>
   );
 };
+
+export default ShareLinkAlert;

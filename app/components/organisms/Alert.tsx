@@ -24,14 +24,19 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
+type ComponentProps = ComponentOwnProps;
+type ComponentOwnProps = {
   title: ReactNode;
   isOpen: boolean;
   onClose?: () => void;
-  children: React.ReactNode;
 };
 
-export default ({ isOpen, title, onClose, children }: Props) => {
+const Alert: React.FC<ComponentProps> = ({
+  isOpen,
+  title,
+  onClose,
+  children,
+}) => {
   const animation = useRef(new Animated.Value(0)).current;
 
   const show = () => {
@@ -88,3 +93,4 @@ export default ({ isOpen, title, onClose, children }: Props) => {
     </View>
   );
 };
+export default Alert;

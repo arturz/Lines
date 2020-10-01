@@ -24,16 +24,18 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({
+type ComponentProps = ComponentOwnProps;
+type ComponentOwnProps = {
+  buttonTitle: string;
+  modalTitle: string;
+  onCloseModal?: () => void;
+};
+
+const ButtonThatOpensModal: React.FC<ComponentProps> = ({
   buttonTitle,
   modalTitle,
   children,
   onCloseModal = identity,
-}: {
-  buttonTitle: string;
-  modalTitle: string;
-  children: React.ReactNode;
-  onCloseModal?: () => void;
 }) => {
   const [modal, setModal] = useState({ open: false, top: null });
 
@@ -94,3 +96,5 @@ export default ({
     </>
   );
 };
+
+export default ButtonThatOpensModal;

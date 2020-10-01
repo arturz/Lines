@@ -1,35 +1,34 @@
 import React, { useRef } from "react";
 import { connect } from "react-redux";
 import Svg from "react-native-svg";
-import { DisplayResolution, CellLineProps, Point, GameMap } from "../../types";
+import { DisplayResolution, CellLineProps, Point } from "../../types";
 import InsideLines from "./InsideLines";
 import Border from "./Border";
 import PointerComponent from "./PointerComponent";
 import TakenLines from "./TakenLines";
 import { PanResponder } from "react-native";
-import HoverLine from "./HoverLine";
+import HoverLine, { HoverLineHandles } from "./HoverLine";
 import GatesComponent from "./GatesComponent";
 import { getHoverLineProps, canBePlaced } from "../../utils";
 import { isEqual } from "lodash";
 import { getOffsetAndCellPx } from "../../utils/inGame";
 import { GameStatus } from "../../constants";
+import { RootState } from "../../redux";
 
-const mapStateToProps = ({ game: { map, status } }) => ({
+type ComponentProps = ComponentOwnProps & ComponentStoreProps;
+type ComponentOwnProps = DisplayResolution &
+  Point & {
+    allowTakingLine: boolean;
+    onTakeLine: (CellLineProps) => void;
+  };
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
+
+const mapStateToProps = ({ game: { map, status } }: RootState) => ({
   status,
   map,
 });
 
-interface StateProps {
-  status: GameStatus;
-  map: GameMap;
-}
-
-interface Props extends DisplayResolution, StateProps, Point {
-  allowTakingLine: boolean;
-  onTakeLine: (CellLineProps) => void;
-}
-
-const Game = ({
+const Game: React.FC<ComponentProps> = ({
   /* resolution of component */
   widthPx,
   heightPx,
@@ -40,7 +39,7 @@ const Game = ({
   map,
   allowTakingLine,
   onTakeLine,
-}: Props) => {
+}) => {
   const { cellPx, offset } = getOffsetAndCellPx({
     width: map.width,
     height: map.height,
@@ -56,7 +55,7 @@ const Game = ({
   /*
     For direct manipulation.
   */
-  const _hoverLineComponent = useRef(null);
+  const _hoverLineComponent = useRef<HoverLineHandles>(null);
 
   const showHoverLine = ({ x, y }: Point) => {
     const hoverLineProps = getHoverLineProps(

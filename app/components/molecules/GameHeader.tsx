@@ -5,7 +5,6 @@ import {
   CurrentPlayerIndicator,
   ConfigGameButton,
 } from "../atoms";
-import { CurrentPlayerIndicatorProps } from "../atoms/CurrentPlayerIndicator";
 import { identity } from "lodash";
 
 const styles = StyleSheet.create({
@@ -15,17 +14,20 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = CurrentPlayerIndicatorProps & {
+type ComponentProps = ComponentOwnProps;
+type ComponentOwnProps = {
+  playerAText: string;
+  playerBText: string;
   onLeaveGameButtonPress?: () => void;
   onConfigGameButtonPress?: () => void;
 };
 
-export default ({
+const GameHeader: React.FC<ComponentProps> = ({
   playerAText,
   playerBText,
   onLeaveGameButtonPress = identity,
   onConfigGameButtonPress = identity,
-}: Props) => (
+}) => (
   <View style={styles.header}>
     <LeaveGameButton onPress={onLeaveGameButtonPress} />
     <CurrentPlayerIndicator
@@ -35,3 +37,4 @@ export default ({
     <ConfigGameButton onPress={onConfigGameButtonPress} />
   </View>
 );
+export default GameHeader;

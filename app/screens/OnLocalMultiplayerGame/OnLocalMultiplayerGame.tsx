@@ -4,41 +4,50 @@ import { connect } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
 import { CellLineProps } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
-import { initializeGame, startGame, takeLine, clearGame } from "../../redux";
-import { Pointer } from "../../classes";
-import { LocalMultiplayerGameScreenNavigationProp } from "../../navigations";
+import {
+  initializeGame,
+  startGame,
+  takeLine,
+  clearGame,
+  RootState,
+} from "../../redux";
+import {
+  LocalMultiplayerGameScreenNavigationProp,
+  RootStackParamList,
+} from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
-import { compose } from "redux";
+import { compose, Dispatch } from "redux";
 import { withGameDeepLinking } from "../../hocs";
 import GameHeader from "../../components/molecules/GameHeader";
 import { LeavePrompt, FinishAlert } from "../../components/organisms";
 import { generateMapSeed } from "../../utils";
 import { GameSize } from "../../constants";
+import { RouteProp } from "@react-navigation/native";
 
-const mapStateToProps = ({ game: { status, pointer } }) => ({
+type ComponentProps = ComponentOwnProps &
+  ComponentStoreProps &
+  ComponentDispatchProps;
+
+type ComponentOwnProps = {
+  route: RouteProp<RootStackParamList, "LocalMultiplayerGame">;
+  navigation: LocalMultiplayerGameScreenNavigationProp;
+};
+
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
+type ComponentDispatchProps = ReturnType<typeof mapDispatchToProps>;
+
+const mapStateToProps = ({ game: { status } }: RootState) => ({
   status,
-  pointer,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   initializeGame: compose(dispatch, initializeGame),
   startGame: compose(dispatch, startGame),
   takeLine: compose(dispatch, takeLine),
   clearGame: compose(dispatch, clearGame),
 });
 
-type Props = {
-  status: GameStatus;
-  pointer: Pointer;
-  startGame: typeof startGame;
-  initializeGame: typeof initializeGame;
-  takeLine: typeof takeLine;
-  clearGame: typeof clearGame;
-  route: any;
-  navigation: LocalMultiplayerGameScreenNavigationProp;
-};
-
-const LocalMultiplayerGame = ({
+const LocalMultiplayerGame: React.FC<ComponentProps> = ({
   status,
   startGame: dispatchStartGame,
   initializeGame: dispatchInitializeGame,
@@ -46,7 +55,7 @@ const LocalMultiplayerGame = ({
   clearGame: dispatchClearGame,
   route,
   navigation,
-}: Props) => {
+}) => {
   //prompt that allows to leave the game
   const [showLeavePrompt, setShowLeavePrompt] = useState(false);
 
@@ -60,7 +69,7 @@ const LocalMultiplayerGame = ({
     if (typeof route?.params?.gameSize === undefined)
       throw new Error(`Undefined gameSize`);
 
-    start(route?.params?.gameSize);
+    start(route.params.gameSize);
   }, []);
 
   //dispatch to store
@@ -136,6 +145,6 @@ const LocalMultiplayerGame = ({
   );
 };
 
-export default withGameDeepLinking<Props>(
+export default withGameDeepLinking(
   connect(mapStateToProps, mapDispatchToProps)(LocalMultiplayerGame)
 );
