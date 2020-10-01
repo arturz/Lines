@@ -6,14 +6,14 @@ import { CellLineProps } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
 import { initializeGame, startGame, takeLine, clearGame } from "../../redux";
 import { Pointer } from "../../classes";
-import FinishAlert from "./FinishAlert";
 import { LocalMultiplayerGameScreenNavigationProp } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
 import { compose } from "redux";
 import { withGameDeepLinking } from "../../hocs";
 import GameHeader from "../../components/molecules/GameHeader";
-import { LeavePrompt } from "../../components/organisms";
+import { LeavePrompt, FinishAlert } from "../../components/organisms";
 import { generateMapSeed } from "../../utils";
+import { GameSize } from "../../constants";
 
 const mapStateToProps = ({ game: { status, pointer } }) => ({
   status,
@@ -50,16 +50,17 @@ const LocalMultiplayerGame = ({
   //prompt that allows to leave the game
   const [showLeavePrompt, setShowLeavePrompt] = useState(false);
 
+  const start = (gameSize: GameSize) => {
+    dispatchInitializeGame(generateMapSeed(gameSize), gameSize);
+    dispatchStartGame();
+  };
+
   //start game automatically
   useEffect(() => {
     if (typeof route?.params?.gameSize === undefined)
       throw new Error(`Undefined gameSize`);
 
-    dispatchInitializeGame(
-      generateMapSeed(route.params.gameSize),
-      route.params.gameSize
-    );
-    dispatchStartGame();
+    start(route?.params?.gameSize);
   }, []);
 
   //dispatch to store
@@ -116,10 +117,16 @@ const LocalMultiplayerGame = ({
                 />
               )}
             />
-            <FinishAlert goToMenu={goToMenu} />
           </GameLogic>
         </View>
       )}
+      <FinishAlert
+        isOpen={status === GameStatus.Finish}
+        playerAWinnerText="Red player wins"
+        playerBWinnerText="Blue player wins"
+        onLeave={goToMenu}
+        onPlayAgain={() => start(route.params.gameSize)}
+      />
       <LeavePrompt
         isOpen={showLeavePrompt}
         onResume={() => setShowLeavePrompt(false)}
@@ -127,31 +134,6 @@ const LocalMultiplayerGame = ({
       />
     </>
   );
-
-  if (status === GameStatus.Playing || status === GameStatus.Finish)
-    return (
-      <View style={StyleSheet.absoluteFill}>
-        <GameHeader playerAText="red’s move" playerBText="blue’s move" />
-        <GameLogic>
-          <LayoutWrapper
-            render={({ widthPx, heightPx, x, y }) => (
-              <GameRenderer
-                widthPx={widthPx}
-                heightPx={heightPx}
-                x={x}
-                y={y}
-                //on the same device always Player.A or Player.B can take line
-                allowTakingLine={status === GameStatus.Playing}
-                onTakeLine={onTakeLine}
-              />
-            )}
-          />
-          <FinishAlert goToMenu={goToMenu} />
-        </GameLogic>
-      </View>
-    );
-
-  return null;
 };
 
 export default withGameDeepLinking<Props>(

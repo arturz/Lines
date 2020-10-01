@@ -1,17 +1,23 @@
 import React, { memo, useEffect } from "react";
 import { connect } from "react-redux";
-import { GameStatus, Player } from "../../constants";
-import { finish, togglePlayer } from "../../redux";
+import { GameStatus } from "../../constants";
+import { finish, togglePlayer, RootState } from "../../redux";
 import {
   checkFinishByEnclosure,
   getToggledPlayer,
   getStickingPoints,
 } from "../../utils";
-import { GameMap } from "../../types";
+
+type ComponentProps = ComponentOwnProps &
+  ComponentStoreProps &
+  ComponentDispatchProps;
+type ComponentOwnProps = {};
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
+type ComponentDispatchProps = ReturnType<typeof mapDispatchToProps>;
 
 const mapStateToProps = ({
   game: { status, map, player, toggledPlayer, winner },
-}) => ({
+}: RootState) => ({
   status,
   map,
   player,
@@ -24,18 +30,7 @@ const mapDispatchToProps = (dispatch) => ({
   togglePlayer: () => dispatch(togglePlayer()),
 });
 
-type Props = {
-  status: GameStatus;
-  map: GameMap;
-  player: Player;
-  toggledPlayer: Player;
-  winner: Player;
-  finish: (winner: Player) => void;
-  togglePlayer: () => void;
-  children: React.ReactChild;
-};
-
-const GameLogic = memo(
+const GameLogic: React.FC<ComponentProps> = memo(
   ({
     status,
     map,
@@ -45,7 +40,7 @@ const GameLogic = memo(
     finish,
     togglePlayer,
     children,
-  }: Props) => {
+  }) => {
     //runs every render
     useEffect(() => {
       //only run the game logic code during gameplay

@@ -7,9 +7,9 @@ import { GameStatus } from "../../constants/GameStatus";
 import {
   startGame,
   takeLine,
-  store,
   initializeGame,
   clearGame,
+  RootState,
 } from "../../redux";
 import { Player } from "../../constants";
 import {
@@ -32,7 +32,7 @@ import {
 import { GameHeader } from "../../components/molecules";
 import { generateMapSeed } from "../../utils";
 
-const mapStateToProps = ({ game: { status, player } }) => ({
+const mapStateToProps = ({ game: { status, player } }: RootState) => ({
   status,
   player,
 });
@@ -42,6 +42,7 @@ const mapDispatchToProps = (dispatch) => ({
   startGame: compose(dispatch, startGame),
   takeLine: compose(dispatch, takeLine),
   clearGame: compose(dispatch, clearGame),
+  dispatch,
 });
 
 function isNetworkHostProp(
@@ -59,6 +60,7 @@ const LocalMultiplayerGame = ({
   clearGame: dispatchClearGame,
   route: { params },
   navigation,
+  dispatch,
 }: {
   status: GameStatus;
   player: Player;
@@ -70,6 +72,7 @@ const LocalMultiplayerGame = ({
     params: NetworkGuestProp | NetworkHostProp;
   };
   navigation: LocalMultiplayerGameScreenNavigationProp;
+  dispatch: (any) => any;
 }) => {
   const isHost = isNetworkHostProp(params);
 
@@ -148,9 +151,14 @@ const LocalMultiplayerGame = ({
     function setup(roomId: string) {
       const game = new NetworkGame(roomId, isHost ? Player.A : Player.B);
 
-      game.emitter.on("opponentLeft", () => setShowOpponentLeftAlert(true));
+      //opponent left the game - we should destroy the game
+      game.emitter.on("opponentLeft", () => {
+        game.__destroy();
+        setGame(null);
+        setShowOpponentLeftAlert(true);
+      });
       game.emitter.on("opponentsAction", (action) => {
-        store.dispatch(action);
+        dispatch(action);
         console.log(
           `dispatched from opponent ${action.type} ${action.payload}`
         );
@@ -297,7 +305,8 @@ const LocalMultiplayerGame = ({
           !showExpiredLinkAlert &&
           status === GameStatus.Finish
         }
-        isHost={isHost}
+        playerAWinnerText={isHost ? `You win` : `You lose`}
+        playerBWinnerText={isHost ? `You lose` : `You win`}
         onPlayAgain={restartAsHost}
         onLeave={leaveRoom}
       />

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { Provider } from "react-redux";
 import {
@@ -6,8 +6,10 @@ import {
   OnLocalMultiplayerGame,
   OnNetworkMultiplayerGame,
 } from "./app/screens";
-import { store } from "./app/redux";
+import { configureStore } from "./app/redux";
 import { Stack } from "./app/navigations";
+
+const store = configureStore();
 
 export default () => {
   return (

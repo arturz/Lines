@@ -4,7 +4,23 @@ import { ModalButton, ModalExitButton } from "../molecules";
 import Alert from "./Alert";
 import { Player } from "../../constants";
 import { connect } from "react-redux";
-import { Paragraph } from "../atoms";
+import { RootState } from "../../redux";
+
+type ComponentProps = ComponentOwnProps & ComponentStoreProps;
+
+type ComponentOwnProps = {
+  isOpen: boolean;
+  playerAWinnerText: string;
+  playerBWinnerText: string;
+  onPlayAgain: () => void;
+  onLeave: () => void;
+};
+
+type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
+
+const mapStateToProps = ({ game: { winner } }: RootState) => ({
+  winner,
+});
 
 const styles = StyleSheet.create({
   content: {
@@ -13,42 +29,26 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ game: { winner } }) => ({
-  winner,
-});
-
-type Props = {
-  isOpen: boolean;
-  isHost: boolean;
-  winner: Player;
-  onPlayAgain: () => void;
-  onLeave: () => void;
-};
-
 const FinishAlert = ({
   isOpen,
-  isHost,
   winner,
+  playerAWinnerText,
+  playerBWinnerText,
   onPlayAgain,
   onLeave,
-}: Props) => {
+}: ComponentProps) => {
   const title =
     winner === null
       ? "Playing again"
-      : isHost && winner === Player.A
-      ? "You win!"
-      : "You lose!";
+      : winner === Player.A
+      ? playerAWinnerText
+      : playerBWinnerText;
 
   return (
     <Alert title={title} isOpen={isOpen}>
       <View style={styles.content}>
-        {isHost && (
-          <>
-            <ModalButton onPress={onPlayAgain}>Play again</ModalButton>
-            <ModalExitButton onPress={onLeave}>Remove game</ModalExitButton>
-          </>
-        )}
-        {isHost || <Paragraph>Waiting for host...</Paragraph>}
+        <ModalButton onPress={onPlayAgain}>Play again</ModalButton>
+        <ModalExitButton onPress={onLeave}>Remove game</ModalExitButton>
       </View>
     </Alert>
   );
