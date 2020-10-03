@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   useRef,
   useImperativeHandle,
-  RefForwardingComponent,
+  ForwardRefRenderFunction,
 } from "react";
 import { connect } from "react-redux";
 import { GameSizes, CellLineProps } from "../../types";
@@ -15,7 +15,9 @@ import { RootState } from "../../redux";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
 type ComponentOwnProps = GameSizes & {
-  ref?: React.RefObject<HoverLineHandles>;
+  forwardedRef?:
+    | React.MutableRefObject<HoverLineHandles>
+    | ((instance: HoverLineHandles) => void);
 };
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
@@ -28,61 +30,66 @@ export type HoverLineHandles = {
   clear: () => void;
 };
 
-const HoverLine: React.FC<ComponentProps> = memo(
-  ({ cellPx, offset, player, ref }) => {
-    const _line = useRef(null);
-    let timeline: gsap.core.Timeline;
+const HoverLine: React.FC<ComponentProps> = ({
+  cellPx,
+  offset,
+  player,
+  forwardedRef,
+}) => {
+  const _line = useRef(null);
+  let timeline: gsap.core.Timeline;
 
-    const start = (props: CellLineProps) => {
-      if (timeline) {
-        timeline.kill();
-      }
+  const start = (props: CellLineProps) => {
+    if (timeline) {
+      timeline.kill();
+    }
 
-      timeline = gsap.timeline();
-      const state = { length: 0 };
-      timeline.to(state, {
-        length: 1,
-        ease: "power3",
-        duration: 0.5,
-        onUpdate() {
-          _line.current.setNativeProps({
-            ...getDrewLineProps(props.y, props.x, props.direction, {
-              backwards: Boolean(props.backwards),
-              cellPx,
-              offset,
-              length: state.length,
-            }),
-            strokeWidth: Sizes.HOVER_LINES,
-          });
-        },
-      });
-    };
-
-    const clear = () => {
-      if (timeline) timeline.kill();
-      _line.current.setNativeProps({
-        strokeWidth: 0,
-      });
-    };
-
-    useImperativeHandle(ref, () => ({
-      get start() {
-        return start;
+    timeline = gsap.timeline();
+    const state = { length: 0 };
+    timeline.to(state, {
+      length: 1,
+      ease: "power3",
+      duration: 0.5,
+      onUpdate() {
+        _line.current.setNativeProps({
+          ...getDrewLineProps(props.y, props.x, props.direction, {
+            backwards: Boolean(props.backwards),
+            cellPx,
+            offset,
+            length: state.length,
+          }),
+          strokeWidth: Sizes.HOVER_LINES,
+        });
       },
-      get clear() {
-        return clear;
-      },
-    }));
+    });
+  };
 
-    return (
-      <Line ref={_line} stroke={getPlayerColor(player)} strokeLinecap="round" />
-    );
-  }
-);
+  const clear = () => {
+    if (timeline) timeline.kill();
+    _line.current.setNativeProps({
+      strokeWidth: 0,
+    });
+  };
 
-const ConnectedComponent: RefForwardingComponent<
+  useImperativeHandle(forwardedRef, () => ({
+    get start() {
+      return start;
+    },
+    get clear() {
+      return clear;
+    },
+  }));
+
+  return (
+    <Line ref={_line} stroke={getPlayerColor(player)} strokeLinecap="round" />
+  );
+};
+
+const ConnectedComponent = connect(mapStateToProps)(HoverLine);
+
+const ForwardedConnectedComponent: ForwardRefRenderFunction<
   HoverLineHandles,
   ComponentOwnProps
-> = connect(mapStateToProps)(HoverLine);
+> = (props, ref) => <ConnectedComponent {...props} forwardedRef={ref} />;
 
-export default forwardRef(ConnectedComponent);
+export default forwardRef(ForwardedConnectedComponent);

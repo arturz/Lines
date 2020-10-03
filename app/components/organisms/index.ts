@@ -7,3 +7,5 @@ export { default as JoinedGameAlert } from "./JoinedGameAlert";
 export { default as LeavePrompt } from "./LeavePrompt";
 export { default as OpponentLeftAlert } from "./OpponentLeftAlert";
 export { default as ShareLinkAlert } from "./ShareLinkAlert";
+export { default as SelectMapSize } from "./SelectMapSize";
+export { default as SettingsAlert } from "./SettingsAlert";

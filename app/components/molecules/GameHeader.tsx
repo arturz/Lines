@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import {
   LeaveGameButton,
   CurrentPlayerIndicator,
-  ConfigGameButton,
+  GameSettingsButton,
 } from "../atoms";
 import { identity } from "lodash";
 
@@ -19,14 +19,14 @@ type ComponentOwnProps = {
   playerAText: string;
   playerBText: string;
   onLeaveGameButtonPress?: () => void;
-  onConfigGameButtonPress?: () => void;
+  onGameSettingsButtonPress?: () => void;
 };
 
 const GameHeader: React.FC<ComponentProps> = ({
   playerAText,
   playerBText,
   onLeaveGameButtonPress = identity,
-  onConfigGameButtonPress = identity,
+  onGameSettingsButtonPress = identity,
 }) => (
   <View style={styles.header}>
     <LeaveGameButton onPress={onLeaveGameButtonPress} />
@@ -34,7 +34,7 @@ const GameHeader: React.FC<ComponentProps> = ({
       playerAText={playerAText}
       playerBText={playerBText}
     />
-    <ConfigGameButton onPress={onConfigGameButtonPress} />
+    <GameSettingsButton onPress={onGameSettingsButtonPress} />
   </View>
 );
 export default GameHeader;

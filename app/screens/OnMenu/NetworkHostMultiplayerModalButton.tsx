@@ -1,6 +1,8 @@
 import React from "react";
-import { ButtonThatOpensModal } from "../../components/organisms";
-import SelectMapSize from "./SelectMapSize";
+import {
+  ButtonThatOpensModal,
+  SelectMapSize,
+} from "../../components/organisms";
 import { GameSize } from "../../constants";
 
 export default ({ goToGame }: { goToGame: (GameSize: GameSize) => void }) => (

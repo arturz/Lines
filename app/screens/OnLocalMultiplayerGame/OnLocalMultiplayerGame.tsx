@@ -19,7 +19,11 @@ import { GameRenderer, GameLogic } from "../../components/gameRenderer";
 import { compose, Dispatch } from "redux";
 import { withGameDeepLinking } from "../../hocs";
 import GameHeader from "../../components/molecules/GameHeader";
-import { LeavePrompt, FinishAlert } from "../../components/organisms";
+import {
+  LeavePrompt,
+  FinishAlert,
+  SettingsAlert,
+} from "../../components/organisms";
 import { generateMapSeed } from "../../utils";
 import { GameSize } from "../../constants";
 import { RouteProp } from "@react-navigation/native";
@@ -58,6 +62,8 @@ const LocalMultiplayerGame: React.FC<ComponentProps> = ({
 }) => {
   //prompt that allows to leave the game
   const [showLeavePrompt, setShowLeavePrompt] = useState(false);
+
+  const [showSettingsAlert, setShowSettingsAlert] = useState(false);
 
   const start = (gameSize: GameSize) => {
     dispatchInitializeGame(generateMapSeed(gameSize), gameSize);
@@ -111,6 +117,7 @@ const LocalMultiplayerGame: React.FC<ComponentProps> = ({
             playerAText="red’s move"
             playerBText="blue’s move"
             onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
+            onGameSettingsButtonPress={() => setShowSettingsAlert(true)}
           />
           <GameLogic>
             <LayoutWrapper
@@ -140,6 +147,15 @@ const LocalMultiplayerGame: React.FC<ComponentProps> = ({
         isOpen={showLeavePrompt}
         onResume={() => setShowLeavePrompt(false)}
         onLeave={leaveRoom}
+      />
+      <SettingsAlert
+        isOpen={showSettingsAlert}
+        onResume={() => setShowSettingsAlert(false)}
+        onLeave={leaveRoom}
+        onPlayAgain={(gameSize) => {
+          start(gameSize);
+          setShowSettingsAlert(false);
+        }}
       />
     </>
   );

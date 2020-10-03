@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ConfigGameButtonProps = {
+export type SettingsGameButtonProps = {
   onPress: () => void;
 };
 
-export default ({ onPress }: ConfigGameButtonProps) => {
+export default ({ onPress }: SettingsGameButtonProps) => {
   return (
     <View style={styles.container}>
       <TouchableScaleRotate minimumScale={0.9} onPress={onPress}>
