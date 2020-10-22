@@ -1,36 +1,40 @@
-import React, { ReactNode, forwardRef, MutableRefObject } from "react";
+import React, { forwardRef, ForwardRefRenderFunction } from "react";
 import { StyleSheet } from "react-native";
-import Button from "../atoms/Button";
-import { Colors } from "../../styles";
+import Button, {
+  ButtonHandles,
+  ButtonHandlesRef,
+  ButtonOwnProps,
+} from "../atoms/Button";
+import { Colors, Sizes } from "../../styles";
 
 const styles = StyleSheet.create({
   menuButton: {
-    height: 80,
+    height: Sizes.MENU_BUTTON_HEIGHT,
     backgroundColor: Colors.BLUE,
-    marginBottom: 30,
   },
   menuButtonTextStyle: {
     color: Colors.YELLOW,
   },
 });
 
-export default forwardRef(
-  (
-    {
-      children,
-      onPress,
-    }: {
-      children: ReactNode;
-      onPress: () => void;
-    },
-    ref: MutableRefObject<any>
-  ) => (
-    <Button
-      style={styles.menuButton}
-      textStyle={styles.menuButtonTextStyle}
-      children={children}
-      onPress={onPress}
-      ref={ref}
-    />
-  )
+type ComponentProps = ComponentOwnProps & {
+  forwardedRef?: ButtonHandlesRef;
+};
+
+type ComponentOwnProps = Omit<ButtonOwnProps, "style" | "textStyle">;
+
+const Component: React.FC<ComponentProps> = ({ forwardedRef, ...props }) => (
+  <Button
+    ref={forwardedRef}
+    {...props}
+    style={styles.menuButton}
+    textStyle={styles.menuButtonTextStyle}
+  />
 );
+
+const ForwardedComponent: ForwardRefRenderFunction<
+  ButtonHandles,
+  React.PropsWithChildren<ComponentOwnProps>
+> = (props, ref) => <Component {...props} forwardedRef={ref} />;
+
+export default forwardRef(ForwardedComponent);

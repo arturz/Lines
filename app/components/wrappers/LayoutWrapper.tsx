@@ -16,8 +16,14 @@ interface RenderProps {
   y: number;
 }
 
-export default ({ render }: { render: (RenderProps) => ReactNode }) => {
-  const [layoutRectangle, setLayoutRectangle] = useState<RenderProps>(null);
+export default ({
+  render,
+}: {
+  render: (renderProps: RenderProps) => ReactNode;
+}) => {
+  const [layoutRectangle, setLayoutRectangle] = useState<RenderProps | null>(
+    null
+  );
 
   return (
     <View

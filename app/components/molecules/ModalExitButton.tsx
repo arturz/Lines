@@ -1,6 +1,11 @@
-import React, { ReactNode, forwardRef, MutableRefObject } from "react";
+import React, {
+  ReactNode,
+  forwardRef,
+  MutableRefObject,
+  ForwardRefRenderFunction,
+} from "react";
 import { StyleSheet } from "react-native";
-import Button from "../atoms/Button";
+import Button, { ButtonHandles, ButtonHandlesRef } from "../atoms/Button";
 import { Colors } from "../../styles";
 
 const styles = StyleSheet.create({
@@ -13,23 +18,27 @@ const styles = StyleSheet.create({
   },
 });
 
-export default forwardRef(
-  (
-    {
-      children,
-      onPress,
-    }: {
-      children: ReactNode;
-      onPress: () => void;
-    },
-    ref: MutableRefObject<any>
-  ) => (
-    <Button
-      style={styles.modalButton}
-      textStyle={styles.modalButtonTextStyle}
-      children={children}
-      onPress={onPress}
-      ref={ref}
-    />
-  )
+type ComponentProps = ComponentOwnProps & {
+  forwardedRef?: ButtonHandlesRef;
+};
+
+type ComponentOwnProps = {
+  onPress: () => void;
+  ref?: ButtonHandlesRef;
+};
+
+const Component: React.FC<ComponentProps> = ({ forwardedRef, ...props }) => (
+  <Button
+    ref={forwardedRef}
+    {...props}
+    style={styles.modalButton}
+    textStyle={styles.modalButtonTextStyle}
+  />
 );
+
+const ForwardedComponent: ForwardRefRenderFunction<
+  ButtonHandles,
+  React.PropsWithChildren<ComponentOwnProps>
+> = (props, ref) => <Component {...props} forwardedRef={ref} />;
+
+export default forwardRef(ForwardedComponent);

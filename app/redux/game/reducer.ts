@@ -8,6 +8,7 @@ import {
   TOGGLE_PLAYER,
   FINISH,
   CLEAR_GAME,
+  INITIALIZE_AND_START_GAME,
 } from "./actions";
 import { createGameMap, getToggledPlayer } from "../../utils";
 import { Pointer } from "../../classes";
@@ -35,6 +36,7 @@ export const gameReducer: Reducer<GameState> = (
 ) => {
   switch (action.type) {
     case INITIALIZE_GAME:
+    case INITIALIZE_AND_START_GAME:
       return {
         ...state,
         ...initialState,
@@ -43,6 +45,9 @@ export const gameReducer: Reducer<GameState> = (
         map: createGameMap(action.payload.seed),
         gameSize: action.payload.gameSize,
         seed: action.payload.seed,
+        ...(action.type === INITIALIZE_AND_START_GAME && {
+          status: GameStatus.Playing,
+        }),
       };
 
     case START_GAME:

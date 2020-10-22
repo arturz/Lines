@@ -7,8 +7,16 @@ import { GameSize } from "../constants";
 export type NetworkHostProp = { gameSize: GameSize } & { isHost: true };
 export type NetworkGuestProp = { id: string; isHost: false };
 
+export type NetworkHostGameProp = {
+  gameSize: GameSize;
+};
+export type NetworkGuestGameProp = {
+  id: string;
+};
+
 export type RootStackParamList = {
   Menu: undefined;
+  Tutorial: undefined;
   LocalMultiplayerGame: {
     gameSize: GameSize;
   };
@@ -20,6 +28,11 @@ export const Stack = createStackNavigator<RootStackParamList>();
 export type MenuScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "Menu"
+>;
+
+export type TutorialScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "Tutorial"
 >;
 
 export type LocalMultiplayerGameScreenNavigationProp = StackNavigationProp<
@@ -35,5 +48,6 @@ export type NetworkMultiplayerGameScreenNavigationProp = StackNavigationProp<
 //for withGameDeepLinking - it should work on every screen
 export type AnyScreenNavigationProp =
   | MenuScreenNavigationProp
+  | TutorialScreenNavigationProp
   | LocalMultiplayerGameScreenNavigationProp
   | NetworkMultiplayerGameScreenNavigationProp;

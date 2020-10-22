@@ -1,9 +1,9 @@
 import React, {
-  memo,
   forwardRef,
   useRef,
   useImperativeHandle,
   ForwardRefRenderFunction,
+  MutableRefObject,
 } from "react";
 import { connect } from "react-redux";
 import { GameSizes, CellLineProps } from "../../types";
@@ -12,12 +12,15 @@ import { getPlayerColor, getDrewLineProps } from "../../utils";
 import gsap from "gsap";
 import { Sizes } from "../../styles";
 import { RootState } from "../../redux";
+import { View } from "react-native";
 
-type ComponentProps = ComponentOwnProps & ComponentStoreProps;
+type ComponentProps = ComponentOwnProps &
+  ComponentStoreProps & {
+    forwardedRef?: Ref;
+  };
+
 type ComponentOwnProps = GameSizes & {
-  forwardedRef?:
-    | React.MutableRefObject<HoverLineHandles>
-    | ((instance: HoverLineHandles) => void);
+  ref?: Ref;
 };
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
@@ -26,9 +29,14 @@ const mapStateToProps = ({ game: { player } }: RootState) => ({
 });
 
 export type HoverLineHandles = {
-  start: (CellLineProps) => any;
+  start: (cellLineProps: CellLineProps) => any;
   clear: () => void;
 };
+
+type Ref =
+  | ((instance: HoverLineHandles | null) => void)
+  | MutableRefObject<HoverLineHandles | null>
+  | null;
 
 const HoverLine: React.FC<ComponentProps> = ({
   cellPx,
@@ -36,7 +44,7 @@ const HoverLine: React.FC<ComponentProps> = ({
   player,
   forwardedRef,
 }) => {
-  const _line = useRef(null);
+  const _line = useRef<View>(null);
   let timeline: gsap.core.Timeline;
 
   const start = (props: CellLineProps) => {
@@ -51,7 +59,7 @@ const HoverLine: React.FC<ComponentProps> = ({
       ease: "power3",
       duration: 0.5,
       onUpdate() {
-        _line.current.setNativeProps({
+        _line.current?.setNativeProps({
           ...getDrewLineProps(props.y, props.x, props.direction, {
             backwards: Boolean(props.backwards),
             cellPx,
@@ -66,7 +74,7 @@ const HoverLine: React.FC<ComponentProps> = ({
 
   const clear = () => {
     if (timeline) timeline.kill();
-    _line.current.setNativeProps({
+    _line.current?.setNativeProps({
       strokeWidth: 0,
     });
   };

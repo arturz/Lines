@@ -16,7 +16,7 @@ type ComponentProps = ComponentOwnProps;
 type ComponentOwnProps = {
   isOpen: boolean;
   isRoomCreated: boolean;
-  id: string;
+  id?: string;
   onAbort: () => void;
 };
 
@@ -27,6 +27,8 @@ const ShareLinkAlert: React.FC<ComponentProps> = ({
   onAbort,
 }) => {
   async function shareInviteLink() {
+    if (!id) return;
+
     Share.share({
       message: `Join me in Lines game: ${getInviteLink(id)}`,
     });

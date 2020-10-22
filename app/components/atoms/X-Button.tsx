@@ -37,7 +37,12 @@ export default ({
   const secondLine = useRef<View>(null);
 
   useEffect(() => {
-    if (animate === null) return;
+    if (
+      animate === null ||
+      firstLine.current === null ||
+      secondLine.current === null
+    )
+      return;
 
     //animate lines
     if (animate === true) animateXButton(firstLine.current, secondLine.current);

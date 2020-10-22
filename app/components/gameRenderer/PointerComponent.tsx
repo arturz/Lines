@@ -6,6 +6,7 @@ import { getPlayerColor } from "../../utils";
 import gsap from "gsap";
 import { Sizes } from "../../styles";
 import { RootState } from "../../redux";
+import { View } from "react-native";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
 type ComponentOwnProps = GameSizes;
@@ -23,7 +24,7 @@ const mapStateToProps = ({
 
 const PointerComponent: React.FC<ComponentProps> = memo(
   ({ pointer, player, cellPx, offset }) => {
-    const _circle = useRef(null);
+    const _circle = useRef<View>(null);
 
     useLayoutEffect(() => {
       const timeline = gsap.timeline();
@@ -33,7 +34,7 @@ const PointerComponent: React.FC<ComponentProps> = memo(
         ease: "power3",
         duration: 1,
         onUpdate() {
-          _circle.current.setNativeProps({
+          _circle.current?.setNativeProps({
             r: state.radius,
           });
         },

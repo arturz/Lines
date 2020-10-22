@@ -5,3 +5,4 @@ export { default as Paragraph } from "./Paragraph";
 export { default as CurrentPlayerIndicator } from "./CurrentPlayerIndicator";
 export { default as LeaveGameButton } from "./LeaveGameButton";
 export { default as GameSettingsButton } from "./GameSettingsButton";
+export { default as Overlay } from "./Overlay";

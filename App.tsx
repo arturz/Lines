@@ -5,6 +5,7 @@ import {
   OnMenu,
   OnLocalMultiplayerGame,
   OnNetworkMultiplayerGame,
+  OnTutorial,
 } from "./app/screens";
 import { configureStore } from "./app/redux";
 import { Stack } from "./app/navigations";
@@ -19,6 +20,11 @@ export default () => {
           <Stack.Screen
             name="Menu"
             component={OnMenu}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Tutorial"
+            component={OnTutorial}
             options={{ headerShown: false }}
           />
           <Stack.Screen

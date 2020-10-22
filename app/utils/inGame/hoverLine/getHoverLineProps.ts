@@ -4,10 +4,15 @@ import getEighthAroundPointer, {
 import { Point } from "../../../types";
 import { Direction } from "../../../constants";
 
-export default (
+export type HoverLineProps = Point & {
+  direction: Direction;
+  backwards?: boolean;
+};
+
+const getHoverLineProps = (
   { x, y }: Point,
   { pointer, cellPx, offset }: EightAroundPointerProps
-) => {
+): HoverLineProps => {
   const eighth = getEighthAroundPointer({ x, y }, { pointer, cellPx, offset });
 
   switch (eighth) {
@@ -75,3 +80,5 @@ export default (
       throw new Error(`Eighth around pointer out of range (${eighth})`);
   }
 };
+
+export default getHoverLineProps;

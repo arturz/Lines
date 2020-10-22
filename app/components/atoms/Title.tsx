@@ -4,7 +4,7 @@ import { Colors } from "../../styles";
 
 const styles = StyleSheet.create({
   title: {
-    fontFamily: "Barlow-Medium",
+    fontFamily: "FredokaOne-Regular",
     fontSize: 30,
     color: Colors.YELLOW,
     marginLeft: 15,

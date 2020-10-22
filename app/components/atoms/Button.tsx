@@ -4,10 +4,10 @@ import React, {
   forwardRef,
   MutableRefObject,
   useImperativeHandle,
+  ForwardRefRenderFunction,
 } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import { Colors, Sizes } from "../../styles";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { TouchableScale } from "../wrappers/touchables";
 
 const styles = StyleSheet.create({
@@ -19,6 +19,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: Math.max(Sizes.BUTTON_HEIGHT, Sizes.BUTTON_WIDTH),
     textTransform: "uppercase",
+  },
+  margin: {
     marginBottom: 15,
   },
   text: {
@@ -30,31 +32,56 @@ const styles = StyleSheet.create({
   },
 });
 
-interface Props {
-  children: ReactNode;
+type ComponentProps = ComponentOwnProps & {
+  forwardedRef?: Ref;
+};
+
+export { ComponentProps as ButtonProps };
+
+type ComponentOwnProps = {
   style?: Object;
   textStyle?: Object;
+  withoutMargin?: boolean;
   onPress: () => void;
-}
+  ref?: Ref;
+};
 
-export default forwardRef<TouchableWithoutFeedback, Props>(
-  (
-    { children, style = {}, textStyle = {}, onPress }: Props,
-    forwardedRef: MutableRefObject<any>
-  ) => {
-    const button = useRef(null);
-    const text = useRef(null);
+export { ComponentOwnProps as ButtonOwnProps };
 
-    useImperativeHandle(forwardedRef, () => ({
-      get button() {
-        return button.current;
-      },
-      get text() {
-        return text.current;
-      },
-    }));
+export type ButtonHandles = {
+  button: View | null;
+  text: Text | null;
+};
 
-    return (
+type Ref =
+  | ((instance: ButtonHandles | null) => void)
+  | MutableRefObject<ButtonHandles | null>
+  | null;
+
+export { Ref as ButtonHandlesRef };
+
+const Button: React.FC<ComponentProps> = ({
+  children,
+  forwardedRef,
+  onPress,
+  withoutMargin,
+  style = {},
+  textStyle = {},
+}) => {
+  const button = useRef<View>(null);
+  const text = useRef<Text>(null);
+
+  useImperativeHandle(forwardedRef, () => ({
+    get button() {
+      return button.current;
+    },
+    get text() {
+      return text.current;
+    },
+  }));
+
+  return (
+    <View style={withoutMargin ? null : styles.margin}>
       <TouchableScale onPress={onPress}>
         <View style={[styles.button, style]} ref={button}>
           <Text style={[styles.text, textStyle]} ref={text}>
@@ -62,6 +89,13 @@ export default forwardRef<TouchableWithoutFeedback, Props>(
           </Text>
         </View>
       </TouchableScale>
-    );
-  }
-);
+    </View>
+  );
+};
+
+const ForwardedButton: ForwardRefRenderFunction<
+  ButtonHandles,
+  React.PropsWithChildren<ComponentOwnProps>
+> = (props, ref) => <Button {...props} forwardedRef={ref} />;
+
+export default forwardRef(ForwardedButton);

@@ -1,12 +1,12 @@
 import React, { memo, useEffect } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { GameStatus } from "../../constants";
+import { GameStatus, Player } from "../../constants";
 import { finish, togglePlayer, RootState } from "../../redux";
 import {
   checkFinishByEnclosure,
+  checkIfCouldBounce,
   getToggledPlayer,
-  getStickingPoints,
 } from "../../utils";
 
 type ComponentProps = ComponentOwnProps &
@@ -27,7 +27,7 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  finish: (player) => dispatch(finish(player)),
+  finish: (player: Player) => dispatch(finish(player)),
   togglePlayer: () => dispatch(togglePlayer()),
 });
 
@@ -81,11 +81,11 @@ const GameLogic: React.FC<ComponentProps> = memo(
       //toggle player if it is necessary
       if (
         !toggledPlayer &&
-        getStickingPoints(
+        !checkIfCouldBounce(
           map.pointer.getCoordinates().y,
           map.pointer.getCoordinates().x,
           map
-        ) === 1
+        )
       ) {
         togglePlayer();
         return;

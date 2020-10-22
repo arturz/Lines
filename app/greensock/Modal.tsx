@@ -1,12 +1,26 @@
+//@ts-ignore
 import { gsap } from "gsap-rn";
 import { View, Dimensions } from "react-native";
 import { measure } from "../utils";
+
+/*
+  During second opening .measure() returns height that was previously set by gsap-rn with .to() method.
+  Because of that modal cannot become fully opened.
+  Height is internally stored with gsap (setNativeProps style.height to undefined/clearProps doesn't work), so it is a way out.
+*/
+const modalsHeight = new WeakMap<View, number>();
 
 export function animateModal(modal: View, content: View) {
   return new Promise(async (resolve) => {
     const tl = gsap.timeline();
 
-    const { height } = await measure(modal);
+    let height: number;
+    if (modalsHeight.has(modal)) {
+      height = modalsHeight.get(modal) as number;
+    } else {
+      height = (await measure(modal)).height;
+      modalsHeight.set(modal, height);
+    }
 
     tl.set(content, { style: { opacity: 0 } });
     tl.set(modal, { style: { opacity: 0, height: 60, width: 0 } });

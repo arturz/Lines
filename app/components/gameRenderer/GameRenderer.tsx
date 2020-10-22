@@ -14,12 +14,13 @@ import { isEqual } from "lodash";
 import { getOffsetAndCellPx } from "../../utils/inGame";
 import { GameStatus } from "../../constants";
 import { RootState } from "../../redux";
+import { HoverLineProps } from "../../utils/inGame/hoverLine/getHoverLineProps";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
 type ComponentOwnProps = DisplayResolution &
   Point & {
     allowTakingLine: boolean;
-    onTakeLine: (CellLineProps) => void;
+    onTakeLine: (cellLineProps: CellLineProps) => void;
   };
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
@@ -50,12 +51,12 @@ const Game: React.FC<ComponentProps> = ({
   /*
     I didn't use useState, so we don't need to rerender whole component only when hover line changes.
   */
-  const _hoverLineProps = useRef(null);
+  const _hoverLineProps = useRef<HoverLineProps | null>(null);
 
   /*
     For direct manipulation.
   */
-  const _hoverLineComponent = useRef<HoverLineHandles>(null);
+  const _hoverLineComponent = useRef<HoverLineHandles | null>(null);
 
   const showHoverLine = ({ x, y }: Point) => {
     const hoverLineProps = getHoverLineProps(
@@ -75,7 +76,7 @@ const Game: React.FC<ComponentProps> = ({
       )
     ) {
       _hoverLineProps.current = hoverLineProps;
-      _hoverLineComponent.current.start(hoverLineProps);
+      _hoverLineComponent.current?.start(hoverLineProps);
     }
   };
 
@@ -98,7 +99,7 @@ const Game: React.FC<ComponentProps> = ({
 
       onTakeLine(_hoverLineProps.current);
       _hoverLineProps.current = null;
-      _hoverLineComponent.current.clear();
+      _hoverLineComponent.current?.clear();
     },
   });
 

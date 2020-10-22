@@ -5,11 +5,10 @@ import { LayoutWrapper } from "../../components/wrappers";
 import { CellLineProps } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
 import {
-  initializeGame,
-  startGame,
   takeLine,
   clearGame,
   RootState,
+  initializeAndStartGame,
 } from "../../redux";
 import {
   LocalMultiplayerGameScreenNavigationProp,
@@ -27,6 +26,7 @@ import {
 import { generateMapSeed } from "../../utils";
 import { GameSize } from "../../constants";
 import { RouteProp } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ComponentProps = ComponentOwnProps &
   ComponentStoreProps &
@@ -45,16 +45,14 @@ const mapStateToProps = ({ game: { status } }: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  initializeGame: compose(dispatch, initializeGame),
-  startGame: compose(dispatch, startGame),
+  initializeAndStartGame: compose(dispatch, initializeAndStartGame),
   takeLine: compose(dispatch, takeLine),
   clearGame: compose(dispatch, clearGame),
 });
 
 const LocalMultiplayerGame: React.FC<ComponentProps> = ({
   status,
-  startGame: dispatchStartGame,
-  initializeGame: dispatchInitializeGame,
+  initializeAndStartGame: dispatchInitializeAndStartGame,
   takeLine: dispatchTakeLine,
   clearGame: dispatchClearGame,
   route,
@@ -65,18 +63,11 @@ const LocalMultiplayerGame: React.FC<ComponentProps> = ({
 
   const [showSettingsAlert, setShowSettingsAlert] = useState(false);
 
-  const start = (gameSize: GameSize) => {
-    dispatchInitializeGame(generateMapSeed(gameSize), gameSize);
-    dispatchStartGame();
-  };
+  const start = (gameSize: GameSize) =>
+    dispatchInitializeAndStartGame(generateMapSeed(gameSize), gameSize);
 
   //start game automatically
-  useEffect(() => {
-    if (typeof route?.params?.gameSize === undefined)
-      throw new Error(`Undefined gameSize`);
-
-    start(route.params.gameSize);
-  }, []);
+  useEffect(() => void start(route.params.gameSize), []);
 
   //dispatch to store
   const onTakeLine = (cellLineProps: CellLineProps) => {
@@ -110,54 +101,56 @@ const LocalMultiplayerGame: React.FC<ComponentProps> = ({
   }, []);
 
   return (
-    <>
-      {(status === GameStatus.Playing || status === GameStatus.Finish) && (
-        <View style={StyleSheet.absoluteFill}>
-          <GameHeader
-            playerAText="red’s move"
-            playerBText="blue’s move"
-            onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
-            onGameSettingsButtonPress={() => setShowSettingsAlert(true)}
-          />
-          <GameLogic>
-            <LayoutWrapper
-              render={({ widthPx, heightPx, x, y }) => (
-                <GameRenderer
-                  widthPx={widthPx}
-                  heightPx={heightPx}
-                  x={x}
-                  y={y}
-                  //on the same device always Player.A or Player.B can take line
-                  allowTakingLine={status === GameStatus.Playing}
-                  onTakeLine={onTakeLine}
-                />
-              )}
+    <SafeAreaView>
+      <View style={{ width: "100%", height: "100%" }}>
+        {(status === GameStatus.Playing || status === GameStatus.Finish) && (
+          <>
+            <GameHeader
+              playerAText="red’s move"
+              playerBText="blue’s move"
+              onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
+              onGameSettingsButtonPress={() => setShowSettingsAlert(true)}
             />
-          </GameLogic>
-        </View>
-      )}
-      <FinishAlert
-        isOpen={status === GameStatus.Finish}
-        playerAWinnerText="Red player wins"
-        playerBWinnerText="Blue player wins"
-        onLeave={goToMenu}
-        onPlayAgain={() => start(route.params.gameSize)}
-      />
-      <LeavePrompt
-        isOpen={showLeavePrompt}
-        onResume={() => setShowLeavePrompt(false)}
-        onLeave={leaveRoom}
-      />
-      <SettingsAlert
-        isOpen={showSettingsAlert}
-        onResume={() => setShowSettingsAlert(false)}
-        onLeave={leaveRoom}
-        onPlayAgain={(gameSize) => {
-          start(gameSize);
-          setShowSettingsAlert(false);
-        }}
-      />
-    </>
+            <GameLogic>
+              <LayoutWrapper
+                render={({ widthPx, heightPx, x, y }) => (
+                  <GameRenderer
+                    widthPx={widthPx}
+                    heightPx={heightPx}
+                    x={x}
+                    y={y}
+                    //on the same device always Player.A or Player.B can take line
+                    allowTakingLine={status === GameStatus.Playing}
+                    onTakeLine={onTakeLine}
+                  />
+                )}
+              />
+            </GameLogic>
+          </>
+        )}
+        <FinishAlert
+          isOpen={status === GameStatus.Finish}
+          playerAWinnerText="Red player wins"
+          playerBWinnerText="Blue player wins"
+          onLeave={goToMenu}
+          onPlayAgain={() => start(route.params.gameSize)}
+        />
+        <LeavePrompt
+          isOpen={showLeavePrompt}
+          onResume={() => setShowLeavePrompt(false)}
+          onLeave={leaveRoom}
+        />
+        <SettingsAlert
+          isOpen={showSettingsAlert}
+          onResume={() => setShowSettingsAlert(false)}
+          onLeave={leaveRoom}
+          onPlayAgain={(gameSize) => {
+            start(gameSize);
+            setShowSettingsAlert(false);
+          }}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 

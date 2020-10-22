@@ -1,6 +1,5 @@
 export { default as ButtonThatOpensModal } from "./ButtonThatOpensModal";
 export { default as Alert } from "./Alert";
-export { default as Modal } from "./Modal";
 export { default as ExpiredLinkAlert } from "./ExpiredLinkAlert";
 export { default as FinishAlert } from "./FinishAlert";
 export { default as JoinedGameAlert } from "./JoinedGameAlert";
@@ -9,3 +8,4 @@ export { default as OpponentLeftAlert } from "./OpponentLeftAlert";
 export { default as ShareLinkAlert } from "./ShareLinkAlert";
 export { default as SelectMapSize } from "./SelectMapSize";
 export { default as SettingsAlert } from "./SettingsAlert";
+export { default as LeaveAppPrompt } from "./LeaveAppPrompt";

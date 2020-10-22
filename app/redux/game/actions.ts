@@ -16,6 +16,14 @@ export function startGame() {
   };
 }
 
+export const INITIALIZE_AND_START_GAME = "INITIALIZE_AND_START_GAME" as const;
+export function initializeAndStartGame(seed: MapSeed, gameSize: GameSize) {
+  return {
+    type: INITIALIZE_AND_START_GAME,
+    payload: { seed, gameSize },
+  };
+}
+
 export const FINISH = "FINISH" as const;
 export function finish(winner: Player) {
   return { type: FINISH, payload: { winner } };

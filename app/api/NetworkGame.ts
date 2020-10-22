@@ -1,19 +1,18 @@
 import { EventEmitter } from "eventemitter3";
 import { throttle } from "lodash";
-import { result } from "lodash/fp";
 import {
   Player,
   NetworkPlayerStatus,
   MAX_DISCONNECTED_TIME,
 } from "../constants";
-import { INITIALIZE_GAME } from "../redux";
+import { INITIALIZE_AND_START_GAME, INITIALIZE_GAME } from "../redux";
 import checkIfRoomExists from "./checkIfRoomExists";
 import { database, firestore } from "../firebase";
 import { getToggledPlayer } from "../utils";
 
 export class NetworkGame {
   public readonly emitter = new EventEmitter();
-  private readonly firestoreListeners = [];
+  private readonly firestoreListeners: Function[] = [];
 
   constructor(public readonly roomId: string, private readonly player: Player) {
     if (__DEV__) this.checkCodebase();
@@ -80,6 +79,7 @@ export class NetworkGame {
     this.firestoreListeners.push(
       database()
         .ref(`/online/${this.roomId}/${getToggledPlayer(this.player)}`)
+        //@ts-ignore
         .on("value", (snapshot) => {
           console.log(
             `on('value') snapshot = ${snapshot ? snapshot.val() : snapshot}`
@@ -132,7 +132,7 @@ export class NetworkGame {
 
   async __destroy() {
     //remove firebase listeners
-    this.firestoreListeners.map(result);
+    this.firestoreListeners.forEach((fn) => fn());
 
     //remove presence object
     await database().ref(`/online/${this.roomId}`).remove();
@@ -151,7 +151,9 @@ export class NetworkGame {
   }
 
   async action({ type, payload }: { type: string; payload?: any }) {
-    if (type === INITIALIZE_GAME) await this.deleteActions();
+    if (type === INITIALIZE_GAME || type === INITIALIZE_AND_START_GAME)
+      await this.deleteActions();
+
     await firestore()
       .collection("rooms")
       .doc(this.roomId)
@@ -166,7 +168,7 @@ export class NetworkGame {
   //set presence to LEFT and leave the game, opponent will destroy the room
   async leave() {
     //remove firebase listeners
-    this.firestoreListeners.map(result);
+    this.firestoreListeners.map((fn) => fn());
 
     //remove client-side listeners
     this.emitter.removeAllListeners();

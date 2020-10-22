@@ -1,5 +1,6 @@
+//@ts-ignore
 import { gsap } from "gsap-rn";
-import { View } from "react-native";
+import { View, Text, Easing } from "react-native";
 import { Sizes } from "../styles";
 
 export function animateButtonThatOpensModal(button: View, text: Text) {
@@ -32,7 +33,7 @@ export function animateButtonThatOpensModal(button: View, text: Text) {
     tl.to(button, {
       style: { width: 40, height: 40 },
       duration: 0.25,
-      ease: "tween3",
+      ease: Easing.bezier(0, 0.5, 0.5, 1.5),
       onComplete() {
         resolve();
       },
@@ -41,29 +42,37 @@ export function animateButtonThatOpensModal(button: View, text: Text) {
 }
 
 export function reverseAnimateButtonThatOpensModal(button: View, text: Text) {
-  const tl = gsap.timeline();
+  return new Promise((resolve) => {
+    const tl = gsap.timeline();
 
-  //make circle bigger
-  tl.to(button, {
-    style: {
-      width: Sizes.MENU_BUTTON_HEIGHT,
-      height: Sizes.MENU_BUTTON_HEIGHT,
-    },
-    duration: 0.25,
-    ease: "tween3",
-  });
+    //make circle bigger
+    tl.to(button, {
+      style: {
+        width: Sizes.MENU_BUTTON_HEIGHT,
+        height: Sizes.MENU_BUTTON_HEIGHT,
+      },
+      duration: 0.25,
+      ease: "tween3",
+    });
 
-  //change shape from circle to normal button
-  tl.to(button, {
-    style: { width: Sizes.MENU_BUTTON_WIDTH, height: Sizes.MENU_BUTTON_HEIGHT },
-    duration: 0.25,
-    ease: "tween3",
-  });
+    //change shape from circle to normal button
+    tl.to(button, {
+      style: {
+        width: Sizes.MENU_BUTTON_WIDTH,
+        height: Sizes.MENU_BUTTON_HEIGHT,
+      },
+      duration: 0.25,
+      ease: "tween3",
+    });
 
-  //lift down text
-  tl.to(text, {
-    style: { bottom: 0, opacity: 1 },
-    duration: 0.25,
-    ease: "tween3",
+    //lift down text
+    tl.to(text, {
+      style: { bottom: 0, opacity: 1 },
+      duration: 0.25,
+      ease: "tween3",
+      onComplete() {
+        resolve();
+      },
+    });
   });
 }

@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, Text, Animated, Easing } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Animated,
+  Easing,
+  LayoutChangeEvent,
+} from "react-native";
 import { connect } from "react-redux";
 import { Colors } from "../../styles";
 import { Player } from "../../constants";
@@ -25,7 +32,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     fontSize: 30,
-    fontFamily: "Barlow-Medium",
+    fontFamily: "FredokaOne-Regular",
     color: Colors.YELLOW,
     textAlign: "center",
     textTransform: "uppercase",
@@ -48,13 +55,13 @@ const Indicator: React.FC<ComponentProps> = ({
   playerAText,
   playerBText,
 }) => {
-  const [textHeight, setTextHeight] = useState(null);
+  const [textHeight, setTextHeight] = useState<number>(0);
 
   const onLayout = ({
     nativeEvent: {
       layout: { height },
     },
-  }) => setTextHeight(height);
+  }: LayoutChangeEvent) => setTextHeight(height);
 
   const animation = useRef(new Animated.Value(1)).current;
 
