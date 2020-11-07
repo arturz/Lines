@@ -51,3 +51,5 @@ export type AnyScreenNavigationProp =
   | TutorialScreenNavigationProp
   | LocalMultiplayerGameScreenNavigationProp
   | NetworkMultiplayerGameScreenNavigationProp;
+
+export * from "./MyTransition";

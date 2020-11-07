@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, BackHandler } from "react-native";
+import { View, BackHandler } from "react-native";
 import { connect, useDispatch } from "react-redux";
 import { LayoutWrapper } from "../../components/wrappers";
 import { CellLineProps, MapSeed } from "../../types";
@@ -29,11 +29,15 @@ import {
   FinishAlert,
 } from "../../components/organisms";
 import { GameHeader } from "../../components/molecules";
-import { generateMapSeed } from "../../utils";
+import { checkConnection, generateMapSeed } from "../../utils";
 import { RouteProp } from "@react-navigation/native";
 import { renderAlerts } from "./renderAlerts";
 import { checkHost, AlertData } from "./types";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { showMessage } from "react-native-flash-message";
+import LostConnection from "../../components/organisms/LostConnection";
+import { useDynamicValue } from "react-native-dynamic";
+import { Colors } from "../../styles";
 
 type ComponentProps = ComponentOwnProps &
   ComponentStoreProps &
@@ -79,13 +83,17 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
   const [showExpiredLinkAlert, setShowExpiredLinkAlert] = useState(false);
   //prompt that allows to leave the game
   const [showLeavePrompt, setShowLeavePrompt] = useState(false);
-  const [showOpponentLeftAlert, setShowOpponentLeftAlert] = useState(false);
+
+  const [hasOpponentLeft, setHasOpponentLeft] = useState(false);
+
+  const [lostConnection, setLostConnection] = useState(false);
 
   function resetState() {
     setGame(null);
     setShowExpiredLinkAlert(false);
     setShowLeavePrompt(false);
-    setShowOpponentLeftAlert(false);
+    setHasOpponentLeft(false);
+    setLostConnection(false);
   }
 
   async function startGameAsHost(
@@ -100,50 +108,76 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
 
   const dispatch = useDispatch();
 
-  //opponent left the game - we should destroy the game
-  function onOpponentLeft() {
-    game?.__destroy();
-    setGame(null);
-    setShowOpponentLeftAlert(true);
+  useEffect(() => {
+    //opponent left the game - we should destroy the game
+    if (hasOpponentLeft) {
+      game?.__destroy();
+      setGame(null);
+    }
+  }, [hasOpponentLeft]);
+
+  function attachCommonGameEmitterEvents(game: NetworkGame) {
+    game.emitter.on("left", () => setLostConnection(true));
+    game.emitter.on("opponentLeft", () => setHasOpponentLeft(true));
+    game.emitter.on("opponentsAction", dispatch);
+    game.emitter.on("connected", () => {
+      showMessage({
+        type: "success",
+        message: "Connected to server",
+      });
+    });
+    game.emitter.on("disconnected", () => {
+      showMessage({
+        type: "danger",
+        message: "Lost connection",
+      });
+    });
   }
+
+  useEffect(() => {
+    checkConnection().then((isConnected) => {
+      if (!isConnected) setLostConnection(true);
+    });
+  }, []);
 
   //host
   useEffect(() => {
-    if (!checkHost(params)) return;
+    (async function () {
+      if (!checkHost(params)) return;
 
-    const mapSeed = generateMapSeed(params.gameSize);
+      const mapSeed = generateMapSeed(params.gameSize);
 
-    //initialize UI when we are waiting for opponent
-    dispatchInitializeGame(mapSeed, params.gameSize);
+      //initialize UI when we are waiting for opponent
+      dispatchInitializeGame(mapSeed, params.gameSize);
 
-    createRoom().then((roomId) => {
+      if (!(await checkConnection())) return;
+
+      const roomId = await createRoom();
       const game = new NetworkGame(roomId, Player.A);
       setGame(game);
 
-      game.emitter.on("opponentLeft", onOpponentLeft);
-      game.emitter.on("opponentsAction", dispatch);
+      attachCommonGameEmitterEvents(game);
       game.emitter.on("opponentConnected", () =>
         startGameAsHost(game, mapSeed, params.gameSize)
       );
-    });
+    })();
   }, []);
 
   //guest
   useEffect(() => {
-    if (checkHost(params)) return;
+    (async function () {
+      if (checkHost(params) || !(await checkConnection())) return;
 
-    checkIfRoomExists(params.id).then((exists) => {
-      if (!exists) {
+      const roomExists = checkIfRoomExists(params.id);
+      if (!roomExists) {
         setShowExpiredLinkAlert(true);
         return;
       }
 
       const game = new NetworkGame(params.id, Player.B);
       setGame(game);
-
-      game.emitter.on("opponentLeft", onOpponentLeft);
-      game.emitter.on("opponentsAction", dispatch);
-    });
+      attachCommonGameEmitterEvents(game);
+    })();
   }, []);
 
   function leaveRoom() {
@@ -215,12 +249,16 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
   ];
 
   const alerts: AlertData[] = [
+    {
+      component: (props) => <LostConnection goToMenu={leaveRoom} {...props} />,
+      isOpen: lostConnection,
+    },
     ...(checkHost(params) ? hostAlerts : guestAlerts),
     {
       component: (props) => (
         <OpponentLeftAlert goToMenu={leaveRoom} {...props} />
       ),
-      isOpen: showOpponentLeftAlert,
+      isOpen: hasOpponentLeft,
     },
     {
       component: (props) => (
@@ -253,40 +291,47 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
     },
   ];
 
+  const backgroundColor = useDynamicValue(Colors.BACKGROUND_DYNAMIC);
   return (
     <SafeAreaView>
-      {(status === GameStatus.Initialized ||
-        status === GameStatus.Playing ||
-        status === GameStatus.Finish) && (
-        <View style={{ width: "100%", height: "100%" }}>
-          <GameHeader
-            playerAText={checkHost(params) ? `your’s move` : `opponent’s move`}
-            playerBText={checkHost(params) ? `opponent’s move` : `your’s move`}
-            onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
-          />
-          <GameLogic>
-            <LayoutWrapper
-              render={({ widthPx, heightPx, x, y }) => (
-                <GameRenderer
-                  widthPx={widthPx}
-                  heightPx={heightPx}
-                  x={x}
-                  y={y}
-                  onTakeLine={onTakeLine}
-                  allowTakingLine={
-                    status === GameStatus.Playing
-                      ? checkHost(params)
-                        ? player === Player.A
-                        : player === Player.B
-                      : false
-                  }
-                />
-              )}
+      <View style={{ width: "100%", height: "100%", backgroundColor }}>
+        {(status === GameStatus.Initialized ||
+          status === GameStatus.Playing ||
+          status === GameStatus.Finish) && (
+          <>
+            <GameHeader
+              playerAText={
+                checkHost(params) ? `your’s move` : `opponent’s move`
+              }
+              playerBText={
+                checkHost(params) ? `opponent’s move` : `your’s move`
+              }
+              onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
             />
-          </GameLogic>
-        </View>
-      )}
-      {renderAlerts(alerts)}
+            <GameLogic>
+              <LayoutWrapper
+                render={({ widthPx, heightPx, x, y }) => (
+                  <GameRenderer
+                    widthPx={widthPx}
+                    heightPx={heightPx}
+                    x={x}
+                    y={y}
+                    onTakeLine={onTakeLine}
+                    allowTakingLine={
+                      status === GameStatus.Playing
+                        ? checkHost(params)
+                          ? player === Player.A
+                          : player === Player.B
+                        : false
+                    }
+                  />
+                )}
+              />
+            </GameLogic>
+          </>
+        )}
+        {renderAlerts(alerts)}
+      </View>
     </SafeAreaView>
   );
 };

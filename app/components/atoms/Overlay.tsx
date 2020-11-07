@@ -51,21 +51,23 @@ const Overlay: React.FC<ComponentProps> = ({
   }, [isVisible]);
 
   return (
-    <Animated.View
-      pointerEvents={isVisible ? "auto" : "none"}
-      style={[
-        StyleSheet.absoluteFill,
-        styles.overlay,
-        {
-          opacity: overlayAnimation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 0.3],
-          }),
-        },
-      ]}
-    >
-      <TouchableWithoutFeedback onPress={onPress} style={styles.touchable} />
-    </Animated.View>
+    <>
+      <Animated.View
+        pointerEvents={isVisible ? "auto" : "none"}
+        style={[
+          StyleSheet.absoluteFill,
+          styles.overlay,
+          {
+            opacity: overlayAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 0.3],
+            }),
+          },
+        ]}
+      >
+        <TouchableWithoutFeedback onPress={onPress} style={styles.touchable} />
+      </Animated.View>
+    </>
   );
 };
 

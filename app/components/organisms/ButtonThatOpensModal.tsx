@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, BackHandler } from "react-native";
+import { View, BackHandler } from "react-native";
 import { Portal } from "react-native-portalize";
 import {
   animateButtonThatOpensModal,
   reverseAnimateButtonThatOpensModal,
 } from "../../greensock";
-import { Colors, Sizes } from "../../styles";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 import measure from "../../utils/measure";
 import MenuButton from "../molecules/MenuButton";
 import { ButtonHandles } from "../atoms/Button";
@@ -14,37 +14,32 @@ import { ModalHeader } from "../molecules";
 import { FromBottom } from "../wrappers";
 import { animateModal, reverseAnimateModal } from "../../greensock/Modal";
 import { useNavigation } from "@react-navigation/native";
+import { useDynamicValue } from "react-native-dynamic";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   buttonContainer: {
     position: "relative",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: Sizes.MENU_BUTTON_WIDTH,
-    height: Sizes.MENU_BUTTON_HEIGHT,
-    marginBottom: 15,
+    marginBottom: Sizes.SPACING_DOUBLE,
+    height:
+      EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH) /
+      Sizes.MENU_BUTTON.ASPECT_RATIO,
   },
   modalContainer: {
     position: "absolute",
-    width: "100%",
-    maxWidth: 420,
-    paddingLeft: 30,
-    paddingRight: 30,
+    left: "10%",
+    width: "80%",
     zIndex: 1,
   },
   modal: {
-    backgroundColor: Colors.BLUE,
-    borderRadius: 30,
-    padding: 15,
+    borderRadius: Sizes.MODAL.BORDER_RADIUS,
+    padding: Sizes.MODAL.PADDING,
     elevation: 6,
     opacity: 0,
     overflow: "hidden",
     height: "100%",
-  },
-  modalMain: {
-    marginLeft: 15,
-    marginRight: 15,
   },
 });
 
@@ -161,7 +156,7 @@ const ButtonThatOpensModal: React.FC<ComponentProps> = ({
   return (
     <>
       <View style={styles.buttonContainer}>
-        <MenuButton onPress={open} ref={buttonComponent} withoutMargin>
+        <MenuButton onPress={open} ref={buttonComponent} margin="none">
           {buttonTitle}
         </MenuButton>
       </View>
@@ -169,13 +164,19 @@ const ButtonThatOpensModal: React.FC<ComponentProps> = ({
         <Overlay isVisible={overlay} onPress={close} />
         <View style={[styles.modalContainer, { top: modalTop }]}>
           <FromBottom>
-            <View style={styles.modal} ref={modalComponent}>
+            <View
+              style={[
+                styles.modal,
+                { backgroundColor: useDynamicValue(Colors.BACKGROUND_DYNAMIC) },
+              ]}
+              ref={modalComponent}
+            >
               <View ref={modalContentComponent}>
                 <ModalHeader
                   title={modalTitle}
                   xButton={{ animate: animateXButton, onPress: close }}
                 />
-                <View style={styles.modalMain}>{children}</View>
+                <View>{children}</View>
               </View>
             </View>
           </FromBottom>

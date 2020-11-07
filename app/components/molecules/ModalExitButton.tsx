@@ -1,20 +1,15 @@
-import React, {
-  ReactNode,
-  forwardRef,
-  MutableRefObject,
-  ForwardRefRenderFunction,
-} from "react";
-import { StyleSheet } from "react-native";
+import React, { forwardRef, ForwardRefRenderFunction } from "react";
 import Button, { ButtonHandles, ButtonHandlesRef } from "../atoms/Button";
-import { Colors } from "../../styles";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
+import { useDynamicValue } from "react-native-dynamic";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   modalButton: {
-    height: 60,
-    backgroundColor: Colors.YELLOW_DARK,
+    width: Sizes.MODAL_BUTTON.WIDTH,
+    aspectRatio: Sizes.MODAL_BUTTON.ASPECT_RATIO,
   },
   modalButtonTextStyle: {
-    color: Colors.RED,
+    fontSize: Sizes.MODAL_BUTTON.FONT_SIZE,
   },
 });
 
@@ -27,14 +22,19 @@ type ComponentOwnProps = {
   ref?: ButtonHandlesRef;
 };
 
-const Component: React.FC<ComponentProps> = ({ forwardedRef, ...props }) => (
-  <Button
-    ref={forwardedRef}
-    {...props}
-    style={styles.modalButton}
-    textStyle={styles.modalButtonTextStyle}
-  />
-);
+const Component: React.FC<ComponentProps> = ({ forwardedRef, ...props }) => {
+  const backgroundColor = useDynamicValue(Colors.SECONDARY_DYNAMIC);
+  const color = useDynamicValue(Colors.SECONDARY_TEXT_DYNAMIC);
+
+  return (
+    <Button
+      ref={forwardedRef}
+      {...props}
+      style={[styles.modalButton, { backgroundColor }]}
+      textStyle={[styles.modalButtonTextStyle, { color }]}
+    />
+  );
+};
 
 const ForwardedComponent: ForwardRefRenderFunction<
   ButtonHandles,

@@ -1,6 +1,13 @@
-import React, { useRef } from "react";
+import React, { memo, useRef } from "react";
 import { connect } from "react-redux";
-import Svg from "react-native-svg";
+import Svg, {
+  Defs,
+  G,
+  LinearGradient,
+  Mask,
+  Rect,
+  Stop,
+} from "react-native-svg";
 import { DisplayResolution, CellLineProps, Point } from "../../types";
 import InsideLines from "./InsideLines";
 import Border from "./Border";
@@ -19,6 +26,7 @@ import { HoverLineProps } from "../../utils/inGame/hoverLine/getHoverLineProps";
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
 type ComponentOwnProps = DisplayResolution &
   Point & {
+    showcase?: boolean;
     allowTakingLine: boolean;
     onTakeLine: (cellLineProps: CellLineProps) => void;
   };
@@ -110,6 +118,24 @@ const Game: React.FC<ComponentProps> = ({
       viewBox={`0 0 ${widthPx} ${heightPx}`}
       {...(status === GameStatus.Playing && panResponder.panHandlers)}
     >
+      {/*
+        It would work if it wasn't so slow.
+      <Defs>
+          <LinearGradient id="Gradient" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#ffffff00" stopOpacity="0" />
+            <Stop offset="1" stopColor="#ffffff00" stopOpacity="1" />
+          </LinearGradient>
+          <Mask id="Mask" x="0" y="0" width={widthPx} height={heightPx}>
+            <Rect
+              x="0"
+              y="0"
+              width={widthPx}
+              height={heightPx}
+              fill="url(#Gradient)"
+            />
+          </Mask>
+        </Defs>
+        <G mask="url(#Mask)">*/}
       <InsideLines
         width={map.width}
         height={map.height}

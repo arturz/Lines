@@ -1,24 +1,24 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
-import { Colors } from "../../styles";
+import { View, Text } from "react-native";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: Sizes.SPACING,
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.YELLOW,
+    backgroundColor: Colors.GRAY,
   },
   text: {
     fontFamily: "Barlow-Medium",
-    fontSize: 25,
-    color: Colors.YELLOW,
-    paddingLeft: 20,
-    paddingRight: 20,
+    fontSize: Sizes.PARAGRAPH.FONT_SIZE,
+    color: Colors.GRAY,
+    paddingLeft: Sizes.SPACING,
+    paddingRight: Sizes.SPACING,
   },
 });
 

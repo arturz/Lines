@@ -1,3 +1,4 @@
+//@ts-ignore
 import { gsap } from "gsap-rn";
 import { View } from "react-native";
 

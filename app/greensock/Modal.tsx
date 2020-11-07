@@ -1,6 +1,7 @@
 //@ts-ignore
 import { gsap } from "gsap-rn";
 import { View, Dimensions } from "react-native";
+import { EStyleSheet } from "../styles";
 import { measure } from "../utils";
 
 /*
@@ -28,7 +29,7 @@ export function animateModal(modal: View, content: View) {
     //expand width
     tl.to(modal, {
       style: {
-        width: Dimensions.get("window").width - 60,
+        width: EStyleSheet.value("300rem"),
         opacity: 1,
       },
       duration: 0.5,

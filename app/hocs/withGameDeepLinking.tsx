@@ -8,20 +8,21 @@ type Props = {
 
 export default <P extends Props>(WrappedComponent: React.ComponentType<P>) =>
   class WithDeepLinking extends React.Component<P> {
-    private navigate(url) {
+    private navigate(url: string) {
       const route = url.replace(/.*?:\/\//g, "");
-      const id = route.match(/\/([^\/]+)\/?$/)[1];
+      const id = route?.match(/\/([^\/]+)\/?$/)?.[1];
       const routeName = route.split("/")[0];
 
-      if (routeName === "join") {
-        this.props.navigation.navigate("NetworkMultiplayerGame", {
-          id,
-          isHost: false,
-        });
-      }
+      if (id !== null && id !== undefined)
+        if (routeName === "join") {
+          this.props.navigation.navigate("NetworkMultiplayerGame", {
+            id,
+            isHost: false,
+          });
+        }
     }
 
-    private handleOpenURL = (event) => {
+    private handleOpenURL = (event: { url: string }) => {
       this.navigate(event.url);
     };
 

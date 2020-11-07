@@ -9,3 +9,4 @@ export { default as ShareLinkAlert } from "./ShareLinkAlert";
 export { default as SelectMapSize } from "./SelectMapSize";
 export { default as SettingsAlert } from "./SettingsAlert";
 export { default as LeaveAppPrompt } from "./LeaveAppPrompt";
+export { default as MenuGameShowcase } from "./MenuGameShowcase";

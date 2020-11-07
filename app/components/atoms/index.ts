@@ -6,3 +6,5 @@ export { default as CurrentPlayerIndicator } from "./CurrentPlayerIndicator";
 export { default as LeaveGameButton } from "./LeaveGameButton";
 export { default as GameSettingsButton } from "./GameSettingsButton";
 export { default as Overlay } from "./Overlay";
+export { default as DarkModeSwitch } from "./DarkModeSwitch";
+export { default as Background } from "./MenuBackground";

@@ -1,13 +1,13 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
-import { Colors } from "../../styles";
+import { Text } from "react-native";
+import { useDynamicValue } from "react-native-dynamic";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   paragraph: {
-    fontSize: 25,
+    fontSize: Sizes.PARAGRAPH.FONT_SIZE,
     fontFamily: "Barlow-Medium",
-    color: Colors.YELLOW,
-    marginBottom: 30,
+    marginBottom: Sizes.SPACING_DOUBLE,
   },
 });
 
@@ -17,4 +17,7 @@ export default ({
 }: {
   children: string;
   style?: Object;
-}) => <Text style={[styles.paragraph, style]}>{children}</Text>;
+}) => {
+  const color = useDynamicValue(Colors.PARAGRAPH_DYNAMIC);
+  return <Text style={[styles.paragraph, style, { color }]}>{children}</Text>;
+};

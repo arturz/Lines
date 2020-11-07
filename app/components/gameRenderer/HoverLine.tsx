@@ -8,11 +8,13 @@ import React, {
 import { connect } from "react-redux";
 import { GameSizes, CellLineProps } from "../../types";
 import { Line } from "react-native-svg";
-import { getPlayerColor, getDrewLineProps } from "../../utils";
+import { getDrewLineProps } from "../../utils";
 import gsap from "gsap";
-import { Sizes } from "../../styles";
+import { Colors, Sizes } from "../../styles";
 import { RootState } from "../../redux";
 import { View } from "react-native";
+import { useDynamicValue } from "react-native-dynamic";
+import { Player } from "../../constants";
 
 type ComponentProps = ComponentOwnProps &
   ComponentStoreProps & {
@@ -46,6 +48,9 @@ const HoverLine: React.FC<ComponentProps> = ({
 }) => {
   const _line = useRef<View>(null);
   let timeline: gsap.core.Timeline;
+
+  const red = useDynamicValue(Colors.RED_DYNAMIC);
+  const blue = useDynamicValue(Colors.BLUE_DYNAMIC);
 
   const start = (props: CellLineProps) => {
     if (timeline) {
@@ -89,7 +94,11 @@ const HoverLine: React.FC<ComponentProps> = ({
   }));
 
   return (
-    <Line ref={_line} stroke={getPlayerColor(player)} strokeLinecap="round" />
+    <Line
+      ref={_line}
+      stroke={player === Player.A ? red : blue}
+      strokeLinecap="round"
+    />
   );
 };
 

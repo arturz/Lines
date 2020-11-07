@@ -1,28 +1,32 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { Colors } from "../../styles";
+import { View, Text } from "react-native";
+import { useDynamicValue } from "react-native-dynamic";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   container: {
     width: "100%",
-    paddingTop: 40,
-    paddingBottom: 40,
+    marginTop: Sizes.MENU_TITLE.MARGINS_Y,
+    marginBottom: Sizes.MENU_TITLE.MARGINS_Y,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
   text: {
-    fontSize: 90,
+    fontSize: Sizes.MENU_TITLE.FONT_SIZE,
+    lineHeight: Sizes.MENU_TITLE.LINE_HEIGHT,
     fontFamily: "FredokaOne-Regular",
-    color: Colors.RED,
     letterSpacing: 9,
     textAlign: "center",
-    lineHeight: 90,
   },
 });
 
-export default () => (
-  <View style={styles.container}>
-    <Text style={styles.text}>LINES{"\n"}GAME</Text>
-  </View>
-);
+export default () => {
+  const color = useDynamicValue(Colors.MENU_TITLE_DYNAMICS);
+
+  return (
+    <View style={styles.container}>
+      <Text style={[styles.text, { color }]}>LINES{"\n"}GAME</Text>
+    </View>
+  );
+};

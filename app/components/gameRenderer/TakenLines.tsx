@@ -2,9 +2,11 @@ import React, { memo } from "react";
 import { connect } from "react-redux";
 import { Line } from "react-native-svg";
 import { GameSizes } from "../../types";
-import { getDrewLineProps, getPlayerColor } from "../../utils";
-import { Sizes } from "../../styles";
+import { getDrewLineProps } from "../../utils";
+import { Colors, Sizes } from "../../styles";
 import { RootState } from "../../redux";
+import { useDynamicValue } from "react-native-dynamic";
+import { Player } from "../../constants";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
 type ComponentOwnProps = GameSizes;
@@ -22,6 +24,9 @@ const TakenLines: React.FC<ComponentProps> = memo(
   ({ cells, width, height, cellPx, offset }) => {
     const elements = [];
 
+    const red = useDynamicValue(Colors.RED_DYNAMIC);
+    const blue = useDynamicValue(Colors.BLUE_DYNAMIC);
+
     for (let i = 0; i < height; i++) {
       for (let j = 0; j < width; j++) {
         if (!cells[i][j]) continue;
@@ -34,7 +39,7 @@ const TakenLines: React.FC<ComponentProps> = memo(
                 cellPx,
                 offset,
               })}
-              stroke={getPlayerColor(cellLine.getPlayer())}
+              stroke={cellLine.getPlayer() === Player.A ? red : blue}
               strokeWidth={Sizes.TAKEN_LINES}
               strokeLinecap="round"
             />

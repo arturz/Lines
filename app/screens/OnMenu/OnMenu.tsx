@@ -5,12 +5,16 @@ import { Colors } from "../../styles";
 import {
   ButtonThatOpensModal,
   LeaveAppPrompt,
-  Modal,
+  MenuGameShowcase,
 } from "../../components/organisms";
 import { MenuScreenNavigationProp } from "../../navigations";
-import { Paragraph } from "../../components/atoms";
+import { DarkModeSwitch, Paragraph } from "../../components/atoms";
 import { withPortalHost, withGameDeepLinking } from "../../hocs";
-import { MenuButton, ModalButton } from "../../components/molecules";
+import {
+  MenuButton,
+  MenuExitButton,
+  ModalButton,
+} from "../../components/molecules";
 import LocalMultiplayerModalButton from "./LocalMultiplayerModalButton";
 import NetworkHostMultiplayerModalButton from "./NetworkHostMultiplayerModalButton";
 import { pipe } from "lodash/fp";
@@ -18,16 +22,15 @@ import { GameSize } from "../../constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import { Portal } from "react-native-portalize";
+import Background from "../../components/atoms/MenuBackground";
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: Colors.YELLOW,
   },
   buttons: {
-    display: "flex",
-    alignItems: "center",
+    width: "100%",
   },
 });
 
@@ -52,39 +55,43 @@ export default withGameDeepLinking<Props>(
     }, []);
 
     return (
-      <SafeAreaView>
-        <ScrollView style={styles.container}>
-          <Title />
-          <View style={styles.buttons}>
-            <MenuButton onPress={() => navigation.navigate("Tutorial")}>
-              How to play?
-            </MenuButton>
-            <LocalMultiplayerModalButton
-              goToGame={(gameSize: GameSize) =>
-                navigation.navigate("LocalMultiplayerGame", { gameSize })
-              }
-            />
-            <NetworkHostMultiplayerModalButton
-              goToGame={(gameSize: GameSize) =>
-                navigation.navigate("NetworkMultiplayerGame", {
-                  gameSize,
-                  isHost: true,
-                })
-              }
-            />
-            <MenuButton onPress={() => setLeaveAppPrompt(true)}>
-              Exit game
-            </MenuButton>
-            <Portal>
-              <LeaveAppPrompt
-                isOpen={leaveAppPrompt}
-                onLeave={() => BackHandler.exitApp()}
-                onResume={() => setLeaveAppPrompt(false)}
+      <>
+        <SafeAreaView>
+          <Background />
+          <MenuGameShowcase />
+          <ScrollView style={styles.container}>
+            <Title />
+            <View style={styles.buttons}>
+              <LocalMultiplayerModalButton
+                goToGame={(gameSize: GameSize) =>
+                  navigation.navigate("LocalMultiplayerGame", { gameSize })
+                }
               />
-            </Portal>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+              <NetworkHostMultiplayerModalButton
+                goToGame={(gameSize: GameSize) =>
+                  navigation.navigate("NetworkMultiplayerGame", {
+                    gameSize,
+                    isHost: true,
+                  })
+                }
+              />
+              <View style={{ display: "flex", alignItems: "center" }}>
+                <MenuExitButton onPress={() => setLeaveAppPrompt(true)}>
+                  Exit game
+                </MenuExitButton>
+              </View>
+              <Portal>
+                <DarkModeSwitch />
+                <LeaveAppPrompt
+                  isOpen={leaveAppPrompt}
+                  onLeave={() => BackHandler.exitApp()}
+                  onResume={() => setLeaveAppPrompt(false)}
+                />
+              </Portal>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </>
     );
   })
 );

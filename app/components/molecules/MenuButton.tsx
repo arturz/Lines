@@ -1,19 +1,21 @@
 import React, { forwardRef, ForwardRefRenderFunction } from "react";
-import { StyleSheet } from "react-native";
 import Button, {
   ButtonHandles,
   ButtonHandlesRef,
   ButtonOwnProps,
 } from "../atoms/Button";
-import { Colors, Sizes } from "../../styles";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
+import { useDynamicValue } from "react-native-dynamic";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   menuButton: {
-    height: Sizes.MENU_BUTTON_HEIGHT,
-    backgroundColor: Colors.BLUE,
+    width: Sizes.MENU_BUTTON.WIDTH,
+    height:
+      EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH) /
+      Sizes.MENU_BUTTON.ASPECT_RATIO,
   },
   menuButtonTextStyle: {
-    color: Colors.YELLOW,
+    fontSize: Sizes.MENU_BUTTON.FONT_SIZE,
   },
 });
 
@@ -23,14 +25,19 @@ type ComponentProps = ComponentOwnProps & {
 
 type ComponentOwnProps = Omit<ButtonOwnProps, "style" | "textStyle">;
 
-const Component: React.FC<ComponentProps> = ({ forwardedRef, ...props }) => (
-  <Button
-    ref={forwardedRef}
-    {...props}
-    style={styles.menuButton}
-    textStyle={styles.menuButtonTextStyle}
-  />
-);
+const Component: React.FC<ComponentProps> = ({ forwardedRef, ...props }) => {
+  const backgroundColor = useDynamicValue(Colors.PRIMARY_DYNAMIC);
+  const color = useDynamicValue(Colors.PRIMARY_TEXT_DYNAMIC);
+
+  return (
+    <Button
+      ref={forwardedRef}
+      {...props}
+      style={[styles.menuButton, { backgroundColor }]}
+      textStyle={[styles.menuButtonTextStyle, { color }]}
+    />
+  );
+};
 
 const ForwardedComponent: ForwardRefRenderFunction<
   ButtonHandles,

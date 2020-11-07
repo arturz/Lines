@@ -7,7 +7,7 @@ import { GameSize } from "../../constants";
 
 export default ({ goToGame }: { goToGame: (gameSize: GameSize) => void }) => (
   <ButtonThatOpensModal
-    buttonTitle={"two players\non this device"}
+    buttonTitle={"Two players\noffline"}
     modalTitle="Map size"
   >
     <SelectMapSize onSelect={goToGame} />

@@ -10,9 +10,27 @@ import checkIfRoomExists from "./checkIfRoomExists";
 import { database, firestore } from "../firebase";
 import { getToggledPlayer } from "../utils";
 
+type Listener = {
+  removeListener: Function;
+  type?: string;
+};
+
+type Snapshot = {
+  val: () => any;
+};
+
+type EventNames =
+  | "connected"
+  | "disconnected"
+  | "left"
+  | "opponentConnected"
+  | "opponentDisconnected"
+  | "opponentLeft"
+  | "opponentsAction";
+
 export class NetworkGame {
-  public readonly emitter = new EventEmitter();
-  private readonly firestoreListeners: Function[] = [];
+  public readonly emitter = new EventEmitter<EventNames>();
+  private readonly listeners: Listener[] = [];
 
   constructor(public readonly roomId: string, private readonly player: Player) {
     if (__DEV__) this.checkCodebase();
@@ -24,14 +42,14 @@ export class NetworkGame {
   private async checkCodebase() {
     //make sure events will be handled properly (you have to attach them on your own)
     setTimeout(() => {
-      if (
-        this.emitter.listenerCount("roomDestroyed") === 0 &&
-        this.emitter.listenerCount("opponentLeft") === 0
-      ) {
-        throw new Error(
-          `You should attach roomDestroyed or opponentLeft listener that navigates to menu`
-        );
-      }
+      const navigationEvents: EventNames[] = ["opponentLeft", "left"];
+      navigationEvents
+        .filter((name) => this.emitter.listenerCount(name) === 0)
+        .forEach((name) => {
+          throw new Error(
+            `You should attach ${name} listener that navigates to menu`
+          );
+        });
 
       if (this.emitter.listenerCount("opponentsAction") === 0) {
         throw new Error(
@@ -53,57 +71,92 @@ export class NetworkGame {
       .ref(`/online/${this.roomId}/${this.player}`)
       .set(NetworkPlayerStatus.CONNECTED);
 
-    //configure onDisconnect callback
-    await database()
-      .ref(`/online/${this.roomId}/${this.player}`)
-      .onDisconnect()
-      .set(NetworkPlayerStatus.DISCONNECTED);
+    //onDisconnect listener is removed every disconnection
+    database()
+      .ref(".info/connected")
+      .on("value", (snapshot: Snapshot) => {
+        if (snapshot.val() === true) {
+          const onDisconnectRef = database()
+            .ref(`/online/${this.roomId}/${this.player}`)
+            .onDisconnect();
+
+          onDisconnectRef.set(NetworkPlayerStatus.DISCONNECTED);
+
+          this.listeners.push({
+            removeListener: () => onDisconnectRef.cancel(),
+            type: "ON_DISCONNECT",
+          });
+
+          this.emitter.emit("connected");
+        } else {
+          this.emitter.emit("disconnected");
+        }
+      });
+
+    this.listeners.push({
+      removeListener: () => database().ref(".info/connected").off("value"),
+    });
   }
 
   private attachEmitterListeners() {
-    const delayedOpponentLeft = throttle(() => {
-      this.emitter.emit("opponentLeft");
-    }, MAX_DISCONNECTED_TIME);
+    const throttledOpponentLeft = throttle(
+      () => void this.emitter.emit("opponentLeft"),
+      MAX_DISCONNECTED_TIME,
+      { leading: false }
+    );
+
+    const throttledLeft = throttle(
+      () => void this.emitter.emit("left"),
+      MAX_DISCONNECTED_TIME,
+      { leading: false }
+    );
 
     //opponent has left the game or may has some connection problems
     //if he/she doesn't reconnect before MAX_DISCONNECTED_TIME, room will be destroyed
-    this.emitter.on("opponentDisconnected", delayedOpponentLeft);
-    this.emitter.on("opponentConnected", () => delayedOpponentLeft.cancel());
-
+    this.emitter.on("opponentDisconnected", throttledOpponentLeft);
+    this.emitter.on("opponentConnected", () => throttledOpponentLeft.cancel());
     //opponent left the game and can't go back - it's time to destroy the room and leave the game
     this.emitter.on("opponentLeft", this.__destroy);
+
+    this.emitter.on("disconnected", throttledLeft);
+    this.emitter.on("connected", () => throttledLeft.cancel());
+    this.emitter.on("left", this.leave);
   }
 
   private attachFirestoreListeners() {
     //listen for opponent's presence change
-    this.firestoreListeners.push(
-      database()
-        .ref(`/online/${this.roomId}/${getToggledPlayer(this.player)}`)
-        //@ts-ignore
-        .on("value", (snapshot) => {
-          console.log(
-            `on('value') snapshot = ${snapshot ? snapshot.val() : snapshot}`
-          );
+    database()
+      .ref(`/online/${this.roomId}/${getToggledPlayer(this.player)}`)
+      .on("value", (snapshot: Snapshot) => {
+        console.log(
+          `on('value') snapshot = ${snapshot ? snapshot.val() : snapshot}`
+        );
 
-          // object has been destroyed (?)
-          if (snapshot === undefined) return;
+        // object has been destroyed (?)
+        if (snapshot === undefined) return;
 
-          // parent object has been destroyed (?)
-          if (snapshot === null) return;
+        // parent object has been destroyed (?)
+        if (snapshot === null) return;
 
-          if (snapshot.val() === NetworkPlayerStatus.CONNECTED) {
-            this.emitter.emit("opponentConnected");
-          } else if (snapshot.val() === NetworkPlayerStatus.DISCONNECTED) {
-            this.emitter.emit("opponentDisconnected");
-          } else if (snapshot.val() === NetworkPlayerStatus.LEFT) {
-            this.emitter.emit("opponentLeft");
-          }
-        })
-    );
+        if (snapshot.val() === NetworkPlayerStatus.CONNECTED) {
+          this.emitter.emit("opponentConnected");
+        } else if (snapshot.val() === NetworkPlayerStatus.DISCONNECTED) {
+          this.emitter.emit("opponentDisconnected");
+        } else if (snapshot.val() === NetworkPlayerStatus.LEFT) {
+          this.emitter.emit("opponentLeft");
+        }
+      });
+
+    this.listeners.push({
+      removeListener: () =>
+        database()
+          .ref(`/online/${this.roomId}/${getToggledPlayer(this.player)}`)
+          .off("value"),
+    });
 
     //listen for opponent's action
-    this.firestoreListeners.push(
-      firestore()
+    this.listeners.push({
+      removeListener: firestore()
         .collection("rooms")
         .doc(this.roomId)
         .collection("actions")
@@ -116,8 +169,8 @@ export class NetworkGame {
               this.emitter.emit("opponentsAction", change.doc.data());
             }
           });
-        })
-    );
+        }),
+    });
   }
 
   private async deleteActions() {
@@ -132,7 +185,10 @@ export class NetworkGame {
 
   async __destroy() {
     //remove firebase listeners
-    this.firestoreListeners.forEach((fn) => fn());
+    this.listeners.forEach(({ removeListener }) => removeListener());
+
+    //remove client-side listeners
+    this.emitter.removeAllListeners();
 
     //remove presence object
     await database().ref(`/online/${this.roomId}`).remove();
@@ -142,12 +198,6 @@ export class NetworkGame {
 
     //delete room
     await firestore().collection("rooms").doc(this.roomId).delete();
-
-    //it's time to navigate to menu
-    this.emitter.emit("roomDestroyed");
-
-    //remove client-side listeners
-    this.emitter.removeAllListeners();
   }
 
   async action({ type, payload }: { type: string; payload?: any }) {
@@ -168,7 +218,7 @@ export class NetworkGame {
   //set presence to LEFT and leave the game, opponent will destroy the room
   async leave() {
     //remove firebase listeners
-    this.firestoreListeners.map((fn) => fn());
+    this.listeners.forEach(({ removeListener }) => removeListener());
 
     //remove client-side listeners
     this.emitter.removeAllListeners();

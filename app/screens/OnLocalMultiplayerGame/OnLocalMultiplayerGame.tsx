@@ -27,6 +27,8 @@ import { generateMapSeed } from "../../utils";
 import { GameSize } from "../../constants";
 import { RouteProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDynamicValue } from "react-native-dynamic";
+import { Colors } from "../../styles";
 
 type ComponentProps = ComponentOwnProps &
   ComponentStoreProps &
@@ -100,9 +102,10 @@ const LocalMultiplayerGame: React.FC<ComponentProps> = ({
     return () => backHandler.remove();
   }, []);
 
+  const backgroundColor = useDynamicValue(Colors.BACKGROUND_DYNAMIC);
   return (
     <SafeAreaView>
-      <View style={{ width: "100%", height: "100%" }}>
+      <View style={{ width: "100%", height: "100%", backgroundColor }}>
         {(status === GameStatus.Playing || status === GameStatus.Finish) && (
           <>
             <GameHeader

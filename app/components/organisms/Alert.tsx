@@ -1,27 +1,26 @@
 import React, { useRef, useEffect, ReactNode, useState } from "react";
 import { Animated, View, StyleSheet, Easing } from "react-native";
-import { Colors } from "../../styles";
+import { useDynamicValue } from "react-native-dynamic";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 import { Overlay } from "../atoms";
 import { ModalHeader } from "../molecules";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   container: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: 30,
+    margin: Sizes.SPACING_DOUBLE,
   },
   alert: {
-    backgroundColor: Colors.BLUE,
-    borderRadius: 30,
+    borderRadius: Sizes.MODAL.BORDER_RADIUS,
     elevation: 6,
     width: "100%",
-    maxWidth: 420,
-    padding: 15,
+    padding: Sizes.MODAL.PADDING,
   },
   main: {
-    marginLeft: 15,
-    marginRight: 15,
+    marginLeft: Sizes.SPACING,
+    marginRight: Sizes.SPACING,
   },
 });
 
@@ -82,6 +81,8 @@ const Alert: React.FC<ComponentProps> = ({
     ],
   };
 
+  const backgroundColor = useDynamicValue(Colors.BACKGROUND_DYNAMIC);
+
   return (
     <>
       <Overlay isVisible={overlay} duration={300} onPress={onClose} />
@@ -89,7 +90,9 @@ const Alert: React.FC<ComponentProps> = ({
         style={[StyleSheet.absoluteFill, styles.container]}
         pointerEvents={isOpen ? "auto" : "none"}
       >
-        <Animated.View style={[styles.alert, animationStyle]}>
+        <Animated.View
+          style={[styles.alert, animationStyle, { backgroundColor }]}
+        >
           <ModalHeader
             title={title}
             xButton={onClose ? { animate: true, onPress: onClose } : false}

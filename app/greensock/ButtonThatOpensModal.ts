@@ -1,7 +1,7 @@
 //@ts-ignore
 import { gsap } from "gsap-rn";
 import { View, Text, Easing } from "react-native";
-import { Sizes } from "../styles";
+import { EStyleSheet, Sizes } from "../styles";
 
 export function animateButtonThatOpensModal(button: View, text: Text) {
   return new Promise((resolve) => {
@@ -15,16 +15,21 @@ export function animateButtonThatOpensModal(button: View, text: Text) {
       ease: "tween3",
     });
 
+    const originalButtonWidth = EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH);
+    const oririnalButtonHeight =
+      EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH) /
+      Sizes.MENU_BUTTON.ASPECT_RATIO;
+
     tl.set(button, {
       style: {
-        width: Sizes.MENU_BUTTON_WIDTH,
-        height: Sizes.MENU_BUTTON_HEIGHT,
+        width: originalButtonWidth,
+        height: oririnalButtonHeight,
       },
     });
 
     //change button's shape to circle-like
     tl.to(button, {
-      style: { width: Sizes.MENU_BUTTON_HEIGHT },
+      style: { width: oririnalButtonHeight },
       duration: 0.25,
       ease: "tween3",
     });
@@ -45,11 +50,16 @@ export function reverseAnimateButtonThatOpensModal(button: View, text: Text) {
   return new Promise((resolve) => {
     const tl = gsap.timeline();
 
+    const originalButtonWidth = EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH);
+    const oririnalButtonHeight =
+      EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH) /
+      Sizes.MENU_BUTTON.ASPECT_RATIO;
+
     //make circle bigger
     tl.to(button, {
       style: {
-        width: Sizes.MENU_BUTTON_HEIGHT,
-        height: Sizes.MENU_BUTTON_HEIGHT,
+        width: oririnalButtonHeight,
+        height: oririnalButtonHeight,
       },
       duration: 0.25,
       ease: "tween3",
@@ -58,8 +68,8 @@ export function reverseAnimateButtonThatOpensModal(button: View, text: Text) {
     //change shape from circle to normal button
     tl.to(button, {
       style: {
-        width: Sizes.MENU_BUTTON_WIDTH,
-        height: Sizes.MENU_BUTTON_HEIGHT,
+        width: originalButtonWidth,
+        height: oririnalButtonHeight,
       },
       duration: 0.25,
       ease: "tween3",

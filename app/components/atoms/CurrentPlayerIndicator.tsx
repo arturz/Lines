@@ -1,27 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Animated,
-  Easing,
-  LayoutChangeEvent,
-} from "react-native";
+import { View, Animated, Easing, LayoutChangeEvent } from "react-native";
 import { connect } from "react-redux";
-import { Colors } from "../../styles";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 import { Player } from "../../constants";
 import { getToggledPlayer } from "../../utils";
-import { GAME_HEADER_HEIGHT } from "../../styles/sizes";
 import { RootState } from "../../redux";
+import { useDynamicValue } from "react-native-dynamic";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: Colors.BLUE,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    height: Sizes.GAME_HEADER.HEIGHT,
+    borderBottomLeftRadius: Sizes.GAME_HEADER.BORDER_RADIUS,
+    borderBottomRightRadius: Sizes.GAME_HEADER.BORDER_RADIUS,
     overflow: "hidden",
-    height: GAME_HEADER_HEIGHT,
     display: "flex",
     justifyContent: "center",
   },
@@ -31,9 +23,8 @@ const styles = StyleSheet.create({
   textbar: {
     position: "absolute",
     width: "100%",
-    fontSize: 30,
+    fontSize: Sizes.GAME_HEADER.FONT_SIZE,
     fontFamily: "FredokaOne-Regular",
-    color: Colors.YELLOW,
     textAlign: "center",
     textTransform: "uppercase",
   },
@@ -116,18 +107,22 @@ const Indicator: React.FC<ComponentProps> = ({
     }).start();
   }, [player]);
 
+  const backgroundColor = useDynamicValue(
+    Colors.CURRENT_PLAYER_INDICATOR.CONTAINER_DYNAMIC
+  );
+  const color = useDynamicValue(Colors.CURRENT_PLAYER_INDICATOR.TEXT_DYNAMIC);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor }]}>
       <View style={[styles.textbarsContainer, { height: textHeight }]}>
         <Animated.Text
           numberOfLines={1}
-          style={[styles.textbar, fadingOutTextbarStyle]}
+          style={[styles.textbar, fadingOutTextbarStyle, { color }]}
         >
           {fadingOutTextbarText}
         </Animated.Text>
         <Animated.Text
           numberOfLines={1}
-          style={[styles.textbar, fadingInTextbarStyle]}
+          style={[styles.textbar, fadingInTextbarStyle, { color }]}
           onLayout={onLayout}
         >
           {fadingInTextbarText}

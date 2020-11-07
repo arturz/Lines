@@ -54,6 +54,7 @@
 		B5F7F272BC4A4FD896586C94 /* Barlow-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF95441755DF48B3AE1F51D9 /* Barlow-ThinItalic.ttf */; };
 		0C2BC0839FBE47CBB7474EBB /* libRCTGCanvas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E527D5F99AC4F6C9E7D6DB2 /* libRCTGCanvas.a */; };
 		A8EEA3BC84BA4840AD7C2587 /* FredokaOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8CEC866B24A447FF85516E16 /* FredokaOne-Regular.ttf */; };
+		76EEE84C947C41B68EB11F5A /* Signika-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 406889C409994C66BC890C62 /* Signika-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +129,7 @@
 		2D48BE5635D04A67A1F3D81A /* RCTGCanvas.xcodeproj */ = {isa = PBXFileReference; name = "RCTGCanvas.xcodeproj"; path = "../node_modules/react-native-gcanvas/ios/RCTGCanvas.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		4E527D5F99AC4F6C9E7D6DB2 /* libRCTGCanvas.a */ = {isa = PBXFileReference; name = "libRCTGCanvas.a"; path = "libRCTGCanvas.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		8CEC866B24A447FF85516E16 /* FredokaOne-Regular.ttf */ = {isa = PBXFileReference; name = "FredokaOne-Regular.ttf"; path = "../app/assets/fonts/FredokaOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		406889C409994C66BC890C62 /* Signika-Regular.ttf */ = {isa = PBXFileReference; name = "Signika-Regular.ttf"; path = "../app/assets/fonts/Signika-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -277,6 +279,7 @@
 				624459ED3E584501890CEC76 /* Barlow-Thin.ttf */,
 				BF95441755DF48B3AE1F51D9 /* Barlow-ThinItalic.ttf */,
 				8CEC866B24A447FF85516E16 /* FredokaOne-Regular.ttf */,
+				406889C409994C66BC890C62 /* Signika-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -457,6 +460,7 @@
 				587F916FB92F4FBDBA84848B /* Barlow-Thin.ttf in Resources */,
 				B5F7F272BC4A4FD896586C94 /* Barlow-ThinItalic.ttf in Resources */,
 				A8EEA3BC84BA4840AD7C2587 /* FredokaOne-Regular.ttf in Resources */,
+				76EEE84C947C41B68EB11F5A /* Signika-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

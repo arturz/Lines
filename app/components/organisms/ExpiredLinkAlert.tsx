@@ -2,6 +2,14 @@ import React from "react";
 import Alert from "./Alert";
 import { Paragraph } from "../atoms";
 import { ModalButton } from "../molecules";
+import { View, StyleSheet } from "react-native";
+
+const styles = StyleSheet.create({
+  buttons: {
+    display: "flex",
+    alignItems: "center",
+  },
+});
 
 export default ({
   isOpen,
@@ -12,6 +20,8 @@ export default ({
 }) => (
   <Alert title="Oooops!" isOpen={isOpen}>
     <Paragraph>Link has been expired.</Paragraph>
-    <ModalButton onPress={goToMenu}>Go back</ModalButton>
+    <View style={styles.buttons}>
+      <ModalButton onPress={goToMenu}>Go to menu</ModalButton>
+    </View>
   </Alert>
 );

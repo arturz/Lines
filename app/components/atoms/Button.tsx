@@ -6,26 +6,26 @@ import React, {
   useImperativeHandle,
   ForwardRefRenderFunction,
 } from "react";
-import { Text, StyleSheet, View } from "react-native";
-import { Colors, Sizes } from "../../styles";
+import { Text, View } from "react-native";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 import { TouchableScale } from "../wrappers/touchables";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   button: {
-    height: Sizes.BUTTON_HEIGHT,
-    width: Sizes.BUTTON_WIDTH,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: Math.max(Sizes.BUTTON_HEIGHT, Sizes.BUTTON_WIDTH),
+    borderRadius: Sizes.MENU_BUTTON.WIDTH,
     textTransform: "uppercase",
   },
-  margin: {
-    marginBottom: 15,
+  singleMargin: {
+    marginBottom: Sizes.SPACING,
+  },
+  doubleMargin: {
+    marginBottom: Sizes.SPACING_DOUBLE,
   },
   text: {
     fontFamily: "Barlow-Medium",
-    fontSize: 25,
     color: Colors.BLUE,
     textTransform: "uppercase",
     textAlign: "center",
@@ -38,10 +38,11 @@ type ComponentProps = ComponentOwnProps & {
 
 export { ComponentProps as ButtonProps };
 
+type Margin = "none" | "single" | "double";
 type ComponentOwnProps = {
   style?: Object;
   textStyle?: Object;
-  withoutMargin?: boolean;
+  margin?: Margin;
   onPress: () => void;
   ref?: Ref;
 };
@@ -60,11 +61,17 @@ type Ref =
 
 export { Ref as ButtonHandlesRef };
 
+const margins: { [type in Margin]: Object | null } = {
+  single: styles.singleMargin,
+  double: styles.doubleMargin,
+  none: null,
+};
+
 const Button: React.FC<ComponentProps> = ({
   children,
   forwardedRef,
   onPress,
-  withoutMargin,
+  margin,
   style = {},
   textStyle = {},
 }) => {
@@ -81,7 +88,7 @@ const Button: React.FC<ComponentProps> = ({
   }));
 
   return (
-    <View style={withoutMargin ? null : styles.margin}>
+    <View style={margins[margin || "single"]}>
       <TouchableScale onPress={onPress}>
         <View style={[styles.button, style]} ref={button}>
           <Text style={[styles.text, textStyle]} ref={text}>

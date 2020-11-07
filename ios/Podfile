@@ -12,6 +12,9 @@ target 'LinesGame' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
+
+
   target 'LinesGameTests' do
     inherit! :complete
     # Pods for testing

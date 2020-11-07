@@ -5,6 +5,7 @@ import { GameSizes } from "../../types";
 import { Sizes, Colors } from "../../styles";
 import { shouldMapLayoutUpdate } from "../../utils";
 import { RootState } from "../../redux";
+import { useDynamicValue } from "react-native-dynamic";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
 type ComponentOwnProps = GameSizes;
@@ -22,6 +23,8 @@ const mapStateToProps = ({
 const InsideLines: React.FC<ComponentProps> = memo(
   ({ cells, width, height, cellPx, offset }) => {
     const elements = [];
+
+    const insideLinesColor = useDynamicValue(Colors.INSIDE_LINES_DYNAMIC);
 
     //rows
     for (let y = 0; y < height; y++) {
@@ -48,8 +51,8 @@ const InsideLines: React.FC<ComponentProps> = memo(
                 y1={offset.height + y * cellPx}
                 x2={offset.width + endX * cellPx}
                 y2={offset.height + y * cellPx}
-                stroke={Colors.YELLOW}
-                strokeWidth={Sizes.TAKEN_LINES}
+                stroke={insideLinesColor}
+                strokeWidth={Sizes.INSIDE_LINES}
                 strokeLinecap="round"
               />
             );
@@ -87,7 +90,7 @@ const InsideLines: React.FC<ComponentProps> = memo(
                 y1={offset.height + startY * cellPx}
                 x2={offset.width + x * cellPx}
                 y2={offset.height + endY * cellPx}
-                stroke={Colors.YELLOW}
+                stroke={insideLinesColor}
                 strokeWidth={Sizes.TAKEN_LINES}
                 strokeLinecap="round"
               />

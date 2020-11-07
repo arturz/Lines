@@ -1,16 +1,17 @@
 import React, { ReactNode } from "react";
-import { Text, StyleSheet } from "react-native";
-import { Colors } from "../../styles";
+import { Text } from "react-native";
+import { useDynamicValue } from "react-native-dynamic";
+import { Colors, EStyleSheet, Sizes } from "../../styles";
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   title: {
     fontFamily: "FredokaOne-Regular",
-    fontSize: 30,
-    color: Colors.YELLOW,
-    marginLeft: 15,
+    fontSize: Sizes.TITLE.FONT_SIZE,
+    marginLeft: Sizes.SPACING,
   },
 });
 
-export default ({ children }: { children: ReactNode }) => (
-  <Text style={styles.title}>{children}</Text>
-);
+export default ({ children }: { children: ReactNode }) => {
+  const color = useDynamicValue(Colors.TITLE_DYNAMIC);
+  return <Text style={[styles.title, { color }]}>{children}</Text>;
+};
