@@ -3,17 +3,23 @@ import getEighthAroundPointer, {
 } from "./getEighthAroundPointer";
 import { Point } from "../../../types";
 import { Direction } from "../../../constants";
+import { POINTER_IS_TOO_FAR } from "./constants";
 
-export type HoverLineProps = Point & {
-  direction: Direction;
-  backwards?: boolean;
-};
+export type HoverLineProps =
+  | (Point & {
+      direction: Direction;
+      backwards?: boolean;
+    })
+  | typeof POINTER_IS_TOO_FAR;
 
 const getHoverLineProps = (
   { x, y }: Point,
   { pointer, cellPx, offset }: EightAroundPointerProps
 ): HoverLineProps => {
   const eighth = getEighthAroundPointer({ x, y }, { pointer, cellPx, offset });
+  if (eighth === POINTER_IS_TOO_FAR) {
+    return POINTER_IS_TOO_FAR;
+  }
 
   switch (eighth) {
     case 0:

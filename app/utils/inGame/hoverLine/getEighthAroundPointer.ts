@@ -1,5 +1,6 @@
 import { Point, Offset } from "../../../types";
 import { Pointer } from "../../../classes";
+import { POINTER_IS_TOO_FAR } from "./constants";
 
 export interface EightAroundPointerProps {
   pointer: Pointer;
@@ -14,7 +15,12 @@ export default (
   const pointerX = pointer.getCoordinates().x * cellPx + offset.width;
   const pointerY = pointer.getCoordinates().y * cellPx + offset.height;
 
-  let deg = (Math.atan2(y - pointerY, x - pointerX) * 180) / Math.PI;
+  const diffX = x - pointerX;
+  const diffY = y - pointerY;
+
+  if (Math.hypot(diffY, diffX) > cellPx * 4) return POINTER_IS_TOO_FAR;
+
+  let deg = (Math.atan2(diffY, diffX) * 180) / Math.PI;
   if (deg < 0) deg = Math.abs(deg);
   else deg = 360 - deg;
 

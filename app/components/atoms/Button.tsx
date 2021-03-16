@@ -1,5 +1,4 @@
 import React, {
-  ReactNode,
   useRef,
   forwardRef,
   MutableRefObject,
@@ -7,7 +6,7 @@ import React, {
   ForwardRefRenderFunction,
 } from "react";
 import { Text, View } from "react-native";
-import { Colors, EStyleSheet, Sizes } from "../../styles";
+import { EStyleSheet, Sizes } from "../../styles";
 import { TouchableScale } from "../wrappers/touchables";
 
 const styles = EStyleSheet.create({
@@ -26,7 +25,6 @@ const styles = EStyleSheet.create({
   },
   text: {
     fontFamily: "Barlow-Medium",
-    color: Colors.BLUE,
     textTransform: "uppercase",
     textAlign: "center",
   },
@@ -50,8 +48,8 @@ type ComponentOwnProps = {
 export { ComponentOwnProps as ButtonOwnProps };
 
 export type ButtonHandles = {
-  button: View | null;
-  text: Text | null;
+  readonly button: View | null;
+  readonly text: Text | null;
 };
 
 type Ref =

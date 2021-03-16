@@ -2,10 +2,8 @@ import { DynamicValue } from "react-native-dynamic";
 
 export const TRANSPARENT = "#FFFFFF00";
 
-export const RED = "#ff644c";
-export const BLUE = "#5da1ff";
 export const RED_DYNAMIC = new DynamicValue("#ff644c", "#B13623");
-export const BLUE_DYNAMIC = new DynamicValue("#5da1ff", "#396CB2");
+export const BLUE_DYNAMIC = new DynamicValue("#5da1ff", "#246acb");
 
 export const BORDERS_DYNAMIC = new DynamicValue("#f9d56e", "#4D4D4D");
 export const INSIDE_LINES_DYNAMIC = new DynamicValue("#f3ecc2", "#646464");

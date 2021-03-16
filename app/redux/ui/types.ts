@@ -1,3 +1,3 @@
 export type UIState = {
-  readonly darkMode: boolean;
+  readonly darkMode?: boolean;
 };

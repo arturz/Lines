@@ -1,6 +1,7 @@
 export * from "./DisplayResolution";
 export * from "./GameSizes";
 export * from "./MapSize";
+export * from "./MapCellsSizes";
 export * from "./Offset";
 export * from "./Point";
 export * from "./CellLineProps";
@@ -9,3 +10,4 @@ export * from "./Cells";
 export * from "./GameMap";
 export * from "./MapSeed";
 export * from "./Array2D";
+export * from "./PowerUp";

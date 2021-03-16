@@ -8,6 +8,7 @@ export const TAKEN_LINES = EStyleSheet.value(BASE);
 export const POINTER = EStyleSheet.value(BASE) * 1.2;
 export const BORDER = EStyleSheet.value(BASE) * 1.4;
 export const GATE = EStyleSheet.value(BASE) * 2.4;
+export const CARROT_POWER_UP = EStyleSheet.value(BASE) * 4.5;
 
 export const MENU_BUTTON = {
   WIDTH: "250rem",

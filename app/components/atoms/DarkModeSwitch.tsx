@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDynamicValue } from "react-native-dynamic";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
@@ -15,6 +15,7 @@ import { Colors, EStyleSheet, Sizes } from "../../styles";
 
 import MoonIcon from "../../assets/images/moon.svg";
 import SunIcon from "../../assets/images/sun.svg";
+import usePrevious from "use-previous";
 
 type ComponentProps = ComponentStoreProps & ComponentDispatchProps;
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
@@ -74,6 +75,12 @@ const DarkModeSwitch: React.FC<ComponentProps> = ({
 }) => {
   const offsetX = useSharedValue(0);
 
+  const previousDarkMode = usePrevious(darkMode);
+  useEffect(() => {
+    if (previousDarkMode === undefined && darkMode)
+      offsetX.value = Sizes.DARK_MODE_SWITCH.TRANSLATE_X;
+  }, [darkMode]);
+
   const circleStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -122,9 +129,9 @@ const DarkModeSwitch: React.FC<ComponentProps> = ({
           </View>
           <View style={styles.icon}>
             {darkMode ? (
-              <SunIcon fill={iconColor} width="100%" height="100%" />
-            ) : (
               <MoonIcon fill={iconColor} width="100%" height="100%" />
+            ) : (
+              <SunIcon fill={iconColor} width="100%" height="100%" />
             )}
           </View>
         </TouchableWithoutFeedback>

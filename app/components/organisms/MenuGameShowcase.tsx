@@ -1,37 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { compose, Dispatch } from "redux";
-import { processColor, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { GameSize, GameStatus } from "../../constants";
 import { initializeAndStartGame, RootState } from "../../redux";
 import { generateMapSeed } from "../../utils";
 import { GameLogic, GameRenderer } from "../gameRenderer";
 import { LayoutWrapper } from "../wrappers";
-import LinearGradient from "react-native-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { Colors } from "../../styles";
 
 type ComponentProps = ComponentStoreProps & ComponentDispatchProps;
 
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 type ComponentDispatchProps = ReturnType<typeof mapDispatchToProps>;
 
-const mapStateToProps = ({
-  game: { status },
-  ui: { darkMode },
-}: RootState) => ({
+const mapStateToProps = ({ game: { status } }: RootState) => ({
   status,
-  darkMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   dispatchInitializeAndStartGame: compose(dispatch, initializeAndStartGame),
 });
 
+const opacity = {
+  opacity: 0.8,
+};
+
 const MenuGameShowcase: React.FC<ComponentProps> = ({
   dispatchInitializeAndStartGame,
   status,
-  darkMode,
 }) => {
   function initialize() {
     dispatchInitializeAndStartGame(
@@ -59,7 +56,7 @@ const MenuGameShowcase: React.FC<ComponentProps> = ({
   if (!visible) return null;
 
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <View style={[StyleSheet.absoluteFill, opacity]}>
       {(status === GameStatus.Playing || status === GameStatus.Finish) && (
         <GameLogic>
           <LayoutWrapper
@@ -78,13 +75,6 @@ const MenuGameShowcase: React.FC<ComponentProps> = ({
           />
         </GameLogic>
       )}
-      {/*<LinearGradient
-        colors={[
-          darkMode ? Colors.BACKGROUND_DARK : Colors.BACKGROUND,
-          Colors.TRANSPARENT,
-        ]}
-        style={[StyleSheet.absoluteFill]}
-      />*/}
     </View>
   );
 };

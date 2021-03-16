@@ -93,11 +93,16 @@ const ButtonThatOpensModal: React.FC<ComponentProps> = ({
     );
 
     const { pageY, height } = await measure(buttonComponent.current.button);
-    setModalTop(pageY + height / 2);
+    const top = pageY + height / 2;
+    setModalTop(top);
 
     setAnimationState(AnimationState.ANIMATING_MODAL);
     setOverlay(true);
-    await animateModal(modalComponent.current, modalContentComponent.current);
+    await animateModal(
+      modalComponent.current,
+      modalContentComponent.current,
+      top
+    );
     setAnimateXButton(true);
     setAnimationState(AnimationState.END);
   }

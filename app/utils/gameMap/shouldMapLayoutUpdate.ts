@@ -12,4 +12,6 @@ export default function <T extends Props>(props: T, nextProps: T) {
     // don't re-render/update
     return true;
   }
+
+  return false
 }

@@ -30,7 +30,8 @@ const ShareLinkAlert: React.FC<ComponentProps> = ({
     if (!id) return;
 
     Share.share({
-      message: `Join me in Lines game: ${getInviteLink(id)}`,
+      //message: `Join me in Lines game: ${getInviteLink(id)}`,
+      message: getInviteLink(id),
     });
   }
 

@@ -7,18 +7,18 @@ export function animateButtonThatOpensModal(button: View, text: Text) {
   return new Promise((resolve) => {
     const tl = gsap.timeline();
 
-    //lift up text
-    tl.set(text, { style: { bottom: 0, opacity: 1 } });
-    tl.to(text, {
-      style: { bottom: 80, opacity: 0 },
-      duration: 0.25,
-      ease: "tween3",
-    });
-
     const originalButtonWidth = EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH);
     const oririnalButtonHeight =
       EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH) /
       Sizes.MENU_BUTTON.ASPECT_RATIO;
+
+    //lift up text
+    tl.set(text, { style: { bottom: 0, opacity: 1 } });
+    tl.to(text, {
+      style: { bottom: oririnalButtonHeight, opacity: 0 },
+      duration: 0.25,
+      ease: "tween3",
+    });
 
     tl.set(button, {
       style: {
@@ -36,7 +36,7 @@ export function animateButtonThatOpensModal(button: View, text: Text) {
 
     //make circle smaller
     tl.to(button, {
-      style: { width: 40, height: 40 },
+      style: { width: oririnalButtonHeight / 2, height: oririnalButtonHeight / 2 },
       duration: 0.25,
       ease: Easing.bezier(0, 0.5, 0.5, 1.5),
       onComplete() {
@@ -48,7 +48,7 @@ export function animateButtonThatOpensModal(button: View, text: Text) {
 
 export function reverseAnimateButtonThatOpensModal(button: View, text: Text) {
   return new Promise((resolve) => {
-    const tl = gsap.timeline();
+    const tl = gsap.timeline() as gsap.core.Timeline;
 
     const originalButtonWidth = EStyleSheet.value(Sizes.MENU_BUTTON.WIDTH);
     const oririnalButtonHeight =

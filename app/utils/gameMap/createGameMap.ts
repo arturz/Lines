@@ -51,5 +51,11 @@ export default (seed: MapSeed): GameMap => {
     borders,
     cells,
     seed,
+    lastTakenLine: null,
+    powerUps: [{
+      type: 'CARROT',
+      x: 1,
+      y: 2
+    }]
   };
 };

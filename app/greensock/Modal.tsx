@@ -1,7 +1,7 @@
 //@ts-ignore
 import { gsap } from "gsap-rn";
-import { View, Dimensions } from "react-native";
-import { EStyleSheet } from "../styles";
+import { View } from "react-native";
+import { EStyleSheet, Sizes } from "../styles";
 import { measure } from "../utils";
 
 /*
@@ -11,7 +11,10 @@ import { measure } from "../utils";
 */
 const modalsHeight = new WeakMap<View, number>();
 
-export function animateModal(modal: View, content: View) {
+const getShrinkedModalHeight = () =>
+  EStyleSheet.value('60rem')
+
+export function animateModal(modal: View, content: View, top: number) {
   return new Promise(async (resolve) => {
     const tl = gsap.timeline();
 
@@ -23,8 +26,16 @@ export function animateModal(modal: View, content: View) {
       modalsHeight.set(modal, height);
     }
 
+    //make sure part of modal is not above the viewport
+    if (height > top)
+      tl.set(modal, {
+        style: {
+          bottom: top - height - EStyleSheet.value(Sizes.SPACING),
+        },
+      });
+
     tl.set(content, { style: { opacity: 0 } });
-    tl.set(modal, { style: { opacity: 0, height: 60, width: 0 } });
+    tl.set(modal, { style: { opacity: 0, height: getShrinkedModalHeight(), width: 0 } });
 
     //expand width
     tl.to(modal, {
@@ -78,7 +89,7 @@ export function reverseAnimateModal(modal: View, content: View) {
       modal,
       {
         style: {
-          height: 60,
+          height: getShrinkedModalHeight(),
         },
         duration: 0.5,
         ease: "tween3",
@@ -95,6 +106,12 @@ export function reverseAnimateModal(modal: View, content: View) {
       duration: 0.5,
       ease: "tween3",
       onComplete() {
+        //reset viewport restriction (if modal's height > top)
+        tl.set(modal, {
+          style: {
+            bottom: 0,
+          },
+        });
         resolve();
       },
     });

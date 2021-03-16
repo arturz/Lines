@@ -22,9 +22,11 @@ const initialState: GameState = {
   map: {
     seed: null,
     cells: null,
+    lastTakenLine: null,
     gates: null,
     borders: null,
     pointer: null,
+    powerUps: [],
     width: null,
     height: null,
   },
@@ -74,6 +76,13 @@ export const gameReducer: Reducer<GameState> = (
         map: {
           ...state.map,
           cells,
+          lastTakenLine: {
+            x: action.payload.x,
+            y: action.payload.y,
+            direction: action.payload.direction,
+            backwards: action.payload.backwards,
+            player: state.player
+          },
           pointer: new Pointer(x, y),
         },
       };

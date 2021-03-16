@@ -14,14 +14,15 @@ type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
 const mapStateToProps = ({
   game: {
-    map: { cells },
+    map: { cells, lastTakenLine },
   },
 }: RootState) => ({
   cells,
+  lastTakenLine,
 });
 
 const TakenLines: React.FC<ComponentProps> = memo(
-  ({ cells, width, height, cellPx, offset }) => {
+  ({ cells, lastTakenLine, width, height, cellPx, offset }) => {
     const elements = [];
 
     const red = useDynamicValue(Colors.RED_DYNAMIC);
@@ -32,10 +33,20 @@ const TakenLines: React.FC<ComponentProps> = memo(
         if (!cells[i][j]) continue;
 
         for (const cellLine of cells[i][j].getTakenLines()) {
+          const direction = cellLine.getDirection();
+
+          //last taken line is animated, so we cannot render it yet
+          if (
+            lastTakenLine.y === i &&
+            lastTakenLine.x === j &&
+            lastTakenLine.direction === direction
+          )
+            continue;
+
           elements.push(
             <Line
-              key={`${i}${j}${cellLine.getDirection()}`}
-              {...getDrewLineProps(i, j, cellLine.getDirection(), {
+              key={`${i}${j}${direction}`}
+              {...getDrewLineProps(i, j, direction, {
                 cellPx,
                 offset,
               })}

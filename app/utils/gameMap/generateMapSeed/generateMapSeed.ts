@@ -7,8 +7,8 @@ import getRelativeSubstraction from "./getRelativeSubstraction";
 
 const getGameSizeBase = cond([
   [isEqual(GameSize.SMALL), always(8)],
-  [isEqual(GameSize.MEDIUM), always(12)],
-  [isEqual(GameSize.LARGE), always(16)],
+  [isEqual(GameSize.MEDIUM), always(10)],
+  [isEqual(GameSize.LARGE), always(12)],
 ]);
 
 const chance = (percentage: number) => {

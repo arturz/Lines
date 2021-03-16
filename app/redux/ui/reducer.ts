@@ -1,10 +1,10 @@
 import { UIState } from "./types";
-import { Appearance } from "react-native";
 import { Reducer } from "redux";
-import { TOGGLE_DARK_MODE } from "./actions";
+import { SET_DARK_MODE, TOGGLE_DARK_MODE } from "./actions";
 
 const initialState: UIState = {
-  darkMode: Appearance.getColorScheme() === "dark",
+  //look at DarkModeProvider for initial state
+  darkMode: undefined,
 };
 
 export const uiReducer: Reducer<UIState> = (state = initialState, action) => {
@@ -12,7 +12,13 @@ export const uiReducer: Reducer<UIState> = (state = initialState, action) => {
     case TOGGLE_DARK_MODE:
       return {
         ...state,
-        darkMode: !state.darkMode,
+        darkMode: state.darkMode ? false : true,
+      };
+
+    case SET_DARK_MODE:
+      return {
+        ...state,
+        darkMode: action.payload,
       };
 
     default:

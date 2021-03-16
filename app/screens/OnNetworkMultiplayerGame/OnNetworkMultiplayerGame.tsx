@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, BackHandler } from "react-native";
 import { connect, useDispatch } from "react-redux";
+import { RouteProp } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { showMessage } from "react-native-flash-message";
 import { LayoutWrapper } from "../../components/wrappers";
 import { CellLineProps, MapSeed } from "../../types";
 import { GameStatus } from "../../constants/GameStatus";
@@ -17,24 +20,20 @@ import {
   RootStackParamList,
 } from "../../navigations";
 import { GameRenderer, GameLogic } from "../../components/gameRenderer";
-import { createRoom, checkIfRoomExists, NetworkGame } from "../../api";
+import { NetworkGameController } from "../../api";
 import { compose, Dispatch } from "redux";
 import { withGameDeepLinking } from "../../hocs";
 import {
   ShareLinkAlert,
   JoinedGameAlert,
-  OpponentLeftAlert,
-  ExpiredLinkAlert,
   LeavePrompt,
   FinishAlert,
+  SettingsAlert,
 } from "../../components/organisms";
 import { GameHeader } from "../../components/molecules";
 import { checkConnection, generateMapSeed } from "../../utils";
-import { RouteProp } from "@react-navigation/native";
 import { renderAlerts } from "./renderAlerts";
 import { checkHost, AlertData } from "./types";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { showMessage } from "react-native-flash-message";
 import LostConnection from "../../components/organisms/LostConnection";
 import { useDynamicValue } from "react-native-dynamic";
 import { Colors } from "../../styles";
@@ -51,9 +50,12 @@ type ComponentOwnProps = {
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 type ComponentDispatchProps = ReturnType<typeof mapDispatchToProps>;
 
-const mapStateToProps = ({ game: { status, player } }: RootState) => ({
+const mapStateToProps = ({
+  game: { status, player, gameSize },
+}: RootState) => ({
   status,
   player,
+  gameSize,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -69,6 +71,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
   status,
   player,
+  gameSize, //for restarting game
   initializeGame: dispatchInitializeGame,
   initializeAndStartGame: dispatchInitializeAndStartGame,
   takeLine: dispatchTakeLine,
@@ -77,68 +80,103 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
   navigation,
 }) => {
   //contains functions for communication with server
-  const [game, setGame] = useState<NetworkGame | null>(null);
+  const [
+    gameController,
+    setGameController,
+  ] = useState<NetworkGameController | null>(null);
 
-  //used for showing alert when guest joins room that doesn't exist (expired URL)
-  const [showExpiredLinkAlert, setShowExpiredLinkAlert] = useState(false);
   //prompt that allows to leave the game
   const [showLeavePrompt, setShowLeavePrompt] = useState(false);
-
-  const [hasOpponentLeft, setHasOpponentLeft] = useState(false);
-
+  const [showSettingsAlert, setShowSettingsAlert] = useState(false);
   const [lostConnection, setLostConnection] = useState(false);
-
-  function resetState() {
-    setGame(null);
-    setShowExpiredLinkAlert(false);
-    setShowLeavePrompt(false);
-    setHasOpponentLeft(false);
-    setLostConnection(false);
-  }
-
-  async function startGameAsHost(
-    game: NetworkGame,
-    mapSeed: MapSeed,
-    gameSize: GameSize
-  ) {
-    if (!checkHost(params)) return;
-
-    await game.action(dispatchInitializeAndStartGame(mapSeed, gameSize));
-  }
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    //opponent left the game - we should destroy the game
-    if (hasOpponentLeft) {
-      game?.__destroy();
-      setGame(null);
-    }
-  }, [hasOpponentLeft]);
-
-  function attachCommonGameEmitterEvents(game: NetworkGame) {
-    game.emitter.on("left", () => setLostConnection(true));
-    game.emitter.on("opponentLeft", () => setHasOpponentLeft(true));
-    game.emitter.on("opponentsAction", dispatch);
-    game.emitter.on("connected", () => {
-      showMessage({
-        type: "success",
-        message: "Connected to server",
-      });
-    });
-    game.emitter.on("disconnected", () => {
-      showMessage({
-        type: "danger",
-        message: "Lost connection",
-      });
-    });
-  }
-
   useEffect(() => {
     checkConnection().then((isConnected) => {
       if (!isConnected) setLostConnection(true);
     });
   }, []);
+
+  function resetState() {
+    setGameController(null);
+    setShowLeavePrompt(false);
+    setLostConnection(false);
+  }
+
+  function goToMenu() {
+    navigation.navigate("Menu");
+  }
+
+  function leaveRoom() {
+    gameController?.removeRoom();
+    goToMenu();
+  }
+
+  async function startGame(
+    gameController: NetworkGameController,
+    mapSeed: MapSeed,
+    gameSize: GameSize
+  ) {
+    await gameController.addAction(
+      dispatchInitializeAndStartGame(mapSeed, gameSize)
+    );
+  }
+
+  function restartGame(_gameSize = gameSize) {
+    if (gameController !== null)
+      startGame(gameController, generateMapSeed(_gameSize), _gameSize);
+  }
+
+  const dispatch = useDispatch();
+  function attachCommonGameControllerListeners(
+    gameController: NetworkGameController
+  ) {
+    gameController
+      .onAction(dispatch)
+      .onRoomRemoved(() => {
+        showMessage({
+          type: "info",
+          message: "Room was removed",
+        });
+        goToMenu();
+      })
+      .onLog((log) => {
+        switch (log) {
+          case "initialConnect":
+            showMessage({
+              type: "success",
+              message: "Connected to server",
+            });
+            break;
+
+          case "reconnect":
+            showMessage({
+              type: "success",
+              message: "Reconnected",
+            });
+            break;
+
+          case "disconnect":
+            showMessage({
+              type: "danger",
+              message: "Lost connection",
+            });
+            break;
+
+          case "opponentDisconnect":
+            showMessage({
+              type: "info",
+              message: "Opponent is disconnected",
+            });
+            break;
+
+          case "opponentReconnect":
+            showMessage({
+              type: "success",
+              message: "Opponent is reconnected",
+            });
+            break;
+        }
+      });
+  }
 
   //host
   useEffect(() => {
@@ -147,57 +185,47 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
 
       const mapSeed = generateMapSeed(params.gameSize);
 
-      //initialize UI when we are waiting for opponent
+      //initialize UI when we are waiting for the opponent
       dispatchInitializeGame(mapSeed, params.gameSize);
 
-      if (!(await checkConnection())) return;
+      try {
+        const gameController = new NetworkGameController(Player.A);
+        attachCommonGameControllerListeners(gameController);
+        gameController.onOpponentInitialConnect(() => {
+          showMessage({ type: "success", message: "Opponent is connected" });
+          startGame(gameController, mapSeed, params.gameSize);
+        });
 
-      const roomId = await createRoom();
-      const game = new NetworkGame(roomId, Player.A);
-      setGame(game);
-
-      attachCommonGameEmitterEvents(game);
-      game.emitter.on("opponentConnected", () =>
-        startGameAsHost(game, mapSeed, params.gameSize)
-      );
+        await gameController.auth();
+        await gameController.createRoom();
+        setGameController(gameController);
+      } catch(error) {
+        showMessage({ type: "danger", message: error });
+        leaveRoom();
+      }
     })();
   }, []);
 
   //guest
   useEffect(() => {
     (async function () {
-      if (checkHost(params) || !(await checkConnection())) return;
+      if (checkHost(params)) return;
 
-      const roomExists = checkIfRoomExists(params.id);
-      if (!roomExists) {
-        setShowExpiredLinkAlert(true);
-        return;
+      try {
+        const gameController = new NetworkGameController(Player.B);
+        attachCommonGameControllerListeners(gameController);
+        await gameController.auth();
+        await gameController.joinRoom(params.id);
+        setGameController(gameController);
+      } catch(error) {
+        showMessage({ type: "danger", message: error });
+        leaveRoom();
       }
-
-      const game = new NetworkGame(params.id, Player.B);
-      setGame(game);
-      attachCommonGameEmitterEvents(game);
     })();
   }, []);
 
-  function leaveRoom() {
-    if (game !== null) {
-      //disconnect
-      game.leave();
-    }
-
-    //reset component's state
-    resetState();
-
-    //reset redux's game state
-    dispatchClearGame();
-
-    //go to menu
-    goToMenu();
-  }
-
   const onTakeLine = (cellLineProps: CellLineProps) =>
-    game?.action(
+    gameController?.addAction(
       dispatchTakeLine(
         cellLineProps.y,
         cellLineProps.x,
@@ -205,8 +233,6 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
         cellLineProps.backwards
       )
     );
-
-  const goToMenu = () => navigation.navigate("Menu");
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -220,16 +246,20 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
     return () => backHandler.remove();
   }, []);
 
+  useEffect(() => {
+    return navigation.addListener("blur", () => {
+      resetState();
+      dispatchClearGame();
+    });
+  }, [navigation]);
+
   const hostAlerts: AlertData[] = [
     {
       component: (props) => (
         <ShareLinkAlert
-          isRoomCreated={game !== null}
-          id={game?.roomId}
-          onAbort={() => {
-            game?.__destroy();
-            goToMenu();
-          }}
+          isRoomCreated={gameController !== null}
+          id={gameController?.roomId}
+          onAbort={leaveRoom}
           {...props}
         />
       ),
@@ -238,10 +268,6 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
   ];
 
   const guestAlerts: AlertData[] = [
-    {
-      component: (props) => <ExpiredLinkAlert goToMenu={goToMenu} {...props} />,
-      isOpen: showExpiredLinkAlert,
-    },
     {
       component: (props) => <JoinedGameAlert {...props} />,
       isOpen: status === GameStatus.Ready || status === GameStatus.Initialized,
@@ -256,12 +282,6 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
     ...(checkHost(params) ? hostAlerts : guestAlerts),
     {
       component: (props) => (
-        <OpponentLeftAlert goToMenu={leaveRoom} {...props} />
-      ),
-      isOpen: hasOpponentLeft,
-    },
-    {
-      component: (props) => (
         <LeavePrompt
           onResume={() => setShowLeavePrompt(false)}
           onLeave={leaveRoom}
@@ -272,17 +292,24 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
     },
     {
       component: (props) => (
+        <SettingsAlert
+          onResume={() => setShowSettingsAlert(false)}
+          onLeave={leaveRoom}
+          onPlayAgain={(gameSize) => {
+            restartGame(gameSize);
+            setShowSettingsAlert(false);
+          }}
+          {...props}
+        />
+      ),
+      isOpen: showSettingsAlert
+    },
+    {
+      component: (props) => (
         <FinishAlert
           playerAWinnerText={checkHost(params) ? `You win` : `You lose`}
           playerBWinnerText={checkHost(params) ? `You lose` : `You win`}
-          onPlayAgain={() => {
-            if (checkHost(params) && game !== null)
-              startGameAsHost(
-                game,
-                generateMapSeed(params.gameSize),
-                params.gameSize
-              );
-          }}
+          onPlayAgain={restartGame}
           onLeave={leaveRoom}
           {...props}
         />
@@ -307,6 +334,7 @@ const NetworkMultiplayerGame: React.FC<ComponentProps> = ({
                 checkHost(params) ? `opponent’s move` : `your’s move`
               }
               onLeaveGameButtonPress={() => setShowLeavePrompt(true)}
+              onGameSettingsButtonPress={() => setShowSettingsAlert(true)}
             />
             <GameLogic>
               <LayoutWrapper

@@ -1,7 +1,5 @@
-const INVITE_WEBSITE = "https://ffn5f.csb.app";
-
 export function getInviteLink(id: string) {
-  return `${INVITE_WEBSITE}?id=${id}`;
+  return `https://join-game.vercel.app/room/${id}`;
 }
 
 export const DEEP_LINK_PROTOCOL = "linesgame";

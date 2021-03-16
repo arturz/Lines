@@ -1,14 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Line } from "react-native-svg";
-import { GameSizes } from "../../types";
+import { MapCellsSizes } from "../../types";
 import { Colors, Sizes } from "../../styles";
 import { RootState } from "../../redux";
 import { useDynamicValue } from "react-native-dynamic";
 import { Player } from "../../constants";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
-type ComponentOwnProps = GameSizes;
+type ComponentOwnProps = MapCellsSizes;
 type ComponentStoreProps = ReturnType<typeof mapStateToProps>;
 
 const mapStateToProps = ({

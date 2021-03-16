@@ -20,7 +20,7 @@ export class Gates {
         pointerX <= gate.to.x &&
         pointerY >= gate.from.y &&
         pointerY <= gate.to.y
-    ).player;
+    )?.player;
   }
 
   getGates() {

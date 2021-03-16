@@ -1,13 +1,6 @@
-import React, { memo, useRef } from "react";
+import React, { useRef } from "react";
 import { connect } from "react-redux";
-import Svg, {
-  Defs,
-  G,
-  LinearGradient,
-  Mask,
-  Rect,
-  Stop,
-} from "react-native-svg";
+import Svg from "react-native-svg";
 import { DisplayResolution, CellLineProps, Point } from "../../types";
 import InsideLines from "./InsideLines";
 import Border from "./Border";
@@ -18,15 +11,16 @@ import HoverLine, { HoverLineHandles } from "./HoverLine";
 import GatesComponent from "./GatesComponent";
 import { getHoverLineProps, canBePlaced } from "../../utils";
 import { isEqual } from "lodash";
-import { getOffsetAndCellPx } from "../../utils/inGame";
+import { getOffsetAndCellPx, POINTER_IS_TOO_FAR } from "../../utils/inGame";
 import { GameStatus } from "../../constants";
 import { RootState } from "../../redux";
 import { HoverLineProps } from "../../utils/inGame/hoverLine/getHoverLineProps";
+import LastTakenLine from "./LastTakenLine";
+import PowerUps from "./PowerUps";
 
 type ComponentProps = ComponentOwnProps & ComponentStoreProps;
 type ComponentOwnProps = DisplayResolution &
   Point & {
-    showcase?: boolean;
     allowTakingLine: boolean;
     onTakeLine: (cellLineProps: CellLineProps) => void;
   };
@@ -59,7 +53,10 @@ const Game: React.FC<ComponentProps> = ({
   /*
     I didn't use useState, so we don't need to rerender whole component only when hover line changes.
   */
-  const _hoverLineProps = useRef<HoverLineProps | null>(null);
+  const _hoverLineProps = useRef<Exclude<
+    HoverLineProps,
+    typeof POINTER_IS_TOO_FAR
+  > | null>(null);
 
   /*
     For direct manipulation.
@@ -71,6 +68,10 @@ const Game: React.FC<ComponentProps> = ({
       { x, y },
       { pointer: map.pointer, cellPx, offset }
     );
+
+    if (hoverLineProps === POINTER_IS_TOO_FAR) {
+      return POINTER_IS_TOO_FAR;
+    }
 
     if (isEqual(_hoverLineProps.current, hoverLineProps)) return;
 
@@ -84,7 +85,7 @@ const Game: React.FC<ComponentProps> = ({
       )
     ) {
       _hoverLineProps.current = hoverLineProps;
-      _hoverLineComponent.current?.start(hoverLineProps);
+      _hoverLineComponent.current?.showHoverLine(hoverLineProps);
     }
   };
 
@@ -97,17 +98,23 @@ const Game: React.FC<ComponentProps> = ({
       });
     },
     onPanResponderMove: (e, gestureState) => {
-      showHoverLine({
-        x: gestureState.moveX - x,
-        y: gestureState.moveY - y,
-      });
+      if (
+        showHoverLine({
+          x: gestureState.moveX - x,
+          y: gestureState.moveY - y,
+        }) === POINTER_IS_TOO_FAR &&
+        _hoverLineProps.current !== null
+      ) {
+        _hoverLineProps.current = null;
+        _hoverLineComponent.current?.hideHoverLine();
+      }
     },
     onPanResponderRelease: (e, gestureState) => {
       if (_hoverLineProps.current === null) return;
 
       onTakeLine(_hoverLineProps.current);
+      _hoverLineComponent.current?.stopHoverLineAnimation();
       _hoverLineProps.current = null;
-      _hoverLineComponent.current?.clear();
     },
   });
 
@@ -142,37 +149,17 @@ const Game: React.FC<ComponentProps> = ({
         cellPx={cellPx}
         offset={offset}
       />
+      <HoverLine cellPx={cellPx} offset={offset} ref={_hoverLineComponent} />
       <TakenLines
         width={map.width}
         height={map.height}
         cellPx={cellPx}
         offset={offset}
       />
-      <HoverLine
-        width={map.width}
-        height={map.height}
-        cellPx={cellPx}
-        offset={offset}
-        ref={_hoverLineComponent}
-      />
-      <Border
-        width={map.width}
-        height={map.height}
-        cellPx={cellPx}
-        offset={offset}
-      />
-      <PointerComponent
-        width={map.width}
-        height={map.height}
-        cellPx={cellPx}
-        offset={offset}
-      />
-      <GatesComponent
-        width={map.width}
-        height={map.height}
-        cellPx={cellPx}
-        offset={offset}
-      />
+      <LastTakenLine cellPx={cellPx} offset={offset} />
+      <Border cellPx={cellPx} offset={offset} />
+      <PointerComponent cellPx={cellPx} offset={offset} />
+      <GatesComponent cellPx={cellPx} offset={offset} />
     </Svg>
   );
 };

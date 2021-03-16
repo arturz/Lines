@@ -8,12 +8,12 @@ target 'LinesGame' do
 
   use_react_native!(:path => config["reactNativePath"])
 
-  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
-
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
   pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
 
+
+  pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
 
   target 'LinesGameTests' do
     inherit! :complete

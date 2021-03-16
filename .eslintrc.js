@@ -7,8 +7,8 @@ module.exports = {
     "prettier/@typescript-eslint",
     "prettier/react",
   ],
-  overrides: {
-    "no-unused-vars": ["off"],
-    "no-undef": ["off"],
+  rules: {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
   },
 };
