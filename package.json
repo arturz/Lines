@@ -22,7 +22,7 @@
     "@react-navigation/stack": "^5.8.0",
     "easystarjs": "^0.4.4",
     "eventemitter3": "^4.0.5",
-    "gsap": "^3.4.2",
+    "gsap": "^3.6.0",
     "gsap-rn": "0.0.14",
     "lodash": "^4.17.20",
     "random-int": "^2.0.1",
