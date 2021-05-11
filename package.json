@@ -24,7 +24,7 @@
     "eventemitter3": "^4.0.5",
     "gsap": "^3.4.2",
     "gsap-rn": "0.0.14",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "random-int": "^2.0.1",
     "react": "16.13.1",
     "react-native-dynamic": "^1.0.0",
