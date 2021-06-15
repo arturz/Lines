@@ -12,21 +12,21 @@
 
 - React Native + Redux
 - Firestore + RTDB (online functionalities)
-- Framer motion + Animated API
+- GreenSock + Animated API
 
 # Showcase
 
 ## Start menu
 
-<img src="./showcase/1.png" alt="image 1" style="max-width: 200px; margin-right: 20px; margin-bottom: 20px;" />
-<img src="./showcase/2.png" alt="image 2" style="max-width: 200px; margin-bottom: 20px;" />
+![image 1](./showcase/1.png)&nbsp;&nbsp;&nbsp;&nbsp;
+![image 2](./showcase/2.png)
 
 ## In-game
 
-<img src="./showcase/3.png" alt="image 3" style="max-width: 200px; margin-right: 20px; margin-bottom: 20px;" />
-<img src="./showcase/4.png" alt="image 4" style="max-width: 200px; margin-bottom: 20px;" />
+![image 3](./showcase/3.png)&nbsp;&nbsp;&nbsp;&nbsp;
+![image 4](./showcase/4.png)
 
 ## Map generation
 
-<img src="./showcase/5.png" alt="image 5" style="max-width: 200px; margin-right: 20px; margin-bottom: 20px;" />
-<img src="./showcase/6.png" alt="image 6" style="max-width: 200px; margin-bottom: 20px;" />
+![image 5](./showcase/5.png)&nbsp;&nbsp;&nbsp;&nbsp;
+![image 6](./showcase/6.png)
