@@ -1,22 +1,32 @@
-# Lines game
+# Lines
 
-Things needed to be done for iOS:
+> Turn-based Android and iOS game
 
-- Deep Linking: https://medium.com/react-native-training/deep-linking-your-react-native-app-d87c39a1ad5e
-- custom font config: https://medium.com/@mehrankhandev/ultimate-guide-to-use-custom-fonts-in-react-native-77fcdf859cf4
-- icons' fonts linking: https://github.com/oblador/react-native-vector-icons
-- native gradient: https://github.com/react-native-linear-gradient/react-native-linear-gradient
+# Features
 
-Things already done for iOS:
+- PvP on the same device or online (one player sends link, the other handles it via Deep Linking)
+- random map generation in three sizes
+- optional dark mode
 
-- placing app icon
+# Stack
 
-# Credits
+- React Native + Redux
+- Firestore + RTDB (online functionalities)
+- Framer motion + Animated API
 
-Font Awesome carrot
+# Showcase
 
-Before you download, this icon is licensed under the Creative Commons Attribution 4.0 International license and requires that you comply with the following:
+## Start menu
 
-You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+<img src="./showcase/1.png" alt="image 1" style="max-width: 200px; margin-right: 20px; margin-bottom: 20px;" />
+<img src="./showcase/2.png" alt="image 2" style="max-width: 200px; margin-bottom: 20px;" />
 
-If this is a real thorn in your side, grabbing a paid plan removes this attribution restriction (and gives you tons more icons and goodies too).
+## In-game
+
+<img src="./showcase/3.png" alt="image 3" style="max-width: 200px; margin-right: 20px; margin-bottom: 20px;" />
+<img src="./showcase/4.png" alt="image 4" style="max-width: 200px; margin-bottom: 20px;" />
+
+## Map generation
+
+<img src="./showcase/5.png" alt="image 5" style="max-width: 200px; margin-right: 20px; margin-bottom: 20px;" />
+<img src="./showcase/6.png" alt="image 6" style="max-width: 200px; margin-bottom: 20px;" />
